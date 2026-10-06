@@ -1,0 +1,22 @@
+{
+  "name": "education-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Global education, test-prep, calculator and student intelligence platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=web",
+    "start": "npm run start --workspace=web",
+    "lint": "npm run lint --workspace=web",
+    "typecheck": "npm run typecheck --workspace=web",
+    "check": "npm run lint && npm run typecheck && npm run build"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}
