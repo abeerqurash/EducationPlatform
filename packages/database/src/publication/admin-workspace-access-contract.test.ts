@@ -20,6 +20,7 @@ const overview = readFileSync(
 describe("admin workspace access boundary", () => {
   it("uses the established database-backed publication permissions", () => {
     expect(access).toContain("resolvePublicationActor");
+    expect(access).toContain("evaluateAdminWorkspaceAccess");
     expect(access).toContain("publicationPermissions.submitForReview");
     expect(access).toContain("publicationPermissions.publish");
     expect(access).toContain('redirect("/dashboard")');

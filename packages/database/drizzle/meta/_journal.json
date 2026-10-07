@@ -29,6 +29,13 @@
       "when": 1791430200000,
       "tag": "0003_student_calculator_results",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791432000000,
+      "tag": "0004_student_intelligence",
+      "breakpoints": true
     }
   ]
 }

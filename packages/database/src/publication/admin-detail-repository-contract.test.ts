@@ -37,12 +37,12 @@ describe("admin publication detail repository", () => {
     expect(source).toContain(
       "reviews",
     );
-    expect(source).toMatch(
-      /requireFormula:\s*true/,
-    );
-    expect(source).toMatch(
-      /requireVerifiedSource:\s*true/,
-    );
+    expect(source).toContain(
+        "resolveCalculatorPublicationRequirements",
+      );
+    expect(source).not.toMatch(
+        /input\.requireVerifiedSource/,
+      );
   });
 
   it("exposes publication context without inventing editorial state", () => {
@@ -84,11 +84,11 @@ describe("admin publication detail repository", () => {
   it(
     "keeps readiness requirements aligned with trusted mutation defaults",
     () => {
-      expect(source).toMatch(
-        /requireFormula:\s*true/,
+      expect(source).toContain(
+        "resolveCalculatorPublicationRequirements",
       );
-      expect(source).toMatch(
-        /requireVerifiedSource:\s*true/,
+      expect(source).not.toMatch(
+        /input\.requireVerifiedSource/,
       );
       expect(source).not.toMatch(
         /input\.requireFormula/,

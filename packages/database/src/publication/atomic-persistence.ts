@@ -41,6 +41,10 @@ import {
 } from "./audit-plan";
 
 import {
+  resolveCalculatorPublicationRequirements,
+} from "./calculator-requirements";
+
+import {
   planPublicationWorkflow,
   type PublicationWorkflowAction,
   type PublicationWorkflowState,
@@ -177,6 +181,9 @@ export async function persistTrustedPublicationTransition(
               verificationStatus:
                 calculatorVersions
                   .verificationStatus,
+              configuration:
+                calculatorVersions
+                  .configuration,
             })
             .from(
               calculatorVersions,
@@ -314,6 +321,11 @@ export async function persistTrustedPublicationTransition(
             .limit(1)
         )[0] ?? null;
 
+      const requirements =
+        resolveCalculatorPublicationRequirements(
+          calculatorVersion.configuration,
+        );
+
       const state:
         PublicationWorkflowState = {
           toolStatus:
@@ -343,11 +355,7 @@ export async function persistTrustedPublicationTransition(
               ?.reviewedAt ??
             null,
 
-          requireFormula:
-            true,
-
-          requireVerifiedSource:
-            true,
+          ...requirements,
         };
 
       const plan =

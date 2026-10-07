@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import {
   createStudentResult,
+  recordStudyActivity,
   removeStudentResult,
 } from "@education/database";
 
@@ -86,8 +87,19 @@ export async function saveStudentResult(
     resultSnapshot: request.resultSnapshot,
   });
 
+  await recordStudyActivity({
+    userId,
+    activityType: "calculator_result_saved",
+    title: `Saved ${toolName} result`,
+    metadata: {
+      resultId: created.id,
+      toolSlug,
+    },
+  });
+
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/saved");
+  revalidatePath("/dashboard/progress");
 
   return {
     ok: true,

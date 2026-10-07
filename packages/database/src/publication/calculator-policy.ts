@@ -2,6 +2,10 @@ import type {
   PublicCalculatorRecord,
 } from "../repositories/public-tools";
 
+import {
+  resolveCalculatorPublicationRequirements,
+} from "./calculator-requirements";
+
 export type CalculatorReadinessLevel =
   | "development"
   | "publishable"
@@ -22,272 +26,160 @@ export type CalculatorReadinessIssueCode =
   | "REVIEW_NOT_APPROVED";
 
 export type CalculatorReadinessIssue = {
-  code:
-    CalculatorReadinessIssueCode;
-
-  severity:
-    | "error"
-    | "warning";
-
+  code: CalculatorReadinessIssueCode;
+  severity: "error" | "warning";
   message: string;
 };
 
 export type CalculatorPublicationReadiness = {
-  level:
-    CalculatorReadinessLevel;
-
+  level: CalculatorReadinessLevel;
   developmentVisible: boolean;
-
   publishable: boolean;
-
   verified: boolean;
-
-  issues:
-    CalculatorReadinessIssue[];
+  issues: CalculatorReadinessIssue[];
 };
 
-function hasText(
-  value:
-    | string
-    | null
-    | undefined,
-) {
-  return Boolean(
-    value?.trim(),
-  );
+function hasText(value: string | null | undefined) {
+  return Boolean(value?.trim());
 }
 
 export function evaluateCalculatorPublication(
-  calculator:
-    PublicCalculatorRecord,
+  calculator: PublicCalculatorRecord,
 ): CalculatorPublicationReadiness {
-  const issues:
-    CalculatorReadinessIssue[] =
-    [];
+  const issues: CalculatorReadinessIssue[] = [];
+  const requirements =
+    resolveCalculatorPublicationRequirements(
+      calculator.calculatorVersion.configuration,
+    );
 
-  if (
-    calculator.tool.status !==
-    "published"
-  ) {
+  if (calculator.tool.status !== "published") {
     issues.push({
-      code:
-        "TOOL_NOT_PUBLISHED",
-
+      code: "TOOL_NOT_PUBLISHED",
       severity: "error",
+      message: "The tool is not published.",
+    });
+  }
 
-      message:
-        "The tool is not published.",
+  if (!calculator.calculatorVersion.isActive) {
+    issues.push({
+      code: "CALCULATOR_INACTIVE",
+      severity: "error",
+      message: "The calculator version is not active.",
     });
   }
 
   if (
-    !calculator.calculatorVersion
-      .isActive
-  ) {
-    issues.push({
-      code:
-        "CALCULATOR_INACTIVE",
-
-      severity: "error",
-
-      message:
-        "The calculator version is not active.",
-    });
-  }
-
-  if (
+    requirements.requireFormula &&
     !calculator.formulaVersion
   ) {
     issues.push({
-      code:
-        "FORMULA_MISSING",
-
+      code: "FORMULA_MISSING",
       severity: "error",
-
-      message:
-        "The calculator does not have an active formula version.",
+      message: "The calculator does not have an active formula version.",
     });
   } else if (
-    !calculator.formulaVersion
-      .isActive
+    calculator.formulaVersion &&
+    !calculator.formulaVersion.isActive
   ) {
     issues.push({
-      code:
-        "FORMULA_INACTIVE",
-
+      code: "FORMULA_INACTIVE",
       severity: "error",
+      message: "The formula version is not active.",
+    });
+  }
 
-      message:
-        "The formula version is not active.",
+  if (!hasText(calculator.calculatorVersion.methodology)) {
+    issues.push({
+      code: "METHODOLOGY_MISSING",
+      severity: "error",
+      message: "Calculator methodology is missing.",
     });
   }
 
   if (
-    !hasText(
-      calculator.calculatorVersion
-        .methodology,
-    )
+    calculator.tool.currentVersion !==
+    calculator.calculatorVersion.version
   ) {
     issues.push({
-      code:
-        "METHODOLOGY_MISSING",
-
+      code: "VERSION_MISMATCH",
       severity: "error",
-
-      message:
-        "Calculator methodology is missing.",
-    });
-  }
-
-  if (
-    calculator.tool
-      .currentVersion !==
-    calculator.calculatorVersion
-      .version
-  ) {
-    issues.push({
-      code:
-        "VERSION_MISMATCH",
-
-      severity: "error",
-
       message:
         "The tool current version does not match the active calculator version.",
     });
   }
 
   if (
-    calculator.calculatorVersion
-      .verificationStatus !==
+    calculator.calculatorVersion.verificationStatus !==
     "verified"
   ) {
     issues.push({
-      code:
-        "CALCULATOR_UNVERIFIED",
-
+      code: "CALCULATOR_UNVERIFIED",
       severity: "warning",
-
-      message:
-        "The calculator version has not been verified.",
+      message: "The calculator version has not been verified.",
     });
   }
 
   if (
     calculator.formulaVersion &&
-    calculator.formulaVersion
-      .verificationStatus !==
-      "verified"
+    calculator.formulaVersion.verificationStatus !== "verified"
   ) {
     issues.push({
-      code:
-        "FORMULA_UNVERIFIED",
-
+      code: "FORMULA_UNVERIFIED",
       severity: "warning",
-
-      message:
-        "The formula version has not been verified.",
+      message: "The formula version has not been verified.",
     });
   }
 
-  if (
-    calculator.sources.length ===
-    0
-  ) {
+  if (calculator.sources.length === 0) {
     issues.push({
-      code:
-        "SOURCE_MISSING",
-
+      code: "SOURCE_MISSING",
       severity: "warning",
-
-      message:
-        "No calculator source has been linked.",
+      message: "No calculator source has been linked.",
     });
   } else if (
     !calculator.sources.some(
-      (source) =>
-        source.verificationStatus ===
-        "verified",
+      (source) => source.verificationStatus === "verified",
     )
   ) {
     issues.push({
-      code:
-        "SOURCE_UNVERIFIED",
-
+      code: "SOURCE_UNVERIFIED",
       severity: "warning",
-
-      message:
-        "No linked calculator source has been verified.",
+      message: "No linked calculator source has been verified.",
     });
   }
 
-  if (
-    !calculator.latestReview
-  ) {
+  if (!calculator.latestReview) {
     issues.push({
-      code:
-        "REVIEW_MISSING",
-
+      code: "REVIEW_MISSING",
       severity: "warning",
-
-      message:
-        "The calculator version has not received a review.",
+      message: "The calculator version has not received a review.",
     });
-  } else if (
-    calculator.latestReview
-      .status !== "approved"
-  ) {
+  } else if (calculator.latestReview.status !== "approved") {
     issues.push({
-      code:
-        "REVIEW_NOT_APPROVED",
-
+      code: "REVIEW_NOT_APPROVED",
       severity: "warning",
-
-      message:
-        "The latest calculator review is not approved.",
+      message: "The latest calculator review is not approved.",
     });
   }
 
-  const hasErrors =
-    issues.some(
-      (issue) =>
-        issue.severity ===
-        "error",
-    );
-
+  const hasErrors = issues.some((issue) => issue.severity === "error");
   const hasVerificationWarnings =
-    issues.some(
-      (issue) =>
-        issue.severity ===
-        "warning",
-    );
+    issues.some((issue) => issue.severity === "warning");
 
   const developmentVisible =
-    calculator.tool.status ===
-      "published" &&
-    calculator.calculatorVersion
-      .isActive &&
-    Boolean(
-      calculator.formulaVersion
-        ?.isActive,
+    calculator.tool.status === "published" &&
+    calculator.calculatorVersion.isActive &&
+    (
+      !requirements.requireFormula ||
+      Boolean(calculator.formulaVersion?.isActive)
     );
 
-  const publishable =
-    developmentVisible &&
-    !hasErrors;
+  const publishable = developmentVisible && !hasErrors;
+  const verified = publishable && !hasVerificationWarnings;
 
-  const verified =
-    publishable &&
-    !hasVerificationWarnings;
-
-  let level:
-    CalculatorReadinessLevel =
-    "development";
-
-  if (verified) {
-    level = "verified";
-  } else if (publishable) {
-    level = "publishable";
-  }
+  let level: CalculatorReadinessLevel = "development";
+  if (verified) level = "verified";
+  else if (publishable) level = "publishable";
 
   return {
     level,

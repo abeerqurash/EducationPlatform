@@ -10,6 +10,7 @@ import { SiteButton } from "./site-button";
 
 type DashboardSectionPageProps = {
   active: string;
+  path: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -21,6 +22,7 @@ type DashboardSectionPageProps = {
 
 export async function DashboardSectionPage({
   active,
+  path,
   eyebrow,
   title,
   description,
@@ -32,9 +34,9 @@ export async function DashboardSectionPage({
   const session = await auth();
 
   if (!session?.user) {
-    redirect(`/login?callbackUrl=${encodeURIComponent(
-      active === "Overview" ? "/dashboard" : `/dashboard/${active.toLowerCase().replaceAll(" ", "-")}`,
-    )}`);
+    redirect(
+      `/login?callbackUrl=${encodeURIComponent(path)}`,
+    );
   }
 
   return (

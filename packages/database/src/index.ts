@@ -4,3 +4,5 @@ export * from "./repositories/public-tools";
 export * from "./publication";
 
 export * from "./repositories/student-results";
+
+export * from "./repositories/student-intelligence";

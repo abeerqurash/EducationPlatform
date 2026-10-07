@@ -8,6 +8,9 @@ import {
   resolvePublicationActor,
 } from "../../../../packages/database/src/publication/actor-resolver";
 import {
+  evaluateAdminWorkspaceAccess,
+} from "../../../../packages/database/src/publication/admin-workspace-policy";
+import {
   publicationPermissions,
 } from "../../../../packages/database/src/publication/authorization";
 
@@ -33,7 +36,10 @@ export async function requireAdminWorkspaceAccess(
     publicationPermissions.publish,
   );
 
-  if (!canSubmit && !canPublish) {
+  const workspaceAccess =
+    evaluateAdminWorkspaceAccess(actor);
+
+  if (!workspaceAccess.allowed) {
     redirect("/dashboard");
   }
 
@@ -42,5 +48,6 @@ export async function requireAdminWorkspaceAccess(
     actor,
     canSubmit,
     canPublish,
+    accessMode: workspaceAccess.mode,
   };
 }

@@ -96,19 +96,19 @@ describe(
       expect(source).not.toMatch(
         /input\.requireVerifiedSource/,
       );
-      expect(source).toMatch(
-        /requireFormula:\s*true/,
+      expect(source).toContain(
+        "resolveCalculatorPublicationRequirements",
       );
-      expect(source).toMatch(
-        /requireVerifiedSource:\s*true/,
+      expect(source).not.toMatch(
+        /input\.requireVerifiedSource/,
       );
-        expect(source).toMatch(
-          /requireFormula:\s*true/,
-        );
+        expect(source).toContain(
+        "resolveCalculatorPublicationRequirements",
+      );
 
-        expect(source).toMatch(
-          /requireVerifiedSource:\s*true/,
-        );
+        expect(source).not.toMatch(
+        /input\.requireVerifiedSource/,
+      );
       },
     );
   },

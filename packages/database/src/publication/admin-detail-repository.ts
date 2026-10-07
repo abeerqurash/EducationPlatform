@@ -36,6 +36,10 @@ import {
   type EditorialGateResult,
 } from "./editorial-gate";
 
+import {
+  resolveCalculatorPublicationRequirements,
+} from "./calculator-requirements";
+
 export type AdminPublicationDetail = {
   tool: {
     id: string;
@@ -139,6 +143,9 @@ export async function getAdminPublicationDetail(
           verificationStatus:
             calculatorVersions
               .verificationStatus,
+          configuration:
+            calculatorVersions
+              .configuration,
         })
         .from(calculatorVersions)
         .where(
@@ -277,6 +284,11 @@ export async function getAdminPublicationDetail(
         .limit(1)
     )[0] ?? null;
 
+  const requirements =
+    resolveCalculatorPublicationRequirements(
+      calculatorVersion.configuration,
+    );
+
   const readiness =
     evaluateEditorialPublicationGate({
       toolStatus: tool.status,
@@ -296,8 +308,7 @@ export async function getAdminPublicationDetail(
       latestReviewReviewedAt:
         latestReview?.reviewedAt ??
         null,
-      requireFormula: true,
-      requireVerifiedSource: true,
+      ...requirements,
     });
 
   return {

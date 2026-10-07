@@ -9,14 +9,20 @@ describe("application workspace routes", () => {
   it("ships every customer dashboard navigation destination", () => {
     const sectionRoutes = [
       "../../../../apps/web/src/app/dashboard/test-prep/page.tsx",
-      "../../../../apps/web/src/app/dashboard/study-plan/page.tsx",
-      "../../../../apps/web/src/app/dashboard/progress/page.tsx",
-      "../../../../apps/web/src/app/dashboard/settings/page.tsx",
     ];
 
     for (const route of sectionRoutes) {
       expect(existsSync(new URL(route, root))).toBe(true);
       expect(read(route)).toContain("DashboardSectionPage");
+    }
+
+    for (const route of [
+      "../../../../apps/web/src/app/dashboard/study-plan/page.tsx",
+      "../../../../apps/web/src/app/dashboard/progress/page.tsx",
+      "../../../../apps/web/src/app/dashboard/settings/page.tsx",
+    ]) {
+      const page = read(route);
+      expect(page).toContain("<DashboardShell");
     }
 
     const toolsRoute =
