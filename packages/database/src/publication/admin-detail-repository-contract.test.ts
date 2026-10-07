@@ -1,0 +1,102 @@
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+import {
+  readFileSync,
+} from "node:fs";
+import {
+  fileURLToPath,
+} from "node:url";
+
+const source = readFileSync(
+  fileURLToPath(
+    new URL(
+      "./admin-detail-repository.ts",
+      import.meta.url,
+    ),
+  ),
+  "utf8",
+);
+
+describe("admin publication detail repository", () => {
+  it("derives readiness from persisted editorial state", () => {
+    expect(source).toContain(
+      "evaluateEditorialPublicationGate({",
+    );
+    expect(source).toContain(
+      "calculatorVersions",
+    );
+    expect(source).toContain(
+      "formulaVersions",
+    );
+    expect(source).toContain(
+      "calculatorVersionSources",
+    );
+    expect(source).toContain(
+      "reviews",
+    );
+    expect(source).toMatch(
+      /requireFormula:\s*true/,
+    );
+    expect(source).toMatch(
+      /requireVerifiedSource:\s*true/,
+    );
+  });
+
+  it("exposes publication context without inventing editorial state", () => {
+    expect(source).toContain(
+      "categoryName",
+    );
+    expect(source).toContain(
+      "applicableYear",
+    );
+    expect(source).toContain(
+      "lastReviewedAt",
+    );
+    expect(source).toContain(
+      "latestReview",
+    );
+    expect(source).toContain(
+      "reviews.notes",
+    );
+    expect(source).toContain(
+      "reviews.reviewerId",
+    );
+    expect(source).toContain(
+      "reviews.id",
+    );
+    expect(source).toContain(
+      "verifiedSources",
+    );
+    expect(source).toContain(
+      "sourceRows.length",
+    );
+  });
+
+  it("is read only", () => {
+    expect(source).not.toMatch(/\.update\s*\(/);
+    expect(source).not.toMatch(/\.insert\s*\(/);
+    expect(source).not.toMatch(/\.delete\s*\(/);
+  });
+
+  it(
+    "keeps readiness requirements aligned with trusted mutation defaults",
+    () => {
+      expect(source).toMatch(
+        /requireFormula:\s*true/,
+      );
+      expect(source).toMatch(
+        /requireVerifiedSource:\s*true/,
+      );
+      expect(source).not.toMatch(
+        /input\.requireFormula/,
+      );
+      expect(source).not.toMatch(
+        /input\.requireVerifiedSource/,
+      );
+    },
+  );
+
+});

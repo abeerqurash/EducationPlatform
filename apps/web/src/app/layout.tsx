@@ -1,26 +1,84 @@
 import type { Metadata } from "next";
+import { Inter, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
+
+import { AnnouncementBar } from "@/components/layout/announcement-bar";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
+import { siteConfig } from "@/config/site";
+
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Education Platform",
-    template: "%s | Education Platform",
-  },
-  description:
-    "Education, test preparation, academic calculators and student intelligence platform.",
-};
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
-interface RootLayoutProps {
-  children: ReactNode;
-}
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      "http://localhost:3000",
+  ),
+
+  title: {
+    default: `${siteConfig.name} — Smarter Tools for Students`,
+    template: `%s | ${siteConfig.name}`,
+  },
+
+  description: siteConfig.description,
+
+  applicationName: siteConfig.name,
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  openGraph: {
+    type: "website",
+    title: `${siteConfig.name} — Smarter Tools for Students`,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — Smarter Tools for Students`,
+    description: siteConfig.description,
+  },
+};
 
 export default function RootLayout({
   children,
-}: RootLayoutProps) {
+}: Readonly<{
+  children: ReactNode;
+}>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${manrope.variable}`}
+    >
+      <body>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+
+        <AnnouncementBar />
+        <Header />
+
+        <div id="main-content">
+          {children}
+        </div>
+
+        <Footer />
+      </body>
     </html>
   );
 }

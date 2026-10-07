@@ -10,25 +10,28 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "latest",
+    "@education/auth": "*",
     "@education/calculators": "*",
     "@education/config": "*",
+    "@education/database": "*",
     "@education/exam-data": "*",
     "@education/types": "*",
     "@education/ui": "*",
     "@education/validation": "*",
     "next": "16.3.8",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "next-auth": "beta",
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "babel-plugin-react-compiler": "1.0.0",
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.8",
-    "tailwindcss": "^4",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "latest",
     "typescript": "^5"
   }
 }

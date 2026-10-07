@@ -1,0 +1,25 @@
+{
+  "name": "@education/auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./password": "./src/password.ts",
+    "./permissions": "./src/permissions.ts",
+    "./tokens": "./src/tokens.ts",
+    "./validation": "./src/validation.ts"
+  },
+  "dependencies": {
+    "@education/database": "*",
+    "@education/validation": "*",
+    "argon2": "^0.44.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

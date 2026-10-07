@@ -1,22 +1,30 @@
 {
-  "name": "education-platform",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Global education, test-prep, calculator and student intelligence platform",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "dev": "npm run dev --workspace=web",
-    "build": "npm run build --workspace=web",
-    "start": "npm run start --workspace=web",
-    "lint": "npm run lint --workspace=web",
-    "typecheck": "npm run typecheck --workspace=web",
-    "check": "npm run lint && npm run typecheck && npm run build"
-  },
-  "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
-  }
+    "name": "education-platform",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Global education, test-prep, calculator and student intelligence platform",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "npm run dev --workspace=web",
+        "build": "npm run build --workspace=web",
+        "start": "npm run start --workspace=web",
+        "lint": "npm run lint --workspace=web",
+        "typecheck": "npm run typecheck --workspace=web",
+        "check": "npm run lint && npm run typecheck && npm run build",
+        "db:generate": "npm run db:generate --workspace=@education/database",
+        "db:migrate": "npm run db:migrate --workspace=@education/database",
+        "db:push": "npm run db:push --workspace=@education/database",
+        "db:studio": "npm run db:studio --workspace=@education/database",
+        "db:seed": "npm run db:seed --workspace=@education/database"
+    },
+    "engines": {
+        "node": ">=22.0.0",
+        "npm": ">=10.0.0"
+    },
+    "devDependencies": {
+        "vitest": "^5.0.3"
+    }
 }

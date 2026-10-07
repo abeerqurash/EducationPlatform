@@ -1,22 +1,39 @@
 import path from "node:path";
-import type { NextConfig } from "next";
+
+import {
+  config as loadEnvironment,
+} from "dotenv";
+
+import type {
+  NextConfig,
+} from "next";
+
+const monorepoRoot = path.resolve(
+  __dirname,
+  "../..",
+);
+
+loadEnvironment({
+  path: path.join(
+    monorepoRoot,
+    ".env.local",
+  ),
+});
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-
-  poweredByHeader: false,
-
   transpilePackages: [
-    "@education/ui",
     "@education/config",
     "@education/types",
     "@education/validation",
+    "@education/ui",
     "@education/calculators",
     "@education/exam-data",
+    "@education/database",
+    "@education/auth",
   ],
 
   turbopack: {
-    root: path.resolve(__dirname, "../.."),
+    root: monorepoRoot,
   },
 };
 
