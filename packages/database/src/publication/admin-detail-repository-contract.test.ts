@@ -99,4 +99,38 @@ describe("admin publication detail repository", () => {
     },
   );
 
+
+  it(
+    "selects only completed reviews for latest-review readiness",
+    () => {
+      expect(source).toContain(
+        "asc(sources.id)",
+      );
+      expect(source).toMatch(
+        /desc\(\s*formulaVersions\.id,?\s*\)/,
+      );
+      expect(source).toContain(
+        "desc(reviews.id)",
+      );
+      expect(source).toContain(
+        "sources.id",
+      );
+      expect(source).toContain(
+        "formulaVersions.id",
+      );
+      expect(source).toContain(
+        "desc(reviews.reviewedAt)",
+      );
+      expect(source).toContain(
+        "desc(reviews.createdAt)",
+      );
+      expect(source).toContain(
+        "isNotNull(",
+      );
+      expect(source).toContain(
+        "reviews.reviewedAt",
+      );
+    },
+  );
+
 });

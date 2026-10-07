@@ -1,7 +1,9 @@
 import {
+  asc,
   and,
   desc,
   eq,
+  isNotNull,
 } from "drizzle-orm";
 
 import {
@@ -237,6 +239,9 @@ export async function persistTrustedPublicationTransition(
                 formulaVersions
                   .createdAt,
               ),
+              desc(
+                formulaVersions.id,
+              ),
             )
             .limit(1)
         )[0] ?? null;
@@ -265,6 +270,9 @@ export async function persistTrustedPublicationTransition(
                 .calculatorVersionId,
               calculatorVersion.id,
             ),
+          )
+          .orderBy(
+            asc(sources.id),
           );
 
       const latestReview =
@@ -287,11 +295,20 @@ export async function persistTrustedPublicationTransition(
                   reviews.entityId,
                   calculatorVersion.id,
                 ),
+                isNotNull(
+                  reviews.reviewedAt,
+                ),
               ),
             )
             .orderBy(
               desc(
+                reviews.reviewedAt,
+              ),
+              desc(
                 reviews.createdAt,
+              ),
+              desc(
+                reviews.id,
               ),
             )
             .limit(1)

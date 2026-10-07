@@ -29,6 +29,33 @@ describe(
     it(
       "resolves editorial state inside the same transaction that mutates the tool",
       () => {
+      expect(source).toContain(
+        "asc(sources.id)",
+      );
+      expect(source).toContain(
+        "formulaVersions.id",
+      );
+      expect(source).toContain(
+        "reviews.id",
+      );
+      expect(source).toContain(
+        "sources.id",
+      );
+      expect(source).toContain(
+        "formulaVersions.id",
+      );
+      expect(source).toContain(
+        "reviews.reviewedAt",
+      );
+      expect(source).toContain(
+        "reviews.createdAt",
+      );
+      expect(source).toContain(
+        "isNotNull(",
+      );
+      expect(source).toContain(
+        "reviews.reviewedAt",
+      );
         expect(source).toContain(
           "return db.transaction(",
         );
@@ -93,6 +120,8 @@ describe(
       "PublicationStateConflictError",
     );
   
+
+
 
 });
 
