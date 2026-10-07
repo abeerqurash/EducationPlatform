@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
+import { SiteChrome } from "@/components/layout/site-chrome";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
@@ -70,14 +68,13 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <AnnouncementBar />
-        <Header />
+        <SiteChrome position="header" />
 
         <div id="main-content">
           {children}
         </div>
 
-        <Footer />
+        <SiteChrome position="footer" />
       </body>
     </html>
   );

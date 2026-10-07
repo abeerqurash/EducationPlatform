@@ -52,6 +52,66 @@ describe("admin publication list UI", () => {
     expect(source).toContain(
       "totalPages",
     );
+    expect(source).toContain(
+      "Number.isSafeInteger(parsed)",
+    );
+    expect(source).toContain(
+      ".slice(0, MAX_ADMIN_SEARCH_LENGTH)",
+    );
+    expect(source).toContain(
+      "normalizedSort",
+    );
+    expect(source).toContain(
+      "q: normalizedSearch || undefined",
+    );
+    expect(source).toContain(
+      "const normalizedSearch",
+    );
+    expect(source).toContain(
+      "defaultValue={normalizedSearch}",
+    );
+    expect(source).toContain(
+      "maxLength={MAX_ADMIN_SEARCH_LENGTH}",
+    );
+    expect(source).toContain(
+      "pageStart + visibleTools.length",
+    );
+    expect(source).toContain(
+      'aria-label="Search publication tools"',
+    );
+    expect(source).toContain(
+      'aria-live="polite"',
+    );
+    expect(source).toContain(
+      'aria-atomic="true"',
+    );
+    expect(source).toContain(
+      'id="publication-search"',
+    );
+    expect(source).toContain(
+      'htmlFor="publication-search"',
+    );
+    expect(source).toContain(
+      "Search publication tools",
+    );
+    expect(source).toContain(
+      'href="/admin/publication"',
+    );
+    expect(source).toContain(
+      "MAX_ADMIN_SEARCH_LENGTH",
+    );
+    expect(source).toContain(
+      "MAX_ADMIN_PAGE",
+    );
+    expect(source).toContain(
+      "parsed <= MAX_ADMIN_PAGE",
+    );
+    expect(source).toContain(
+      "const currentPage",
+    );
+    expect(source).toContain(
+      "requestedPage",
+    );
   });
 
   it("keeps filtering read only", () => {

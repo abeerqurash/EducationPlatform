@@ -450,6 +450,12 @@ export function PublicationActions({
               ? "alert"
               : "status"
           }
+          aria-live={
+            isError
+              ? "assertive"
+              : "polite"
+          }
+          aria-atomic="true"
           className={`mt-2 text-xs ${
             isError
               ? "text-rose-600"
@@ -459,7 +465,7 @@ export function PublicationActions({
           <p>{message}</p>
 
           {blockers.length > 0 ? (
-            <ul className="mt-2 list-disc space-y-1 pl-5">
+            <ul className="mt-2 list-disc space-y-1 pl-5" aria-label="Publication blockers">
               {blockers.map(
                 (blocker) => (
                   <li key={blocker}>

@@ -1,3 +1,4 @@
+import { AdminShell } from "@/components/app-shell/admin-shell";
 import Link from "next/link";
 
 import { redirect } from "next/navigation";
@@ -60,17 +61,23 @@ const publicationSorts = [
 ] as const;
 
 const PAGE_SIZE = 10;
+const MAX_ADMIN_SEARCH_LENGTH = 100;
+const MAX_ADMIN_PAGE = 10_000;
 
 function normalizePage(
   value: string | undefined,
 ) {
-  const parsed = Number.parseInt(
-    value ?? "1",
-    10,
-  );
+  if (
+    !value ||
+    !/^[1-9]\d*$/.test(value)
+  ) {
+    return 1;
+  }
 
-  return Number.isFinite(parsed) &&
-    parsed > 0
+  const parsed = Number(value);
+
+  return Number.isSafeInteger(parsed) &&
+    parsed <= MAX_ADMIN_PAGE
     ? parsed
     : 1;
 }
@@ -154,7 +161,7 @@ function normalizeFilter(
     : "all";
 }
 
-export default async function AdminPublicationPage({
+async function AdminPublicationPageContent({
   searchParams,
 }: PublicationPageProps) {
   const session = await auth();
@@ -183,9 +190,14 @@ export default async function AdminPublicationPage({
   const query =
     await searchParams;
 
-  const search =
-    query.q?.trim().toLowerCase() ??
+  const normalizedSearch =
+    query.q
+      ?.trim()
+      .slice(0, MAX_ADMIN_SEARCH_LENGTH) ??
     "";
+
+  const search =
+    normalizedSearch.toLowerCase();
 
   const status =
     normalizeFilter(
@@ -199,16 +211,16 @@ export default async function AdminPublicationPage({
       verificationStatuses,
     );
 
-  const sort =
+  const normalizedSort =
     normalizeFilter(
       query.sort,
       publicationSorts,
-    ) === "all"
+    );
+
+  const sort =
+    normalizedSort === "all"
       ? "updated"
-      : normalizeFilter(
-          query.sort,
-          publicationSorts,
-        );
+      : normalizedSort;
 
   const requestedPage =
     normalizePage(query.page);
@@ -316,7 +328,7 @@ export default async function AdminPublicationPage({
     );
 
   const paginationQuery = {
-    q: query.q,
+    q: normalizedSearch || undefined,
     status,
     verification,
     sort,
@@ -399,10 +411,20 @@ export default async function AdminPublicationPage({
             <span className="sr-only">
               Search publication tools
             </span>
+            <label
+              htmlFor="publication-search"
+              className="sr-only"
+            >
+              Search publication tools
+            </label>
             <input
+              id="publication-search"
               type="search"
               name="q"
-              defaultValue={query.q ?? ""}
+              defaultValue={normalizedSearch}
+              maxLength={MAX_ADMIN_SEARCH_LENGTH}
+              autoComplete="off"
+              aria-label="Search publication tools"
               placeholder="Search tool, slug or category"
               className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             />
@@ -497,16 +519,25 @@ export default async function AdminPublicationPage({
         </form>
 
         <div className="mb-3 flex items-center justify-between gap-4">
-          <p className="text-sm text-slate-600">
+          <p
+            className="text-sm text-slate-600"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             Showing{" "}
+            <span className="font-semibold text-slate-950">
+              {visibleTools.length
+                ? `${pageStart + 1}–${pageStart + visibleTools.length}`
+                : "0"}
+            </span>{" "}
+            of{" "}
             <span className="font-semibold text-slate-950">
               {filteredTools.length}
             </span>{" "}
-            matching of{" "}
-            <span className="font-semibold text-slate-950">
-              {publicationTools.length}
-            </span>{" "}
-            total tools
+            matching tools
+            <span className="text-slate-400">
+              {" "}({publicationTools.length} total)
+            </span>
           </p>
         </div>
 
@@ -679,5 +710,16 @@ export default async function AdminPublicationPage({
         ) : null}
       </div>
     </main>
+  );
+}
+
+
+export default async function AdminPublicationPage({
+  searchParams,
+}: PublicationPageProps) {
+  return (
+    <AdminShell active="Publication">
+      {await AdminPublicationPageContent({ searchParams })}
+    </AdminShell>
   );
 }

@@ -6,6 +6,8 @@ import {
   isNotNull,
 } from "drizzle-orm";
 
+import { z } from "zod";
+
 import {
   db,
 } from "../client";
@@ -77,6 +79,10 @@ export type AdminPublicationDetail = {
 export async function getAdminPublicationDetail(
   toolId: string,
 ): Promise<AdminPublicationDetail | null> {
+  if (!z.string().uuid().safeParse(toolId).success) {
+    return null;
+  }
+
   const tool =
     (
       await db

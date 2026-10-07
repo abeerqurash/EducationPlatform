@@ -1,3 +1,4 @@
+import { AdminShell } from "@/components/app-shell/admin-shell";
 import Link from "next/link";
 import {
   notFound,
@@ -60,7 +61,7 @@ function StatusCard({
   );
 }
 
-export default async function AdminPublicationDetailPage({
+async function AdminPublicationDetailPageContent({
   params,
 }: PageProps) {
   const session = await auth();
@@ -181,7 +182,10 @@ export default async function AdminPublicationDetailPage({
           </div>
         </section>
 
-        <section className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section
+          aria-label="Publication status summary"
+          className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
           <StatusCard
             title="Publication"
             value={detail.tool.status}
@@ -230,18 +234,27 @@ export default async function AdminPublicationDetailPage({
         </section>
 
         <div className="mt-7 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section
+            aria-labelledby="publication-readiness-heading"
+            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+          >
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Editorial gate
                 </p>
-                <h2 className="mt-1 text-xl font-semibold text-slate-950">
+                <h2
+                  id="publication-readiness-heading"
+                  className="mt-1 text-xl font-semibold text-slate-950"
+                >
                   Publication readiness
                 </h2>
               </div>
 
               <span
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
                 className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                   detail.readiness?.canPublish
                     ? "bg-emerald-50 text-emerald-700"
@@ -284,11 +297,17 @@ export default async function AdminPublicationDetailPage({
           </section>
 
           <div className="space-y-6">
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <section
+              aria-labelledby="latest-review-heading"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Review record
               </p>
-              <h2 className="mt-1 text-xl font-semibold text-slate-950">
+              <h2
+                id="latest-review-heading"
+                className="mt-1 text-xl font-semibold text-slate-950"
+              >
                 Latest editorial review
               </h2>
 
@@ -364,11 +383,17 @@ export default async function AdminPublicationDetailPage({
               )}
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <section
+              aria-labelledby="linked-sources-heading"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Evidence
             </p>
-            <h2 className="mt-1 text-xl font-semibold text-slate-950">
+            <h2
+              id="linked-sources-heading"
+              className="mt-1 text-xl font-semibold text-slate-950"
+            >
               Linked sources
             </h2>
 
@@ -424,5 +449,16 @@ export default async function AdminPublicationDetailPage({
         </div>
       </div>
     </main>
+  );
+}
+
+
+export default async function AdminPublicationDetailPage({
+  params,
+}: PageProps) {
+  return (
+    <AdminShell active="Publication">
+      {await AdminPublicationDetailPageContent({ params })}
+    </AdminShell>
   );
 }
