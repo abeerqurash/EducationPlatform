@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppIcon } from "./app-icon";
 import { AppLogo } from "./app-logo";
+import { SiteButton } from "./site-button";
 
 const sections = [
   {
@@ -91,9 +92,9 @@ export function AdminShell({
               Search admin workspace
             </div>
             <div className="ml-auto flex items-center gap-2.5">
-              <Link href="/admin/publication" className="hidden rounded-full border border-[#dfe2dc] bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:border-violet-200 hover:text-violet-700 sm:inline-flex">
+              <SiteButton href="/admin/publication" variant="secondary" size="small" className="hidden sm:inline-flex">
                 Publication queue
-              </Link>
+              </SiteButton>
               <span className="grid h-10 w-10 place-items-center rounded-full bg-[#151a12] text-sm font-extrabold text-white">{initials}</span>
               <span className="hidden sm:block">
                 <span className="block max-w-36 truncate text-xs font-bold text-slate-900">{userName || "Administrator"}</span>
@@ -102,6 +103,28 @@ export function AdminShell({
             </div>
           </div>
         </header>
+        <nav aria-label="Mobile admin navigation" className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-2 lg:hidden">
+          {sections.map((section) =>
+            section.items.map(([label, href]) => {
+              const selected = label === active;
+
+              return (
+                <Link
+                  key={label}
+                  href={href}
+                  aria-current={selected ? "page" : undefined}
+                  className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-bold ${
+                    selected
+                      ? "bg-[#151a12] text-white"
+                      : "bg-slate-50 text-slate-600"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            }),
+          )}
+        </nav>
         <main id="admin-main" className="mx-auto w-full max-w-[1600px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9 xl:px-10">{children}</main>
       </div>
     </div>

@@ -27,9 +27,11 @@ describe("application UI foundation", () => {
     expect(admin).toContain('href="#admin-main"');
   });
 
-  it("keeps the admin overview behind the existing session boundary", () => {
-    expect(adminPage).toContain("const session = await auth()");
-    expect(adminPage).toContain('redirect("/login")');
+  it("keeps the admin overview behind the shared protected workspace boundary", () => {
+    expect(adminPage).toContain("requireAdminWorkspaceAccess");
+    expect(adminPage).toContain(
+      'requireAdminWorkspaceAccess("/admin")',
+    );
     expect(adminPage).toContain("<AdminShell");
   });
 

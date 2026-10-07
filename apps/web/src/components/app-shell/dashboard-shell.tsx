@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppIcon } from "./app-icon";
 import { AppLogo } from "./app-logo";
+import { SiteButton } from "./site-button";
 
 type NavItem = { label: string; href: string; icon: Parameters<typeof AppIcon>[0]["name"]; badge?: string };
 type DashboardShellProps = { children: ReactNode; userName?: string | null; userEmail?: string | null; active?: string };
@@ -56,7 +57,7 @@ export function DashboardShell({ children, userName, userEmail, active = "Overvi
           <div className="flex h-[76px] items-center gap-3 px-4 sm:px-6 lg:px-8 xl:px-10">
             <div className="lg:hidden"><AppLogo compact /></div>
             <div className="ml-auto flex items-center gap-2 sm:gap-3">
-              <Link href="/tools" className="hidden rounded-full border border-[#dfe2dc] bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-slate-300 sm:inline-flex">Browse tools</Link>
+              <SiteButton href="/tools" variant="secondary" size="small" className="hidden sm:inline-flex">Browse tools</SiteButton>
               <button type="button" aria-label="Notifications" className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm hover:text-slate-950"><AppIcon name="bell" className="h-[18px] w-[18px]" /></button>
               <div className="ml-1 flex items-center gap-2.5 border-l border-slate-200 pl-3">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-sm font-extrabold text-violet-700">{initials}</span>
@@ -68,6 +69,17 @@ export function DashboardShell({ children, userName, userEmail, active = "Overvi
             </div>
           </div>
         </header>
+        <nav aria-label="Mobile student dashboard" className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-2 lg:hidden">
+          {nav.map((item) => {
+            const selected = item.label === active;
+            return (
+              <Link key={item.label} href={item.href} aria-current={selected ? "page" : undefined}
+                className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-bold ${selected ? "bg-[#151a12] text-white" : "bg-slate-50 text-slate-600"}`}>
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
         <main id="dashboard-main" className="mx-auto w-full max-w-[1500px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9 xl:px-10">{children}</main>
       </div>
     </div>

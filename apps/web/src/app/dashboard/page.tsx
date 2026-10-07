@@ -1,13 +1,20 @@
+import { getStudentResultOverview } from "@education/database";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
+import { SiteButton } from "@/components/app-shell/site-button";
 import { Eyebrow, MetricCard, Panel, QuickTool } from "@/components/app-shell/dashboard-ui";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  const resultOverview =
+    await getStudentResultOverview(
+      session.user.id,
+    );
 
   const firstName = session.user.name?.trim().split(/\s+/)[0] || "Student";
 
@@ -20,19 +27,42 @@ export default async function DashboardPage() {
             <h1 className="mt-3 max-w-2xl text-3xl font-extrabold tracking-[-0.045em] text-slate-950 sm:text-4xl">Welcome back, {firstName}.</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Keep your scores, study goals and academic tools together in one focused workspace.</p>
           </div>
-          <Link href="/tools" className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-[#151a12] px-5 text-xs font-bold text-white shadow-sm transition hover:bg-[#20251d] md:self-auto">Open a calculator <AppIcon name="arrow" className="h-4 w-4" /></Link>
+          <SiteButton href="/tools" className="self-start md:self-auto">Open a calculator <AppIcon name="arrow" className="h-4 w-4" /></SiteButton>
         </section>
 
         <section aria-label="Study overview" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Saved results" value="0" note="Your saved calculations will appear here" icon="bookmark" />
+          <MetricCard label="Saved results" value={String(resultOverview.savedResultCount)} note="Your saved calculations will appear here" icon="bookmark" />
           <MetricCard label="Practice sessions" value="0" note="Start a test-prep session to track progress" icon="target" />
           <MetricCard label="Study streak" value="0 days" note="Complete an activity to begin your streak" icon="calendar" />
-          <MetricCard label="Tools used" value="0" note="Explore calculators built for your goals" icon="calculator" />
+          <MetricCard label="Tools used" value={String(resultOverview.toolsUsed)} note="Explore calculators built for your goals" icon="calculator" />
         </section>
 
         <div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
           <Panel title="Continue learning" description="Your recent activities and study plan will stay organized here."
             action={<Link href="/tools" className="text-xs font-bold text-violet-600 hover:text-violet-800">View all tools</Link>}>
+            {resultOverview.recentResults.length > 0 ? (
+              <div className="mb-5 space-y-2">
+                {resultOverview.recentResults.slice(0, 3).map((item) => (
+                  <Link
+                    key={item.id}
+                    href="/dashboard/saved"
+                    className="flex items-center gap-3 rounded-2xl border border-slate-100 p-3 transition hover:border-violet-200 hover:bg-violet-50/50"
+                  >
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-slate-50 text-violet-600">
+                      <AppIcon name="bookmark" className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-xs font-extrabold text-slate-900">
+                        {item.toolName}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[10px] text-slate-500">
+                        {item.summary}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <QuickTool title="GPA Calculator" description="Calculate and plan your GPA" href="/tools/gpa/gpa-calculator" icon="calculator" />
               <QuickTool title="ACT Score Calculator" description="Estimate your enhanced ACT score" href="/tools/test-prep/act-score-calculator" icon="target" />
@@ -47,7 +77,7 @@ export default async function DashboardPage() {
               <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full w-0 rounded-full bg-violet-600" /></div>
               <div className="mt-2 flex justify-between text-[10px] font-semibold text-slate-400"><span>0 activities</span><span>Start today</span></div>
             </div>
-            <Link href="/tools" className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700">Find a study tool <AppIcon name="arrow" className="h-4 w-4" /></Link>
+            <SiteButton href="/tools" variant="secondary" className="mt-4 flex">Find a study tool <AppIcon name="arrow" className="h-4 w-4" /></SiteButton>
           </Panel>
         </div>
 

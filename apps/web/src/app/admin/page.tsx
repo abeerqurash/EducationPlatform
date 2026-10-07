@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { AdminShell } from "@/components/app-shell/admin-shell";
+import { requireAdminWorkspaceAccess } from "@/lib/admin-workspace-access";
 import { AppIcon } from "@/components/app-shell/app-icon";
+import { SiteButton } from "@/components/app-shell/site-button";
 import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
 
 const areas = [
@@ -15,11 +15,10 @@ const areas = [
 ] as const;
 
 export default async function AdminPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
+  const { user } = await requireAdminWorkspaceAccess("/admin");
 
   return (
-    <AdminShell userName={session.user.name} userEmail={session.user.email} active="Overview">
+    <AdminShell userName={user.name} userEmail={user.email} active="Overview">
       <div className="space-y-8">
         <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
@@ -27,9 +26,9 @@ export default async function AdminPage() {
             <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.045em] text-slate-950 sm:text-4xl">Admin workspace</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">A unified control surface for publishing, content, tools, growth and platform operations.</p>
           </div>
-          <Link href="/admin/publication" className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-[#151a12] px-5 text-xs font-bold text-white transition hover:bg-[#20251d] md:self-auto">
+          <SiteButton href="/admin/publication" className="self-start md:self-auto">
             Open publication queue <AppIcon name="arrow" className="h-4 w-4" />
-          </Link>
+          </SiteButton>
         </section>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

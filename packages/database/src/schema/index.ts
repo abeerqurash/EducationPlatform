@@ -16,5 +16,6 @@ export * from "./sources";
 export * from "./reviews";
 export * from "./change-history";
 export * from "./audit";
+export * from "./student-results";
 
 export * from "./relations";

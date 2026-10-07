@@ -22,12 +22,12 @@ describe("auth and application visual language", () => {
     expect(authLayout).toContain("auth-workspace");
     expect(authLayout).toContain("{children}");
     expect(authCss).toContain('.auth-workspace__card button[type="submit"]');
+    expect(authCss).toContain("button-shimmer 4.8s");
+    expect(authCss).toContain("cubic-bezier(0.16, 1, 0.3, 1)");
   });
 
   it("uses the public site's pill-shaped primary language in generated dashboards", () => {
-    expect(dashboard).toContain("rounded-full");
-    expect(admin).toContain("rounded-full");
-    expect(dashboard).toContain("bg-[#151a12]");
-    expect(admin).toContain("bg-[#151a12]");
+    expect(dashboard).toContain("<SiteButton");
+    expect(admin).toContain("<SiteButton");
   });
 });
