@@ -12,3 +12,5 @@ export * from "./repositories/admin-access";
 export * from "./repositories/test-prep";
 
 export * from "./repositories/test-prep-history";
+
+export { getTestPrepDatePreset, activeTestPrepDatePreset } from "./repositories/test-prep-date-presets";

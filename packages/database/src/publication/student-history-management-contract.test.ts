@@ -13,7 +13,7 @@ describe("student history ownership boundaries", () => {
     expect(actions).toContain("!id || !UUID.test(activityId)");
     expect(progress).toContain("<ConfirmStudySessionDelete activityId={activity.id} title={activity.title} />");
     expect(deleteConfirmation).toContain("action={deleteManualStudySessionAction}");
-    expect(deleteConfirmation).toContain("onSubmit={confirmDelete}");
+    expect(deleteConfirmation).toContain("<ThemedConfirmDialog");
   });
   it("restores only owned archived goals", () => {
     expect(repo).toContain("eq(studyGoals.isArchived, true)");

@@ -7,6 +7,7 @@ import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
 import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
+import { ThemedFormDate } from "@/components/shared/themed-form-date";
 
 export const metadata = { title: "Study plan" };
 
@@ -42,10 +43,7 @@ export default async function StudyPlanPage() {
                   className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm" />
               </label>
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-xs font-bold text-slate-700">Target date
-                  <input name="targetDate" type="date"
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm" />
-                </label>
+                <ThemedFormDate name="targetDate" label="Target date" />
                 <label className="text-xs font-bold text-slate-700">Target minutes
                   <input name="targetMinutes" type="number" min="1" max="100000"
                     className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm" />
@@ -82,9 +80,7 @@ export default async function StudyPlanPage() {
                             <label className="block text-xs font-bold text-slate-700">Notes
                               <textarea name="description" maxLength={1000} rows={2} defaultValue={goal.description ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
                             </label>
-                            <label className="block text-xs font-bold text-slate-700">Target date
-                              <input name="targetDate" type="date" defaultValue={goal.targetDate ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
-                            </label>
+                            <ThemedFormDate name="targetDate" label="Target date" defaultValue={goal.targetDate ?? ""} />
                             <label className="block text-xs font-bold text-slate-700">Target minutes
                               <input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
                             </label>
