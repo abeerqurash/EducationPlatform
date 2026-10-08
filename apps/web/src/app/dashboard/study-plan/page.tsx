@@ -46,7 +46,7 @@ export default async function StudyPlanPage() {
                 <ThemedFormDate name="targetDate" label="Target date" />
                 <label className="text-xs font-bold text-slate-700">Target minutes
                   <input name="targetMinutes" type="number" min="1" max="100000"
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm" />
+                    className="mt-2 h-[50px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm" />
                 </label>
               </div>
               <button className="button button--primary" type="submit">Create goal</button>
@@ -82,7 +82,7 @@ export default async function StudyPlanPage() {
                             </label>
                             <ThemedFormDate name="targetDate" label="Target date" defaultValue={goal.targetDate ?? ""} />
                             <label className="block text-xs font-bold text-slate-700">Target minutes
-                              <input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
+                              <input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 h-[50px] w-full rounded-xl border border-slate-200 px-3 text-sm" />
                             </label>
                             <button type="submit" className="button button--secondary">Save changes</button>
                           </form>

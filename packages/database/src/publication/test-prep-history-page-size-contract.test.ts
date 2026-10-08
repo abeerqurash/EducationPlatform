@@ -25,6 +25,6 @@ describe("bounded saved exam result page sizes", () => {
     expect(page).toContain('size={history.pageSize}');
     expect(page).toContain('historyUrl(pageNumber)');
     expect(dateRange).toContain('size:String(size)');
-    expect(dateRange).toContain('size?: number; from: string; to: string');
+    expect(dateRange).toContain('size?: number; q?: string; from: string; to: string');
   });
 });

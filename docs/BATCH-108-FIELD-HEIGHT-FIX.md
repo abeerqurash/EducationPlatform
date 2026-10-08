@@ -1,0 +1,1 @@
+Study plan form alignment: shared calendar trigger and target-minutes inputs use a consistent 50px height, full column width, and unchanged labels and form data. ThemedDatePicker is shared across the project. No migrations or dependencies.

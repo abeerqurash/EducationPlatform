@@ -14,7 +14,7 @@ import { historyPageWindow, historyResultRange } from "@/components/shared/histo
 export const metadata = { title: "Test prep" };
 
 export default async function TestPrepPage({ searchParams }: {
-  searchParams: Promise<{ exam?: string; page?: string; from?: string; to?: string; sort?: string; size?: string }>;
+  searchParams: Promise<{ exam?: string; page?: string; from?: string; to?: string; sort?: string; size?: string; q?: string }>;
 }) {
   const session = await auth();
   const userId = session?.user?.id?.trim();
@@ -30,14 +30,29 @@ export default async function TestPrepPage({ searchParams }: {
   ]);
   const examGoals = workspace.goals.filter((goal) => /\b(sat|act|psat|exam|test prep)\b/i.test(`${goal.title} ${goal.description ?? ""}`));
   const filterParams = new URLSearchParams({ exam: history.exam, sort: history.sort, size: String(history.pageSize) });
+  if (history.q) filterParams.set("q", history.q);
   if (history.from) filterParams.set("from", history.from);
   if (history.to) filterParams.set("to", history.to);
   const historyUrl = (page: number) => `/dashboard/test-prep?${filterParams.toString()}&page=${page}`;
   const activePreset = activeTestPrepDatePreset(history.from, history.to);
-  const presetUrl = (preset: "7d" | "30d" | "90d") => `/dashboard/test-prep?${new URLSearchParams({ exam: history.exam, sort: history.sort, size: String(history.pageSize), ...getTestPrepDatePreset(preset), page: "1" }).toString()}`;
+  const presetUrl = (preset: "7d" | "30d" | "90d") => `/dashboard/test-prep?${new URLSearchParams({ exam: history.exam, sort: history.sort, size: String(history.pageSize), ...(history.q ? { q: history.q } : {}), ...getTestPrepDatePreset(preset), page: "1" }).toString()}`;
   const visiblePages = historyPageWindow(history.page, history.totalPages);
   const visibleRange = historyResultRange(history.page, history.pageSize, history.total);
-  const filtersActive = history.exam !== "all" || history.sort !== "newest" || history.pageSize !== 15 || Boolean(history.from || history.to);
+  const filtersActive = history.exam !== "all" || history.sort !== "newest" || history.pageSize !== 15 || Boolean(history.from || history.to || history.q);
+  // Build each removal link from normalized server-owned values, never raw URL input.
+  const withoutFilter = (keys: string[]) => {
+    const next = new URLSearchParams(filterParams);
+    for (const key of keys) next.delete(key);
+    next.set("page", "1");
+    return `/dashboard/test-prep?${next.toString()}`;
+  };
+  const activeFilterChips = [
+    ...(history.q ? [{ key: "q", label: `Search: ${history.q}`, href: withoutFilter(["q"]) }] : []),
+    ...(history.exam !== "all" ? [{ key: "exam", label: `Exam: ${history.exam.toUpperCase()}`, href: withoutFilter(["exam"]) }] : []),
+    ...(history.from || history.to ? [{ key: "dates", label: `Dates: ${history.from ?? "Any"} to ${history.to ?? "Any"} UTC`, href: withoutFilter(["from", "to"]) }] : []),
+    ...(history.sort !== "newest" ? [{ key: "sort", label: "Order: oldest first", href: withoutFilter(["sort"]) }] : []),
+    ...(history.pageSize !== 15 ? [{ key: "size", label: `Page size: ${history.pageSize}`, href: withoutFilter(["size"]) }] : []),
+  ];
   const completedGoals = examGoals.filter((goal) => Boolean(goal.completedAt)).length;
 
   return (
@@ -85,6 +100,21 @@ export default async function TestPrepPage({ searchParams }: {
 
         <Panel title="Saved exam result history" description="Filter and browse your saved SAT and ACT calculator outputs. Results are shown as recorded, without estimating improvement or predicting admissions outcomes."
           action={<Link href="/dashboard/saved" className="shrink-0 text-xs font-bold text-violet-700 hover:underline">All saved results</Link>}>
+          <form action="/dashboard/test-prep" method="get" role="search" aria-label="Search saved exam results" className="mb-5 flex flex-wrap items-end gap-3">
+            <input type="hidden" name="exam" value={history.exam} />
+            <input type="hidden" name="sort" value={history.sort} />
+            <input type="hidden" name="size" value={String(history.pageSize)} />
+            {history.from ? <input type="hidden" name="from" value={history.from} /> : null}
+            {history.to ? <input type="hidden" name="to" value={history.to} /> : null}
+            <div className="flex min-w-[200px] flex-1 flex-col gap-1.5">
+              <label htmlFor="test-prep-history-search" className="text-xs font-bold text-slate-700">Search results</label>
+              <input id="test-prep-history-search" type="search" name="q" maxLength={80} defaultValue={history.q}
+                placeholder="Calculator name or result summary" autoComplete="off"
+                className="h-[50px] w-full rounded-full border border-[#dcded2] bg-white px-4 text-sm text-[#171912] outline-none transition focus:border-[#171912] focus:ring-2 focus:ring-[#171912]/15" />
+            </div>
+            <button type="submit" className="inline-flex h-[50px] items-center justify-center rounded-full bg-[#171912] px-6 text-xs font-bold text-white transition hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Search</button>
+            {history.q ? <Link href={withoutFilter(["q"])} className="inline-flex h-[50px] items-center rounded-full border border-[#dcded2] px-5 text-xs font-bold text-[#171912] hover:bg-slate-100">Clear search</Link> : null}
+          </form>
           <nav aria-label="Filter saved exam results" className="mb-5 flex flex-wrap gap-2">
             {(["all", "sat", "act"] as const).map((exam) => (
               <ThemedFilterPill key={exam} href={`/dashboard/test-prep?${new URLSearchParams({ ...Object.fromEntries(filterParams), exam, page: "1" }).toString()}`} active={history.exam === exam}>
@@ -108,7 +138,7 @@ export default async function TestPrepPage({ searchParams }: {
                </ThemedFilterPill>
              ))}
            </nav>
-           <ThemedDateRange exam={history.exam} sort={history.sort} size={history.pageSize} from={history.from ?? ""} to={history.to ?? ""} />
+           <ThemedDateRange key={`${history.exam}:${history.sort}:${history.pageSize}:${history.from ?? ""}:${history.to ?? ""}:${history.q}`} exam={history.exam} sort={history.sort} size={history.pageSize} q={history.q} from={history.from ?? ""} to={history.to ?? ""} />
           <nav aria-label="Results per page" className="mb-4 flex flex-wrap items-center gap-2">
             <span className="mr-1 text-xs font-semibold text-slate-500">Results per page</span>
             {([15, 30, 50] as const).map((size) => (
@@ -121,6 +151,17 @@ export default async function TestPrepPage({ searchParams }: {
             <p className="text-xs text-slate-500">Exports include up to 1,000 matching records in the selected order.</p>
             <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered CSV</Link>
           </div>
+          {activeFilterChips.length > 0 ? (
+            <section aria-label="Active history filters" className="mb-4 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-slate-500">Active filters</span>
+              {activeFilterChips.map((chip) => (
+                <Link key={chip.key} href={chip.href} aria-label={`Remove ${chip.label} filter`}
+                  className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[#dfe0d5] bg-[#f7f8f2] px-3 py-1.5 text-xs font-bold text-[#171912] transition hover:border-[#171912] hover:bg-[#eef0e8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
+                  <span>{chip.label}</span><span aria-hidden="true" className="text-base leading-none">×</span>
+                </Link>
+              ))}
+            </section>
+          ) : null}
           {filtersActive ? <Link href="/dashboard/test-prep" className="mb-4 inline-flex rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Reset all filters</Link> : null}
           <p className="mb-3 text-xs text-slate-500">{history.total === 0 ? "No matching saved results" : `Showing ${visibleRange.start}–${visibleRange.end} of ${history.total} saved results`} · Page {history.page} of {history.totalPages}</p>
           {history.rows.length ? (
@@ -136,7 +177,25 @@ export default async function TestPrepPage({ searchParams }: {
                 </li>
               ))}
             </ol>
-          ) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-6 text-sm text-slate-500">No saved results match this exam filter. Complete an available test-prep calculator and save its output to populate this history.</p>}
+          ) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-6 text-sm text-slate-500">No saved results match your current search and filters. Complete an available test-prep calculator and save its output to populate this history.</p>}
+          {history.totalPages > 1 ? (
+            <form action="/dashboard/test-prep" method="get" aria-label="Jump to saved result page" className="mt-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+              <input type="hidden" name="exam" value={history.exam} />
+              <input type="hidden" name="sort" value={history.sort} />
+              <input type="hidden" name="size" value={String(history.pageSize)} />
+              {history.q ? <input type="hidden" name="q" value={history.q} /> : null}
+              {history.from ? <input type="hidden" name="from" value={history.from} /> : null}
+              {history.to ? <input type="hidden" name="to" value={history.to} /> : null}
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <label htmlFor="history-jump-page" className="text-xs font-bold text-slate-700">Go to page</label>
+                <input id="history-jump-page" name="page" type="number" inputMode="numeric" min={1} max={history.totalPages} step={1} required
+                  defaultValue={history.page}
+                  className="h-10 w-28 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition-colors focus:border-slate-900 focus:ring-2 focus:ring-slate-900/15" />
+              </div>
+              <button type="submit" className="inline-flex h-10 items-center justify-center rounded-full bg-[#171912] px-5 text-xs font-bold text-white transition-colors hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Go</button>
+              <span className="pb-3 text-xs text-slate-500">1–{history.totalPages}</span>
+            </form>
+          ) : null}
           <nav aria-label="Exam result history pages" className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
             {history.page > 1 ? <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(1)}>First page</Link> : null}

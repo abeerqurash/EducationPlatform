@@ -39,7 +39,10 @@ function CalendarDropdown({ label, value, options, onSelect }: { label: string; 
   const openMenu = () => {
     setFocusedIndex(currentIndex);
     setExpanded(true);
-    requestAnimationFrame(() => list.current?.focus());
+    requestAnimationFrame(() => {
+      list.current?.focus();
+      document.getElementById(`${optionPrefix}-option-${currentIndex}`)?.scrollIntoView({ block: "nearest" });
+    });
   };
   return <div ref={container} className="relative min-w-0 flex-1">
     <span className="mb-1 block text-[11px] font-bold text-slate-600">{label}</span>
@@ -47,7 +50,7 @@ function CalendarDropdown({ label, value, options, onSelect }: { label: string; 
       <span className="truncate">{options[currentIndex].label}</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
     </button>
     {expanded && <div ref={list} role="listbox" tabIndex={0} aria-label={label} aria-activedescendant={`${optionPrefix}-option-${focusedIndex}`} onKeyDown={event => {
-      if (event.key === "Escape") { event.preventDefault(); setExpanded(false); button.current?.focus(); }
+      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); setExpanded(false); button.current?.focus(); }
       else if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
         event.preventDefault();
         const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : (focusedIndex + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
@@ -65,7 +68,7 @@ export function ThemedDatePicker({ label, value, onChange, theme = "dashboard" }
   const initial = valid(value) ? new Date(`${value}T12:00:00Z`) : new Date();
   const [month, setMonth] = useState(() => new Date(initial.getUTCFullYear(), initial.getUTCMonth(), 1));
   const root = useRef<HTMLDivElement>(null);
-  const headingId = "calendar-heading-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const headingId = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!open) return;
@@ -80,9 +83,9 @@ export function ThemedDatePicker({ label, value, onChange, theme = "dashboard" }
   const days = new Date(y, m + 1, 0).getDate();
   const chosen = valid(value) ? value : "";
   const dark = theme === "dashboard";
-  return <div ref={root} className="relative min-w-[155px] flex-1 sm:flex-none">
+  return <div ref={root} className="relative min-w-0 w-full flex-1">
     <span className="mb-2 block text-xs font-bold text-slate-700">{label}</span>
-    <button ref={trigger} type="button" aria-haspopup="dialog" aria-label={`Choose ${label.toLowerCase()}`} aria-expanded={open} onClick={() => { if (!open && valid(value)) { const [year, selectedMonth] = value.split("-").map(Number); setMonth(new Date(year, selectedMonth - 1, 1)); } setOpen(!open); }} className="flex w-full items-center justify-between gap-4 rounded-full border border-[#dedfd4] bg-white px-4 py-3 text-left text-xs font-semibold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
+    <button ref={trigger} type="button" aria-haspopup="dialog" aria-label={`Choose ${label.toLowerCase()}`} aria-expanded={open} onClick={() => { if (!open && valid(value)) { const [year, selectedMonth] = value.split("-").map(Number); setMonth(new Date(year, selectedMonth - 1, 1)); } setOpen(!open); }} className="flex h-[50px] w-full items-center justify-between gap-4 rounded-full border border-[#dedfd4] bg-white px-4 text-left text-xs font-semibold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
       <span>{chosen ? `${chosen.slice(5,7)}/${chosen.slice(8)}/${chosen.slice(0,4)}` : "Choose date"}</span><span aria-hidden="true">▦</span>
     </button>
     {open && <div role="dialog" aria-modal="false" aria-labelledby={headingId} aria-label={`${label} calendar`} className="absolute left-0 top-full z-50 mt-2 w-[min(310px,calc(100vw-48px))] rounded-[24px] border border-[#e3e4d9] bg-white p-4 shadow-[0_24px_70px_rgba(0,0,0,.18)]">
@@ -94,10 +97,10 @@ export function ThemedDatePicker({ label, value, onChange, theme = "dashboard" }
   </div>;
 }
 
-export function ThemedDateRange({ exam, sort = "newest", size = 15, from, to }: { exam: string; sort?: "newest" | "oldest"; size?: number; from: string; to: string }) {
+export function ThemedDateRange({ exam, sort = "newest", size = 15, q = "", from, to }: { exam: string; sort?: "newest" | "oldest"; size?: number; q?: string; from: string; to: string }) {
   const router = useRouter();
   const [start,setStart]=useState(from),[end,setEnd]=useState(to);
   const [error,setError]=useState("");
-  const navigate=(a:string,b:string)=>{if(a&&b&&a>b){setError("The start date must not be after the end date.");return;}setError("");const p=new URLSearchParams({exam,sort,size:String(size),page:"1"});if(a)p.set("from",a);if(b)p.set("to",b);router.push(`/dashboard/test-prep?${p.toString()}`);};
+  const navigate=(a:string,b:string)=>{if(a&&b&&a>b){setError("The start date must not be after the end date.");return;}setError("");const p=new URLSearchParams({exam,sort,size:String(size),page:"1"});if(q)p.set("q",q);if(a)p.set("from",a);if(b)p.set("to",b);router.push(`/dashboard/test-prep?${p.toString()}`);};
   return <div className="mb-5"><div className="flex flex-wrap items-end gap-3"><ThemedDatePicker label="From (UTC)" value={start} onChange={setStart}/><ThemedDatePicker label="To (UTC)" value={end} onChange={setEnd}/><button type="button" onClick={()=>navigate(start,end)} className="min-h-[43px] rounded-full bg-[#171912] px-5 py-3 text-xs font-bold !text-white transition hover:-translate-y-0.5 hover:shadow-lg">Apply dates</button><button type="button" onClick={()=>{setStart("");setEnd("");navigate("","");}} className="min-h-[43px] rounded-full border border-[#dcded2] bg-white px-5 py-3 text-xs font-bold text-[#171912] transition hover:bg-[#eef0e8]">Clear dates</button></div>{error&&<p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{error}</p>}</div>;
 }

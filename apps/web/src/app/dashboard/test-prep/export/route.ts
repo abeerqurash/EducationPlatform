@@ -20,6 +20,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = normalizeTestPrepHistoryQuery({
     exam: url.searchParams.get("exam") ?? undefined,
+    q: url.searchParams.get("q") ?? undefined,
     sort: url.searchParams.get("sort") ?? undefined,
     from: url.searchParams.get("from") ?? undefined,
     to: url.searchParams.get("to") ?? undefined,
