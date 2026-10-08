@@ -14,6 +14,7 @@ import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { parseProgressExportDays } from "./export-window";
+import { summarizeStudyDays } from "./insights";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, MetricCard, Panel } from "@/components/app-shell/dashboard-ui";
 
@@ -39,6 +40,7 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
   const target = workspace.profile?.weeklyStudyTargetMinutes ?? 300;
   const highestMonthlyMinutes = Math.max(1, ...monthly.daily.map((day) => day.minutes));
   const highestTrendMinutes = Math.max(1, ...trend.daily.map((day) => day.minutes));
+  const studyInsights = summarizeStudyDays(trend.daily);
   const trendAverage = Math.round(trend.totalMinutes / trendDays);
   const trendCompletion = Math.round((trend.activeDays / trendDays) * 100);
   const trendPeak = trend.daily.reduce((best, day) => day.minutes > best.minutes ? day : best, trend.daily[0]);
@@ -91,6 +93,30 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
             <div className="mt-2 flex justify-between text-[10px] font-semibold tabular-nums text-slate-500"><span>{trend.daily[0]?.day}</span><span>{trend.daily.at(-1)?.day}</span></div>
           </div>
           <p className="mt-3 text-xs text-slate-500">{trend.activityCount} recorded activities. Dates are UTC; empty bars mean no recorded minutes. Daily average includes inactive days.</p>
+        </Panel>
+
+        <Panel title="Study consistency" description="Streaks and weekly summaries use the selected UTC period above. Activity on a day means a recorded session or saved tool activity.">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Current streak within selected period</p><p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{studyInsights.currentStreak} days</p></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Longest streak within selected period</p><p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{studyInsights.longestStreak} days</p></div>
+          </div>
+          <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[480px] text-left text-xs">
+              <caption className="px-4 py-3 text-left text-sm font-extrabold text-slate-900">Weekly activity breakdown (consecutive seven-day groups)</caption>
+              <thead className="bg-slate-50 text-slate-600"><tr><th scope="col" className="px-4 py-3">UTC dates</th><th scope="col" className="px-4 py-3">Study minutes</th><th scope="col" className="px-4 py-3">Activities</th><th scope="col" className="px-4 py-3">Active days</th></tr></thead>
+              <tbody className="divide-y divide-slate-100">{studyInsights.weeks.map((week) => <tr key={week.label}><th scope="row" className="px-4 py-3 font-semibold text-slate-900">{week.label}</th><td className="px-4 py-3 tabular-nums">{week.minutes}</td><td className="px-4 py-3 tabular-nums">{week.activities}</td><td className="px-4 py-3 tabular-nums">{week.activeDays} / {week.days}</td></tr>)}</tbody>
+            </table>
+          </div>
+          <details className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer text-sm font-bold text-slate-900">View every day in this period</summary>
+            <div className="mt-4 max-h-[420px] overflow-auto rounded-xl border border-slate-100">
+              <table className="w-full min-w-[360px] text-left text-xs">
+                <caption className="px-3 py-3 text-left font-semibold text-slate-600">All {trendDays} UTC days, including days without activity</caption>
+                <thead className="sticky top-0 bg-slate-50 text-slate-700"><tr><th scope="col" className="px-3 py-2">Date (UTC)</th><th scope="col" className="px-3 py-2">Minutes</th><th scope="col" className="px-3 py-2">Activities</th></tr></thead>
+                <tbody className="divide-y divide-slate-100">{trend.daily.map((day) => <tr key={day.day}><th scope="row" className="px-3 py-2 font-semibold text-slate-900">{day.day}</th><td className="px-3 py-2 tabular-nums">{day.minutes}</td><td className="px-3 py-2 tabular-nums">{day.activities}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </details>
         </Panel>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
