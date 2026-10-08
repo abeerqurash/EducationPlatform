@@ -47,6 +47,17 @@ export default async function ProgressPage() {
           <p className="mt-2 text-sm text-slate-500">Only persisted account activity is reported here.</p>
         </div>
 
+        <section aria-label="Export study progress" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-5 py-4">
+          <div>
+            <p className="text-sm font-extrabold text-[#171912]">Download your 30-day progress</p>
+            <p className="mt-1 text-xs text-slate-600">Export the 30 UTC calendar days shown below, including zero-activity days. Your records stay unchanged.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a href="/dashboard/progress/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export CSV</a>
+            <a href="/dashboard/progress/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export JSON</a>
+          </div>
+        </section>
+
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Saved results" value={String(results.savedResultCount)} note="Calculator outcomes in your account" icon="bookmark" />
           <MetricCard label="Tools used" value={String(results.toolsUsed)} note="Distinct saved calculator tools" icon="calculator" />

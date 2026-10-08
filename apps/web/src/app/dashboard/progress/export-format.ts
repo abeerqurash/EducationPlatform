@@ -1,0 +1,36 @@
+/** Export the same 30 UTC-day aggregate already displayed on the Progress dashboard. */
+export type ProgressExport = {
+  daily: { day: string; minutes: number; activities: number }[];
+  totalMinutes: number;
+  activeDays: number;
+  activityCount: number;
+};
+
+export function formatProgressJson(progress: ProgressExport): string {
+  return JSON.stringify({
+    schemaVersion: 1,
+    exportType: "study-progress-30-day",
+    timezone: "UTC",
+    periodStart: progress.daily[0]?.day ?? null,
+    periodEnd: progress.daily.at(-1)?.day ?? null,
+    totals: {
+      minutes: progress.totalMinutes,
+      activeDays: progress.activeDays,
+      activities: progress.activityCount,
+    },
+    days: progress.daily,
+  }, null, 2) + "\n";
+}
+
+/** Quote every cell and prevent spreadsheet programs from interpreting formulas. */
+function csvCell(value: string | number): string {
+  const input = String(value);
+  const safe = /^[\s\u0000-\u001f]*[=+@-]/u.test(input) ? `\'${input}` : input;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
+export function formatProgressCsv(progress: ProgressExport): string {
+  const header = ["UTC date", "Recorded minutes", "Activities"];
+  const lines = progress.daily.map((day) => [day.day, day.minutes, day.activities]);
+  return "\uFEFF" + [header, ...lines].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+}
