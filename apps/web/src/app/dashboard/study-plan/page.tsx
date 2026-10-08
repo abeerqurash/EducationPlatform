@@ -47,6 +47,18 @@ export default async function StudyPlanPage() {
           </form>
         </section>
 
+        <section aria-label="Download goal health report" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-5 py-4">
+          <div>
+            <p className="text-sm font-extrabold text-[#171912]">Goal health report</p>
+            <p className="mt-1 text-xs text-slate-600">Download current goal metrics and the eight nearest deadlines. The report excludes archived goals.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a href="/dashboard/study-plan/health-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Report CSV</a>
+            <a href="/dashboard/study-plan/health-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Report JSON</a>
+            <a href="/dashboard/study-plan/health-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Report TXT</a>
+          </div>
+        </section>
+
         <Panel title="Goal health overview" description="Live insights from your current, non-archived goals. Deadlines are compared using UTC dates.">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
             {[
