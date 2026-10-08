@@ -4,6 +4,7 @@ import {
   getStudyProgress,
   getStudyGoalSummary,
   getStudyMonthlyTrend,
+  getStudyProgressExportWindow,
 } from "@education/database";
 import { redirect } from "next/navigation";
 
@@ -12,28 +13,35 @@ import { recordStudySessionAction } from "@/app/actions/student-intelligence";
 import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
+import { parseProgressExportDays } from "./export-window";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, MetricCard, Panel } from "@/components/app-shell/dashboard-ui";
 
 export const metadata = { title: "Progress" };
 
-export default async function ProgressPage() {
+export default async function ProgressPage({ searchParams }: { searchParams: Promise<{ trendDays?: string }> }) {
   const session = await auth();
   const userId = session?.user?.id?.trim();
   if (!session?.user || !userId) {
     redirect("/login?callbackUrl=%2Fdashboard%2Fprogress");
   }
 
-  const [workspace, progress, results, goalSummary, monthly] = await Promise.all([
+  const trendDays = parseProgressExportDays((await searchParams).trendDays ?? null);
+  const [workspace, progress, results, goalSummary, monthly, trend] = await Promise.all([
     getStudentWorkspace(userId),
     getStudyProgress(userId),
     getStudentResultOverview(userId),
     getStudyGoalSummary(userId),
     getStudyMonthlyTrend(userId),
+    getStudyProgressExportWindow(userId, trendDays),
   ]);
 
   const target = workspace.profile?.weeklyStudyTargetMinutes ?? 300;
   const highestMonthlyMinutes = Math.max(1, ...monthly.daily.map((day) => day.minutes));
+  const highestTrendMinutes = Math.max(1, ...trend.daily.map((day) => day.minutes));
+  const trendAverage = Math.round(trend.totalMinutes / trendDays);
+  const trendCompletion = Math.round((trend.activeDays / trendDays) * 100);
+  const trendPeak = trend.daily.reduce((best, day) => day.minutes > best.minutes ? day : best, trend.daily[0]);
   const highestDayMinutes = Math.max(1, ...progress.daily.map((day) => day.minutes));
   const percent = target > 0
     ? Math.min(100, Math.round((progress.totalMinutes / target) * 100))
@@ -60,6 +68,30 @@ export default async function ProgressPage() {
             <button type="submit" formAction="/dashboard/progress/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export JSON</button>
           </form>
         </section>
+
+        <Panel title="Study insights" description="Compare recorded activity across a bounded UTC calendar window. Only your account records are included.">
+          <form action="/dashboard/progress" method="GET" className="mb-5 flex flex-wrap items-end gap-3">
+            <ThemedExportSelect name="trendDays" label="Chart period" defaultValue={String(trendDays)} options={[{ value: "7", label: "Last 7 days" }, { value: "30", label: "Last 30 days" }, { value: "90", label: "Last 90 days" }]} />
+            <button type="submit" className="inline-flex min-h-[44px] items-center rounded-full bg-[#171912] px-5 text-xs font-bold text-white transition hover:bg-[#343a2d]">Update chart</button>
+          </form>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Total minutes</p><p className="mt-1 text-xl font-extrabold tabular-nums text-slate-900">{trend.totalMinutes}</p></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Daily average</p><p className="mt-1 text-xl font-extrabold tabular-nums text-slate-900">{trendAverage} min</p></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Active days</p><p className="mt-1 text-xl font-extrabold tabular-nums text-slate-900">{trend.activeDays} / {trendDays}</p><p className="text-xs text-slate-500">{trendCompletion}% of days</p></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs text-slate-500">Busiest day</p><p className="mt-1 text-lg font-extrabold tabular-nums text-slate-900">{trendPeak?.minutes ?? 0} min</p><p className="text-xs text-slate-500">{trendPeak?.minutes ? trendPeak.day : "No recorded activity"}</p></div>
+          </div>
+          <div className="mt-5 overflow-x-auto rounded-xl border border-slate-100 p-3" role="group" aria-label={`Daily study activity for the last ${trendDays} UTC days`}>
+            <div className="flex h-36 min-w-[480px] items-end gap-1" role="list">
+              {trend.daily.map((day) => (
+                <div key={day.day} role="listitem" aria-label={`${day.day}: ${day.minutes} minutes and ${day.activities} activities`} title={`${day.day}: ${day.minutes} min, ${day.activities} activities`} className="flex h-full min-w-0 flex-1 items-end rounded-t bg-slate-50">
+                  <div aria-hidden="true" className="w-full rounded-t bg-violet-600" style={{ height: `${day.minutes ? Math.max(5, (day.minutes / highestTrendMinutes) * 100) : 0}%` }} />
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 flex justify-between text-[10px] font-semibold tabular-nums text-slate-500"><span>{trend.daily[0]?.day}</span><span>{trend.daily.at(-1)?.day}</span></div>
+          </div>
+          <p className="mt-3 text-xs text-slate-500">{trend.activityCount} recorded activities. Dates are UTC; empty bars mean no recorded minutes. Daily average includes inactive days.</p>
+        </Panel>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Saved results" value={String(results.savedResultCount)} note="Calculator outcomes in your account" icon="bookmark" />
