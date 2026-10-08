@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { updateStudyGoalAction } from "@/app/actions/student-intelligence";
+import { bulkStudyGoalAction, updateStudyGoalAction } from "@/app/actions/student-intelligence";
 import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
+import { bulkSelectionOnPage, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
 import { paginateGoals } from "./study-goal-pagination";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
@@ -44,11 +45,34 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const [sort, setSort] = useState("deadline");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkOperation, setBulkOperation] = useState<GoalBulkOperation>("complete");
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkMessage, setBulkMessage] = useState("");
   const visible = useMemo(() => {
     const filter: GoalWorkspaceFilter = { query, status, deadline, sort };
     return filterAndSortGoals(goals, filter, todayUtc);
   }, [goals, query, status, deadline, sort, todayUtc]);
   const pagination = paginateGoals(visible, page, Number(pageSize));
+  const pageIds = pagination.items.map(goal => goal.id);
+  const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
+  const toggleGoal = (id: string, checked: boolean) => setSelectedIds(previous => checked ? previous.includes(id) || previous.length >= MAX_BULK_GOALS ? previous : [...previous, id] : previous.filter(item => item !== id));
+  const togglePage = (checked: boolean) => setSelectedIds(previous => checked ? [...previous, ...pageIds.filter(id => !previous.includes(id))].slice(0, MAX_BULK_GOALS) : previous.filter(id => !pageIds.includes(id)));
+  const applyBulk = async () => {
+    if (!selectedIds.length || bulkBusy) return;
+    const message = bulkOperation === "archive" ? "Archive" : bulkOperation === "complete" ? "Complete" : "Reopen";
+    if (!window.confirm(`${message} ${selectedIds.length} selected goal(s)? This changes their saved status.`)) return;
+    setBulkBusy(true);
+    setBulkMessage("");
+    try {
+      const result = await bulkStudyGoalAction(selectedIds, bulkOperation);
+      if (!result.ok) { setBulkMessage("Bulk update could not be completed."); return; }
+      setBulkMessage(`${result.updated} goal(s) updated. Refreshing the workspace…`);
+      setSelectedIds([]);
+      window.location.reload();
+    } catch { setBulkMessage("Bulk update failed. Please try again."); }
+    finally { setBulkBusy(false); }
+  };
   const downloadFiltered = (format: GoalExportFormat) => {
     if (!visible.length) return;
     const now = new Date().toISOString();
@@ -84,8 +108,19 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
         <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
         {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadFiltered(format)} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
       </section>
+      <section aria-label="Bulk study goal actions" className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+        <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
+          <input type="checkbox" checked={selectedOnPage} disabled={!pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={event => togglePage(event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select current page
+        </label>
+        <p className="text-xs text-slate-600" role="status">{selectedIds.length} selected (maximum {MAX_BULK_GOALS})</p>
+        <ThemedExportSelect name="goalBulkOperation" label="Bulk action" defaultValue="complete" value={bulkOperation} onValueChange={value => setBulkOperation(value as GoalBulkOperation)} options={[{ value: "complete", label: "Mark completed" }, { value: "reopen", label: "Mark open" }, { value: "archive", label: "Archive selected" }]} />
+        <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={applyBulk} className="button button--secondary disabled:cursor-not-allowed disabled:opacity-40">{bulkBusy ? "Updating…" : "Apply to selected"}</button>
+        <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className="text-xs font-bold underline disabled:opacity-40">Clear selection</button>
+        {bulkMessage ? <p role="status" className="w-full text-xs text-slate-700">{bulkMessage}</p> : null}
+      </section>
       {visible.length ? <div className="divide-y divide-slate-100">{pagination.items.map(goal => (
         <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
+          <label className="mb-3 flex w-fit items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" aria-label={`Select goal: ${goal.title}`} checked={selectedIds.includes(goal.id)} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && !selectedIds.includes(goal.id))} onChange={event => toggleGoal(goal.id, event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select goal</label>
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div className="min-w-0">
               <h2 className="break-words text-sm font-extrabold text-slate-950">{goal.title}</h2>

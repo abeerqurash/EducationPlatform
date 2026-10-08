@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import {
   archiveStudyGoal,
+  bulkUpdateStudyGoals,
   restoreStudyGoal,
   deleteManualStudySession,
   createStudyGoal,
@@ -14,6 +15,7 @@ import {
 } from "@education/database";
 
 import { auth } from "@/auth";
+import { validateBulkGoalIds, type GoalBulkOperation } from "@/components/dashboard/study-goal-bulk";
 import { validCalendarDate, validIanaTimezone, validStudyMinutes } from "@/lib/study-input-validation";
 
 const UUID =
@@ -179,4 +181,15 @@ export async function restoreStudyGoalAction(formData: FormData): Promise<void> 
   if (!await restoreStudyGoal(id, goalId)) return;
   revalidatePath("/dashboard/study-plan");
   revalidatePath("/dashboard/progress");
+}
+
+/** A single bounded database update for a confirmed selection of owned goals. */
+export async function bulkStudyGoalAction(goalIds: string[], operation: GoalBulkOperation): Promise<{ ok: boolean; updated: number }> {
+  const id = await userId();
+  const validIds = validateBulkGoalIds(goalIds);
+  if (!id || !validIds || !(["complete", "reopen", "archive"] as string[]).includes(operation)) return { ok: false, updated: 0 };
+  const updated = await bulkUpdateStudyGoals(id, validIds, operation);
+  revalidatePath("/dashboard/study-plan");
+  revalidatePath("/dashboard/progress");
+  return { ok: true, updated };
 }

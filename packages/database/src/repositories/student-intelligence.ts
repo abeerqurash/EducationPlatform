@@ -3,6 +3,7 @@ import {
   desc,
   asc,
   eq,
+  inArray,
   gte,
   lt,
   sql,
@@ -343,4 +344,16 @@ export async function getStudyProgressExportWindow(userId: string, days: 7 | 30 
     activityCount: summary[0]?.activities ?? 0,
     activeDays: summary[0]?.activeDays ?? 0,
   };
+}
+
+/** Atomic account-scoped bulk mutation. Never modifies archived goals. */
+export async function bulkUpdateStudyGoals(userId: string, goalIds: string[], operation: "complete" | "reopen" | "archive") {
+  if (!goalIds.length || goalIds.length > 50) return 0;
+  const values = operation === "archive"
+    ? { isArchived: true, updatedAt: new Date() }
+    : { completedAt: operation === "complete" ? new Date().toISOString().slice(0, 10) : null, updatedAt: new Date() };
+  const changed = await db.update(studyGoals).set(values).where(and(
+    eq(studyGoals.userId, userId), eq(studyGoals.isArchived, false), inArray(studyGoals.id, goalIds),
+  )).returning({ id: studyGoals.id });
+  return changed.length;
 }
