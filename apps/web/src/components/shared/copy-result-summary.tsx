@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type CopyKind = "summary" | "details";
-type CopyStatus = "idle" | "summary" | "details" | "download" | "json" | "error";
+type CopyKind = "summary" | "details" | "json";
+type CopyStatus = "idle" | "summary" | "details" | "json-copy" | "download" | "json" | "error";
 
 /** Format already-authorized, displayed fields; never request additional private data. */
 export function formatSavedResultDetails(input: {
@@ -63,12 +63,14 @@ export function CopyResultSummary({ summary, details }: {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       if (kind === "summary") {
         await navigator.clipboard.writeText(summary);
+      } else if (details && kind === "json") {
+        await navigator.clipboard.writeText(formatSavedResultJson({ ...details, summary }));
       } else if (details) {
         await navigator.clipboard.writeText(formatSavedResultDetails({ ...details, summary }));
       } else {
         return;
       }
-      setStatus(kind);
+      setStatus(kind === "json" ? "json-copy" : kind);
       resetTimer.current = setTimeout(() => setStatus("idle"), 2500);
     } catch {
       setStatus("error");
@@ -136,6 +138,12 @@ export function CopyResultSummary({ summary, details }: {
         </button>
       ) : null}
       {details ? (
+        <button type="button" onClick={() => void copy("json")}
+          aria-label="Copy saved result details as JSON" className={buttonClass}>
+          {status === "json-copy" ? "Copied" : "Copy JSON"}
+        </button>
+      ) : null}
+      {details ? (
         <button type="button" onClick={download}
           aria-label="Download saved result details as text" className={buttonClass}>
           {status === "download" ? "Downloaded" : "Download .txt"}
@@ -148,7 +156,7 @@ export function CopyResultSummary({ summary, details }: {
         </button>
       ) : null}
       <span role="status" aria-live="polite" className="text-[11px] text-slate-600">
-        {status === "error" ? "Copy or download unavailable; select the text to copy." : status === "summary" ? "Summary copied" : status === "details" ? "Result details copied" : status === "download" ? "Text download started" : status === "json" ? "JSON download started" : ""}
+        {status === "error" ? "Copy or download unavailable; select the text to copy." : status === "summary" ? "Summary copied" : status === "details" ? "Result details copied" : status === "json-copy" ? "JSON copied" : status === "download" ? "Text download started" : status === "json" ? "JSON download started" : ""}
       </span>
     </div>
   );
