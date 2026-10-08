@@ -12,7 +12,8 @@ describe("bounded study progress export periods", () => {
   });
   it("uses the same selector for all formats", () => {
     const page = read("page.tsx");
-    for (const days of ["7", "30", "90"]) expect(page).toContain(`value="${days}"`);
+    for (const days of ["7", "30", "90"]) expect(page).toContain(`value: "${days}"`);
+    expect(page).toContain("<ThemedExportSelect");
     for (const format of ["csv", "json", "text"]) expect(page).toContain(`formAction="/dashboard/progress/export-${format}"`);
   });
   it("authorizes every export and applies the bounded period", () => {

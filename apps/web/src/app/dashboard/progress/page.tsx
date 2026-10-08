@@ -12,6 +12,7 @@ import { recordStudySessionAction } from "@/app/actions/student-intelligence";
 import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
+import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, MetricCard, Panel } from "@/components/app-shell/dashboard-ui";
 
 export const metadata = { title: "Progress" };
@@ -53,13 +54,7 @@ export default async function ProgressPage() {
             <p className="mt-1 text-xs text-slate-600">Choose 7, 30 or 90 UTC days. Zero-activity days are included and saved records remain unchanged.</p>
           </div>
           <form method="GET" action="/dashboard/progress/export-csv" className="flex flex-wrap items-end gap-2">
-            <label className="flex flex-col gap-1 text-xs font-bold text-[#171912]">Period
-              <select name="days" defaultValue="30" className="min-h-[44px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
-                <option value="7">Last 7 days</option>
-                <option value="30">Last 30 days</option>
-                <option value="90">Last 90 days</option>
-              </select>
-            </label>
+            <ThemedExportSelect name="days" label="Period" defaultValue="30" options={[{ value: "7", label: "Last 7 days" }, { value: "30", label: "Last 30 days" }, { value: "90", label: "Last 90 days" }]} />
             <button type="submit" formAction="/dashboard/progress/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export CSV</button>
             <button type="submit" formAction="/dashboard/progress/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export TXT</button>
             <button type="submit" formAction="/dashboard/progress/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export JSON</button>

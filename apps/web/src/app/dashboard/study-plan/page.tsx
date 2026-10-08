@@ -5,6 +5,7 @@ import { createStudyGoalAction, restoreStudyGoalAction, updateStudyGoalAction } 
 import { auth } from "@/auth";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
+import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
 import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
@@ -35,15 +36,7 @@ export default async function StudyPlanPage() {
             <p className="mt-1 text-xs text-slate-600">Choose a status and download matching goals from your 1,000 most recent records. Your existing goals are unchanged.</p>
           </div>
           <form method="GET" action="/dashboard/study-plan/export-csv" className="flex flex-wrap items-end gap-2">
-            <label className="flex flex-col gap-1 text-xs font-bold text-[#171912]">
-              Goal status
-              <select name="status" defaultValue="all" className="min-h-[44px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
-                <option value="all">All goals</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="archived">Archived</option>
-              </select>
-            </label>
+            <ThemedExportSelect name="status" label="Goal status" defaultValue="all" options={[{ value: "all", label: "All goals" }, { value: "active", label: "Active" }, { value: "completed", label: "Completed" }, { value: "archived", label: "Archived" }]} />
             <button type="submit" formAction="/dashboard/study-plan/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export CSV</button>
             <button type="submit" formAction="/dashboard/study-plan/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export TXT</button>
             <button type="submit" formAction="/dashboard/study-plan/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export JSON</button>

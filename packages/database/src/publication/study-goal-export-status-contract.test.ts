@@ -26,6 +26,7 @@ describe("study goal export status filtering", () => {
   it("shares a status selector across all three export actions", () => {
     const page = read(`${base}/page.tsx`);
     expect(page).toContain('name="status"');
+    expect(page).toContain('<ThemedExportSelect');
     for (const type of ["csv", "json", "text"]) expect(page).toContain(`formAction="/dashboard/study-plan/export-${type}"`);
   });
 });
