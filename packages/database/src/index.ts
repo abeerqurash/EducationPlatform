@@ -8,3 +8,7 @@ export * from "./repositories/student-results";
 export * from "./repositories/student-intelligence";
 
 export * from "./repositories/admin-access";
+
+export * from "./repositories/test-prep";
+
+export * from "./repositories/test-prep-history";

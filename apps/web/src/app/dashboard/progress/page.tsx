@@ -8,7 +8,8 @@ import {
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import { deleteManualStudySessionAction, recordStudySessionAction } from "@/app/actions/student-intelligence";
+import { recordStudySessionAction } from "@/app/actions/student-intelligence";
+import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { Eyebrow, MetricCard, Panel } from "@/components/app-shell/dashboard-ui";
@@ -54,7 +55,7 @@ export default async function ProgressPage() {
         </section>
 
         <Panel title="Weekly study target" description={`${progress.totalMinutes} of ${target} minutes recorded`}>
-          <div role="progressbar" aria-label="Weekly study target progress" aria-valuemin={0} aria-valuemax={target} aria-valuenow={Math.min(progress.totalMinutes, target)} aria-valuetext={`${progress.totalMinutes} of ${target} minutes`} className="h-3 overflow-hidden rounded-full bg-slate-100">
+          <div role="progressbar" aria-label="Weekly study target progress" aria-valuemin={0} aria-valuemax={Math.max(1, target)} aria-valuenow={Math.min(progress.totalMinutes, Math.max(1, target))} aria-valuetext={`${progress.totalMinutes} of ${target} minutes`} className="h-3 overflow-hidden rounded-full bg-slate-100">
             <div className="h-full rounded-full bg-violet-600" style={{ width: `${percent}%` }} />
           </div>
           <div className="mt-3 flex justify-between text-xs font-bold text-slate-500">
@@ -126,10 +127,7 @@ export default async function ProgressPage() {
                       <span className="text-xs font-bold text-slate-600">{activity.durationMinutes} min</span>
                       {activity.activityType === "study_session" &&
                         (activity.metadata as Record<string, unknown> | null)?.source === "manual_study_log" && (
-                          <form action={deleteManualStudySessionAction}>
-                            <input type="hidden" name="activityId" value={activity.id} />
-                            <button type="submit" aria-label={`Delete manually recorded session: ${activity.title}`} className="text-xs font-semibold text-rose-700 underline underline-offset-2 hover:text-rose-900">Delete</button>
-                          </form>
+                          <ConfirmStudySessionDelete activityId={activity.id} title={activity.title} />
                         )}
                     </div>
                   </li>

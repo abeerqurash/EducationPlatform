@@ -7,14 +7,14 @@ const read = (path: string) =>
 
 describe("application workspace routes", () => {
   it("ships every customer dashboard navigation destination", () => {
-    const sectionRoutes = [
-      "../../../../apps/web/src/app/dashboard/test-prep/page.tsx",
-    ];
-
-    for (const route of sectionRoutes) {
-      expect(existsSync(new URL(route, root))).toBe(true);
-      expect(read(route)).toContain("DashboardSectionPage");
-    }
+    const testPrepRoute =
+      "../../../../apps/web/src/app/dashboard/test-prep/page.tsx";
+    expect(existsSync(new URL(testPrepRoute, root))).toBe(true);
+    const testPrepPage = read(testPrepRoute);
+    expect(testPrepPage).toContain("getStudentTestPrepOverview");
+    expect(testPrepPage).toContain("<DashboardShell");
+    expect(testPrepPage).toContain("Saved exam result history");
+    expect(testPrepPage).not.toContain("DashboardSectionPage");
 
     for (const route of [
       "../../../../apps/web/src/app/dashboard/study-plan/page.tsx",

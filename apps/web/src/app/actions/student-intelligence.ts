@@ -139,8 +139,11 @@ export async function saveStudentProfileAction(formData: FormData) {
 export async function recordStudySessionAction(formData: FormData): Promise<void> {
   const id = await userId();
   if (!id) return;
-  const title = String(formData.get("title") ?? "").trim();
-  const rawMinutes = String(formData.get("durationMinutes") ?? "").trim();
+  const titleValue = formData.get("title");
+  const minutesValue = formData.get("durationMinutes");
+  if (typeof titleValue !== "string" || typeof minutesValue !== "string") return;
+  const title = titleValue.trim();
+  const rawMinutes = minutesValue.trim();
   const durationMinutes = Number(rawMinutes);
   if (
     title.length < 2 || title.length > 180 ||
