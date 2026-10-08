@@ -16,7 +16,9 @@ describe("study exports in readable text", () => {
       expect(route).toContain('"Content-Type": "text/plain; charset=utf-8"');
     });
     it(`${page} has a dashboard download control and readable formatter`, () => {
-      expect(read(`${page}/page.tsx`)).toContain(`href="/dashboard/${page}/export-text"`);
+      const source = read(`${page}/page.tsx`);
+      const endpoint = `/dashboard/${page}/export-text`;
+      expect(source.includes(`href="${endpoint}"`) || source.includes(`formAction="${endpoint}"`)).toBe(true);
       const format = read(`${page}/export-format.ts`);
       expect(format).toContain(page === "progress" ? "formatProgressText" : "formatStudyGoalsText");
     });

@@ -32,13 +32,22 @@ export default async function StudyPlanPage() {
         <section aria-label="Export study goals" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-5 py-4">
           <div>
             <p className="text-sm font-extrabold text-[#171912]">Back up your study goals</p>
-            <p className="mt-1 text-xs text-slate-600">Download up to 1,000 recent active and archived goals. Your existing goals are unchanged.</p>
+            <p className="mt-1 text-xs text-slate-600">Choose a status and download matching goals from your 1,000 most recent records. Your existing goals are unchanged.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <a href="/dashboard/study-plan/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export CSV</a>
-            <a href="/dashboard/study-plan/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export TXT</a>
-            <a href="/dashboard/study-plan/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export JSON</a>
-          </div>
+          <form method="GET" action="/dashboard/study-plan/export-csv" className="flex flex-wrap items-end gap-2">
+            <label className="flex flex-col gap-1 text-xs font-bold text-[#171912]">
+              Goal status
+              <select name="status" defaultValue="all" className="min-h-[44px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
+                <option value="all">All goals</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="archived">Archived</option>
+              </select>
+            </label>
+            <button type="submit" formAction="/dashboard/study-plan/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export CSV</button>
+            <button type="submit" formAction="/dashboard/study-plan/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export TXT</button>
+            <button type="submit" formAction="/dashboard/study-plan/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export JSON</button>
+          </form>
         </section>
 
         <div className="grid gap-6 xl:grid-cols-[.8fr_1.2fr]">
