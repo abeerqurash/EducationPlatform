@@ -9,6 +9,7 @@ import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
 import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
+import { summarizeGoalHealth } from "./goal-insights";
 
 export const metadata = { title: "Study plan" };
 
@@ -20,6 +21,9 @@ export default async function StudyPlanPage() {
   }
 
   const [workspace, archivedGoals] = await Promise.all([getStudentWorkspace(userId), getArchivedStudyGoals(userId)]);
+
+  const todayUtc = new Date().toISOString().slice(0, 10);
+  const goalHealth = summarizeGoalHealth(workspace.goals, todayUtc);
 
   return (
     <DashboardShell userName={session.user.name} userEmail={session.user.email} active="Study plan">
@@ -42,6 +46,45 @@ export default async function StudyPlanPage() {
             <button type="submit" formAction="/dashboard/study-plan/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Export JSON</button>
           </form>
         </section>
+
+        <Panel title="Goal health overview" description="Live insights from your current, non-archived goals. Deadlines are compared using UTC dates.">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+            {[
+              { label: "Open goals", value: goalHealth.open },
+              { label: "Completed", value: goalHealth.completed },
+              { label: "Completion rate", value: `${goalHealth.completionRate}%` },
+              { label: "Overdue", value: goalHealth.overdue },
+              { label: "Due today", value: goalHealth.dueToday },
+              { label: "Next 7 days", value: goalHealth.upcoming },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <p className="text-xs font-semibold text-slate-500">{item.label}</p>
+                <p className="mt-2 text-2xl font-extrabold tabular-nums text-slate-950">{item.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
+            <p><strong className="text-slate-900">{goalHealth.plannedMinutes.toLocaleString("en-US")} minutes</strong> planned across open goals</p>
+            <p><strong className="text-slate-900">{goalHealth.unscheduled}</strong> open goals without a deadline</p>
+          </div>
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label="Goal completion rate" aria-valuemin={0} aria-valuemax={100} aria-valuenow={goalHealth.completionRate}>
+            <div className="h-full rounded-full bg-violet-600" style={{ width: `${goalHealth.completionRate}%` }} />
+          </div>
+          <details className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer text-sm font-bold text-slate-900">View next goal deadlines</summary>
+            {goalHealth.deadlines.length ? (
+              <ol className="mt-4 divide-y divide-slate-100">
+                {goalHealth.deadlines.map((goal) => (
+                  <li key={goal.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-xs">
+                    <span className="min-w-0 break-words font-bold text-slate-900">{goal.title}</span>
+                    <span className="font-semibold tabular-nums text-slate-600">{goal.targetDate} · {goal.status}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : <p className="mt-3 text-xs text-slate-500">No upcoming or overdue scheduled goals.</p>}
+          </details>
+          <p className="mt-3 text-xs text-slate-500">Completion metrics exclude archived goals. The deadline list shows up to eight open goals, earliest first.</p>
+        </Panel>
 
         <div className="grid gap-6 xl:grid-cols-[.8fr_1.2fr]">
           <Panel title="Create a goal" description="Set a clear target for your next study milestone.">
