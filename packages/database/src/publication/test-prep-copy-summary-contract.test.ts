@@ -6,7 +6,7 @@ const component = readFileSync(new URL("../../../../apps/web/src/components/shar
 
 describe("saved result summary copy interaction", () => {
   it("copies the authorized saved summary instead of recalculating or fetching records", () => {
-    expect(page).toContain("<CopyResultSummary summary={result.summary} />");
+    expect(page).toContain("<CopyResultSummary summary={result.summary} details={{");
     expect(component).toContain("navigator.clipboard.writeText(summary)");
     expect(component).not.toContain("dangerouslySetInnerHTML");
   });

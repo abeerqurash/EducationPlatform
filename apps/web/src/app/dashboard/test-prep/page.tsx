@@ -181,7 +181,7 @@ export default async function TestPrepPage({ searchParams }: {
                   </div>
                   <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
                     <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">{/(^|-)sat(-|$)/.test(result.toolSlug) ? "SAT" : "ACT"}</span>
-                    <CopyResultSummary summary={result.summary} />
+                    <CopyResultSummary summary={result.summary} details={{ toolName: result.toolName, savedDateUtc: result.createdAt.toISOString().slice(0, 10), calculatorVersion: result.calculatorVersion }} />
                   </div>
                 </li>
               ))}
