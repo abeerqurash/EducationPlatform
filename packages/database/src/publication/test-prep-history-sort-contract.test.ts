@@ -20,7 +20,7 @@ describe("saved exam history sort contract", () => {
     expect(page).toContain('aria-label="Sort saved exam results"');
     expect(page).toContain('sort: history.sort');
     expect(page).toContain('sort={history.sort}');
-    expect(dateRange).toContain('new URLSearchParams({exam,sort,page:"1"})');
+    expect(dateRange).toContain('new URLSearchParams({exam,sort,size:String(size),page:"1"})');
     expect(exportRoute).toContain('sort: url.searchParams.get("sort")');
   });
 });

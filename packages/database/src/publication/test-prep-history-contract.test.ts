@@ -14,7 +14,7 @@ describe("test prep history pagination and filtering", () => {
   it("keeps every count and page restricted to the owner and saved exam results", () => {
     expect(repo).toContain("eq(studentCalculatorResults.userId, userId)");
     expect(repo).toContain("eq(studentCalculatorResults.isSaved, true)");
-    expect(repo).toContain(".limit(TEST_PREP_PAGE_SIZE).offset((page - 1) * TEST_PREP_PAGE_SIZE)");
+    expect(repo).toContain(".limit(query.pageSize).offset((page - 1) * query.pageSize)");
     expect(page).toContain("getStudentTestPrepHistory(userId, query)");
     expect(page).toContain('aria-label="Filter saved exam results"');
     expect(page).toContain('aria-label="Exam result history pages"');

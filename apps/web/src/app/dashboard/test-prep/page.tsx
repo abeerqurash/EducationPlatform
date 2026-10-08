@@ -9,12 +9,12 @@ import { Eyebrow, MetricCard, Panel, QuickTool } from "@/components/app-shell/da
 import { SiteButton } from "@/components/app-shell/site-button";
 import { ThemedDateRange } from "@/components/shared/themed-date-range";
 import { ThemedFilterPill } from "@/components/shared/themed-filter-pill";
-import { historyPageWindow } from "@/components/shared/history-page-window";
+import { historyPageWindow, historyResultRange } from "@/components/shared/history-page-window";
 
 export const metadata = { title: "Test prep" };
 
 export default async function TestPrepPage({ searchParams }: {
-  searchParams: Promise<{ exam?: string; page?: string; from?: string; to?: string; sort?: string }>;
+  searchParams: Promise<{ exam?: string; page?: string; from?: string; to?: string; sort?: string; size?: string }>;
 }) {
   const session = await auth();
   const userId = session?.user?.id?.trim();
@@ -29,14 +29,15 @@ export default async function TestPrepPage({ searchParams }: {
     getStudentTestPrepHistory(userId, query),
   ]);
   const examGoals = workspace.goals.filter((goal) => /\b(sat|act|psat|exam|test prep)\b/i.test(`${goal.title} ${goal.description ?? ""}`));
-  const filterParams = new URLSearchParams({ exam: history.exam, sort: history.sort });
+  const filterParams = new URLSearchParams({ exam: history.exam, sort: history.sort, size: String(history.pageSize) });
   if (history.from) filterParams.set("from", history.from);
   if (history.to) filterParams.set("to", history.to);
   const historyUrl = (page: number) => `/dashboard/test-prep?${filterParams.toString()}&page=${page}`;
   const activePreset = activeTestPrepDatePreset(history.from, history.to);
-  const presetUrl = (preset: "7d" | "30d" | "90d") => `/dashboard/test-prep?${new URLSearchParams({ exam: history.exam, sort: history.sort, ...getTestPrepDatePreset(preset), page: "1" }).toString()}`;
+  const presetUrl = (preset: "7d" | "30d" | "90d") => `/dashboard/test-prep?${new URLSearchParams({ exam: history.exam, sort: history.sort, size: String(history.pageSize), ...getTestPrepDatePreset(preset), page: "1" }).toString()}`;
   const visiblePages = historyPageWindow(history.page, history.totalPages);
-  const filtersActive = history.exam !== "all" || history.sort !== "newest" || Boolean(history.from || history.to);
+  const visibleRange = historyResultRange(history.page, history.pageSize, history.total);
+  const filtersActive = history.exam !== "all" || history.sort !== "newest" || history.pageSize !== 15 || Boolean(history.from || history.to);
   const completedGoals = examGoals.filter((goal) => Boolean(goal.completedAt)).length;
 
   return (
@@ -107,13 +108,21 @@ export default async function TestPrepPage({ searchParams }: {
                </ThemedFilterPill>
              ))}
            </nav>
-           <ThemedDateRange exam={history.exam} sort={history.sort} from={history.from ?? ""} to={history.to ?? ""} />
+           <ThemedDateRange exam={history.exam} sort={history.sort} size={history.pageSize} from={history.from ?? ""} to={history.to ?? ""} />
+          <nav aria-label="Results per page" className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-xs font-semibold text-slate-500">Results per page</span>
+            {([15, 30, 50] as const).map((size) => (
+              <ThemedFilterPill key={size} href={`/dashboard/test-prep?${new URLSearchParams({ ...Object.fromEntries(filterParams), size: String(size), page: "1" }).toString()}`} active={history.pageSize === size}>
+                {size} results
+              </ThemedFilterPill>
+            ))}
+          </nav>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-slate-500">Exports include up to 1,000 matching records in the selected order.</p>
             <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered CSV</Link>
           </div>
           {filtersActive ? <Link href="/dashboard/test-prep" className="mb-4 inline-flex rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Reset all filters</Link> : null}
-          <p className="mb-3 text-xs text-slate-500">{history.total} matching saved results · Page {history.page} of {history.totalPages}</p>
+          <p className="mb-3 text-xs text-slate-500">{history.total === 0 ? "No matching saved results" : `Showing ${visibleRange.start}–${visibleRange.end} of ${history.total} saved results`} · Page {history.page} of {history.totalPages}</p>
           {history.rows.length ? (
             <ol className="divide-y divide-slate-100">
               {history.rows.map((result) => (
@@ -129,9 +138,12 @@ export default async function TestPrepPage({ searchParams }: {
             </ol>
           ) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-6 text-sm text-slate-500">No saved results match this exam filter. Complete an available test-prep calculator and save its output to populate this history.</p>}
           <nav aria-label="Exam result history pages" className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+            {history.page > 1 ? <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(1)}>First page</Link> : null}
             {history.page > 1 ? (
               <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.page - 1)}>Previous page</Link>
-            ) : <span />}
+            ) : null}
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-1.5" aria-label="Choose history page">
               {visiblePages.map((pageNumber) => (
                 <Link key={pageNumber} href={historyUrl(pageNumber)} aria-current={history.page === pageNumber ? "page" : undefined}
@@ -141,9 +153,12 @@ export default async function TestPrepPage({ searchParams }: {
                 </Link>
               ))}
             </div>
+            <div className="flex items-center gap-3">
             {history.page < history.totalPages ? (
               <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.page + 1)}>Next page</Link>
-            ) : <span />}
+            ) : null}
+            {history.page < history.totalPages ? <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.totalPages)}>Last page</Link> : null}
+            </div>
           </nav>
         </Panel>
       </div>

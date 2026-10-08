@@ -94,10 +94,10 @@ export function ThemedDatePicker({ label, value, onChange, theme = "dashboard" }
   </div>;
 }
 
-export function ThemedDateRange({ exam, sort = "newest", from, to }: { exam: string; sort?: "newest" | "oldest"; from: string; to: string }) {
+export function ThemedDateRange({ exam, sort = "newest", size = 15, from, to }: { exam: string; sort?: "newest" | "oldest"; size?: number; from: string; to: string }) {
   const router = useRouter();
   const [start,setStart]=useState(from),[end,setEnd]=useState(to);
   const [error,setError]=useState("");
-  const navigate=(a:string,b:string)=>{if(a&&b&&a>b){setError("The start date must not be after the end date.");return;}setError("");const p=new URLSearchParams({exam,sort,page:"1"});if(a)p.set("from",a);if(b)p.set("to",b);router.push(`/dashboard/test-prep?${p.toString()}`);};
+  const navigate=(a:string,b:string)=>{if(a&&b&&a>b){setError("The start date must not be after the end date.");return;}setError("");const p=new URLSearchParams({exam,sort,size:String(size),page:"1"});if(a)p.set("from",a);if(b)p.set("to",b);router.push(`/dashboard/test-prep?${p.toString()}`);};
   return <div className="mb-5"><div className="flex flex-wrap items-end gap-3"><ThemedDatePicker label="From (UTC)" value={start} onChange={setStart}/><ThemedDatePicker label="To (UTC)" value={end} onChange={setEnd}/><button type="button" onClick={()=>navigate(start,end)} className="min-h-[43px] rounded-full bg-[#171912] px-5 py-3 text-xs font-bold !text-white transition hover:-translate-y-0.5 hover:shadow-lg">Apply dates</button><button type="button" onClick={()=>{setStart("");setEnd("");navigate("","");}} className="min-h-[43px] rounded-full border border-[#dcded2] bg-white px-5 py-3 text-xs font-bold text-[#171912] transition hover:bg-[#eef0e8]">Clear dates</button></div>{error&&<p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{error}</p>}</div>;
 }
