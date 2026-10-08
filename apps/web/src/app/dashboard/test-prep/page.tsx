@@ -164,7 +164,11 @@ export default async function TestPrepPage({ searchParams }: {
             </section>
           ) : null}
           {filtersActive ? <Link href="/dashboard/test-prep" className="mb-4 inline-flex rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Reset all filters</Link> : null}
-          <p className="mb-3 text-xs text-slate-500">{history.total === 0 ? "No matching saved results" : `Showing ${visibleRange.start}–${visibleRange.end} of ${history.total} saved results`} · Page {history.page} of {history.totalPages}</p>
+          <p role="status" aria-live="polite" className="mb-3 text-xs text-slate-500">
+            {history.total === 0 ? "No matching saved results" : `Showing ${visibleRange.start}–${visibleRange.end} of ${history.total} saved results`}
+            {history.q ? <> for <span className="font-bold text-slate-800">“{history.q}”</span></> : null}
+            {` · Page ${history.page} of ${history.totalPages}`}
+          </p>
           {history.rows.length ? (
             <ol className="divide-y divide-slate-100">
               {history.rows.map((result) => (
@@ -178,7 +182,7 @@ export default async function TestPrepPage({ searchParams }: {
                 </li>
               ))}
             </ol>
-          ) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-6 text-sm text-slate-500">No saved results match your current search and filters. Complete an available test-prep calculator and save its output to populate this history.</p>}
+          ) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-6 text-sm text-slate-500">{history.q ? <>No saved exam results match <strong>“{history.q}”</strong> with the selected filters. Try another keyword or clear the search.</> : filtersActive ? "No saved exam results match the selected filters. Remove a filter or reset all filters to see more results." : "No saved SAT or ACT results yet. Complete an available test-prep calculator and save its output to populate this history."}</p>}
           {history.totalPages > 1 ? (
             <form action="/dashboard/test-prep" method="get" aria-label="Jump to saved result page" className="mt-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
               <input type="hidden" name="exam" value={history.exam} />
@@ -191,9 +195,9 @@ export default async function TestPrepPage({ searchParams }: {
                 <label htmlFor="history-jump-page" className="text-xs font-bold text-slate-700">Go to page</label>
                 <input id="history-jump-page" name="page" type="number" inputMode="numeric" min={1} max={history.totalPages} step={1} required
                   defaultValue={history.page}
-                  className="h-10 w-28 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition-colors focus:border-slate-900 focus:ring-2 focus:ring-slate-900/15" />
+                  className="h-[50px] w-28 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition-colors focus:border-slate-900 focus:ring-2 focus:ring-slate-900/15" />
               </div>
-              <button type="submit" className="inline-flex h-10 items-center justify-center rounded-full bg-[#171912] px-5 text-xs font-bold text-white transition-colors hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Go</button>
+              <button type="submit" className="inline-flex h-[50px] items-center justify-center rounded-full bg-[#171912] px-5 text-xs font-bold text-white transition-colors hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">Go</button>
               <span className="pb-3 text-xs text-slate-500">1–{history.totalPages}</span>
             </form>
           ) : null}
