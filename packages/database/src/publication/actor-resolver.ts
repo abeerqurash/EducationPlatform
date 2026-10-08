@@ -1,5 +1,6 @@
 import {
   eq,
+  and,
 } from "drizzle-orm";
 
 import {
@@ -10,7 +11,10 @@ import {
   permissions,
   rolePermissions,
   userRoles,
+
 } from "../schema/rbac";
+
+import { users } from "../schema/users";
 
 import type {
   PublicationActor,
@@ -46,6 +50,7 @@ export async function resolvePublicationActor(
           permissions.key,
       })
       .from(userRoles)
+      .innerJoin(users, eq(userRoles.userId, users.id))
       .innerJoin(
         rolePermissions,
         eq(
@@ -62,9 +67,9 @@ export async function resolvePublicationActor(
         ),
       )
       .where(
-        eq(
-          userRoles.userId,
-          userId,
+        and(
+          eq(userRoles.userId, userId),
+          eq(users.isActive, true),
         ),
       );
 

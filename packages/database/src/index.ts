@@ -6,3 +6,5 @@ export * from "./publication";
 export * from "./repositories/student-results";
 
 export * from "./repositories/student-intelligence";
+
+export * from "./repositories/admin-access";

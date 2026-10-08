@@ -54,12 +54,22 @@ describe("application workspace routes", () => {
       "admin/analytics/page.tsx",
       "admin/seo/page.tsx",
       "admin/monetization/page.tsx",
-      "admin/users/page.tsx",
       "admin/support/page.tsx",
       "admin/settings/page.tsx",
     ]) {
       expect(existsSync(new URL(route, root))).toBe(true);
       expect(read(route)).toContain("AdminSectionPage");
     }
+
+    const usersRoute = "admin/users/page.tsx";
+    expect(existsSync(new URL(usersRoute, root))).toBe(true);
+
+    const usersPage = read(usersRoute);
+    expect(usersPage).toContain("<AdminShell");
+    expect(usersPage).toContain(
+      'requireAdminWorkspaceAccess("/admin/users")',
+    );
+    expect(usersPage).toContain("listAdminUsers");
+    expect(usersPage).toContain("listAccessAudit");
   });
 });

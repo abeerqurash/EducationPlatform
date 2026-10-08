@@ -4,12 +4,17 @@ import { revalidatePath } from "next/cache";
 
 import {
   archiveStudyGoal,
+  restoreStudyGoal,
+  deleteManualStudySession,
   createStudyGoal,
+  updateStudyGoal,
+  recordStudyActivity,
   saveStudentProfile,
   setStudyGoalCompleted,
 } from "@education/database";
 
 import { auth } from "@/auth";
+import { validCalendarDate, validIanaTimezone, validStudyMinutes } from "@/lib/study-input-validation";
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -34,11 +39,9 @@ export async function createStudyGoalAction(formData: FormData) {
     title.length < 2 ||
     title.length > 160 ||
     description.length > 1000 ||
-    (targetDate && !/^\d{4}-\d{2}-\d{2}$/.test(targetDate)) ||
+    (targetDate && !validCalendarDate(targetDate)) ||
     (targetMinutes !== null &&
-      (!Number.isInteger(targetMinutes) ||
-       targetMinutes < 1 ||
-       targetMinutes > 100000))
+      (!validStudyMinutes(targetMinutes, 100000) || targetMinutes === 0))
   ) {
     return;
   }
@@ -53,6 +56,39 @@ export async function createStudyGoalAction(formData: FormData) {
 
   revalidatePath("/dashboard/study-plan");
   revalidatePath("/dashboard/progress");
+}
+
+export async function updateStudyGoalAction(formData: FormData) {
+  const id = await userId();
+  const goalId = String(formData.get("goalId") ?? "").trim();
+  if (!id || !UUID.test(goalId)) return;
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const targetDate = String(formData.get("targetDate") ?? "").trim();
+  const rawMinutes = String(formData.get("targetMinutes") ?? "").trim();
+  const targetMinutes = rawMinutes ? Number(rawMinutes) : null;
+  if (
+    title.length < 2 || title.length > 160 ||
+    description.length > 1000 ||
+    (targetDate && !validCalendarDate(targetDate)) ||
+    (targetMinutes !== null &&
+      (!validStudyMinutes(targetMinutes, 100000) || targetMinutes === 0))
+  ) return;
+
+  const ok = await updateStudyGoal({
+    userId: id,
+    goalId,
+    title,
+    description: description || null,
+    targetDate: targetDate || null,
+    targetMinutes,
+  });
+  if (ok) {
+    revalidatePath("/dashboard/study-plan");
+    revalidatePath("/dashboard/progress");
+  }
+  return;
 }
 
 export async function toggleStudyGoalAction(goalId: string, completed: boolean) {
@@ -81,11 +117,8 @@ export async function saveStudentProfileAction(formData: FormData) {
   const reminders = formData.get("emailStudyReminders") === "on";
 
   if (
-    timezone.length < 1 ||
-    timezone.length > 80 ||
-    !Number.isInteger(minutes) ||
-    minutes < 0 ||
-    minutes > 10080
+    !validIanaTimezone(timezone) ||
+    !validStudyMinutes(minutes, 10080)
   ) {
     return;
   }
@@ -101,3 +134,46 @@ export async function saveStudentProfileAction(formData: FormData) {
   revalidatePath("/dashboard/progress");
 }
 
+
+/** Record an actual, completed study session; no timer or time claim is inferred. */
+export async function recordStudySessionAction(formData: FormData): Promise<void> {
+  const id = await userId();
+  if (!id) return;
+  const title = String(formData.get("title") ?? "").trim();
+  const rawMinutes = String(formData.get("durationMinutes") ?? "").trim();
+  const durationMinutes = Number(rawMinutes);
+  if (
+    title.length < 2 || title.length > 180 ||
+    !rawMinutes || !validStudyMinutes(durationMinutes, 720) || durationMinutes === 0
+  ) return;
+
+  await recordStudyActivity({
+    userId: id,
+    activityType: "study_session",
+    title,
+    durationMinutes,
+    metadata: { source: "manual_study_log" },
+  });
+  revalidatePath("/dashboard/progress");
+  revalidatePath("/dashboard");
+}
+
+/** A user may undo their own manual entry, never a calculator-generated event. */
+export async function deleteManualStudySessionAction(formData: FormData): Promise<void> {
+  const id = await userId();
+  const activityId = String(formData.get("activityId") ?? "").trim();
+  if (!id || !UUID.test(activityId)) return;
+  const deleted = await deleteManualStudySession(id, activityId);
+  if (!deleted) return;
+  revalidatePath("/dashboard/progress");
+  revalidatePath("/dashboard");
+}
+
+export async function restoreStudyGoalAction(formData: FormData): Promise<void> {
+  const id = await userId();
+  const goalId = String(formData.get("goalId") ?? "").trim();
+  if (!id || !UUID.test(goalId)) return;
+  if (!await restoreStudyGoal(id, goalId)) return;
+  revalidatePath("/dashboard/study-plan");
+  revalidatePath("/dashboard/progress");
+}

@@ -1,7 +1,7 @@
-import { getStudentWorkspace } from "@education/database";
+import { getArchivedStudyGoals, getStudentWorkspace } from "@education/database";
 import { redirect } from "next/navigation";
 
-import { createStudyGoalAction } from "@/app/actions/student-intelligence";
+import { createStudyGoalAction, restoreStudyGoalAction, updateStudyGoalAction } from "@/app/actions/student-intelligence";
 import { auth } from "@/auth";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
@@ -17,7 +17,7 @@ export default async function StudyPlanPage() {
     redirect("/login?callbackUrl=%2Fdashboard%2Fstudy-plan");
   }
 
-  const workspace = await getStudentWorkspace(userId);
+  const [workspace, archivedGoals] = await Promise.all([getStudentWorkspace(userId), getArchivedStudyGoals(userId)]);
 
   return (
     <DashboardShell userName={session.user.name} userEmail={session.user.email} active="Study plan">
@@ -70,7 +70,28 @@ export default async function StudyPlanPage() {
                           {goal.targetMinutes ? ` · ${goal.targetMinutes} min` : ""}
                         </p>
                       </div>
-                      <StudyGoalControls goalId={goal.id} completed={Boolean(goal.completedAt)} />
+                      <div className="space-y-3">
+                        <StudyGoalControls goalId={goal.id} completed={Boolean(goal.completedAt)} />
+                        <details className="rounded-2xl border border-slate-200 p-3">
+                          <summary className="cursor-pointer text-xs font-bold text-slate-700">Edit goal</summary>
+                          <form action={updateStudyGoalAction} className="mt-3 space-y-3">
+                            <input type="hidden" name="goalId" value={goal.id} />
+                            <label className="block text-xs font-bold text-slate-700">Title
+                              <input name="title" required minLength={2} maxLength={160} defaultValue={goal.title} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
+                            </label>
+                            <label className="block text-xs font-bold text-slate-700">Notes
+                              <textarea name="description" maxLength={1000} rows={2} defaultValue={goal.description ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
+                            </label>
+                            <label className="block text-xs font-bold text-slate-700">Target date
+                              <input name="targetDate" type="date" defaultValue={goal.targetDate ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
+                            </label>
+                            <label className="block text-xs font-bold text-slate-700">Target minutes
+                              <input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
+                            </label>
+                            <button type="submit" className="button button--secondary">Save changes</button>
+                          </form>
+                        </details>
+                      </div>
                     </div>
                   </article>
                 ))}
@@ -82,6 +103,24 @@ export default async function StudyPlanPage() {
             )}
           </Panel>
         </div>
+        <Panel title="Archived study goals" description="Restore a goal to your active plan. Showing up to 50 recently archived goals.">
+          {archivedGoals.length ? (
+            <ul className="divide-y divide-slate-100">
+              {archivedGoals.map((goal) => (
+                <li key={goal.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="break-words text-sm font-bold text-slate-900">{goal.title}</p>
+                    <p className="mt-1 text-xs text-slate-500">{goal.completedAt ? "Completed before archiving" : "Not completed"}</p>
+                  </div>
+                  <form action={restoreStudyGoalAction}>
+                    <input type="hidden" name="goalId" value={goal.id} />
+                    <button type="submit" className="button button--secondary" aria-label={`Restore goal: ${goal.title}`}>Restore</button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : <p role="status" className="text-sm text-slate-500">No archived goals yet.</p>}
+        </Panel>
       </div>
     </DashboardShell>
   );
