@@ -10,6 +10,7 @@ import { SiteButton } from "@/components/app-shell/site-button";
 import { ThemedDateRange } from "@/components/shared/themed-date-range";
 import { ThemedFilterPill } from "@/components/shared/themed-filter-pill";
 import { historyPageWindow, historyResultRange } from "@/components/shared/history-page-window";
+import { HighlightSearchMatch } from "@/components/shared/highlight-search-match";
 
 export const metadata = { title: "Test prep" };
 
@@ -169,8 +170,8 @@ export default async function TestPrepPage({ searchParams }: {
               {history.rows.map((result) => (
                 <li key={result.id} className="flex flex-col justify-between gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-start">
                   <div className="min-w-0">
-                    <p className="text-sm font-extrabold text-slate-900">{result.toolName}</p>
-                    <p className="mt-1 break-words text-xs text-slate-600">{result.summary}</p>
+                    <p className="text-sm font-extrabold text-slate-900"><HighlightSearchMatch text={result.toolName} query={history.q} /></p>
+                    <p className="mt-1 break-words text-xs text-slate-600"><HighlightSearchMatch text={result.summary} query={history.q} /></p>
                     <p className="mt-1 text-[11px] text-slate-400">{result.createdAt.toLocaleDateString("en-GB", { timeZone: "UTC" })} UTC{result.calculatorVersion ? ` · Calculator ${result.calculatorVersion}` : ""}</p>
                   </div>
                   <span className="shrink-0 self-start rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">{/(^|-)sat(-|$)/.test(result.toolSlug) ? "SAT" : "ACT"}</span>
