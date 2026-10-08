@@ -11,6 +11,7 @@ import { ThemedDateRange } from "@/components/shared/themed-date-range";
 import { ThemedFilterPill } from "@/components/shared/themed-filter-pill";
 import { historyPageWindow, historyResultRange } from "@/components/shared/history-page-window";
 import { HighlightSearchMatch } from "@/components/shared/highlight-search-match";
+import { CopyResultSummary } from "@/components/shared/copy-result-summary";
 
 export const metadata = { title: "Test prep" };
 
@@ -178,7 +179,10 @@ export default async function TestPrepPage({ searchParams }: {
                     <p className="mt-1 break-words text-xs text-slate-600"><HighlightSearchMatch text={result.summary} query={history.q} /></p>
                     <p className="mt-1 text-[11px] text-slate-400">{result.createdAt.toLocaleDateString("en-GB", { timeZone: "UTC" })} UTC{result.calculatorVersion ? ` · Calculator ${result.calculatorVersion}` : ""}</p>
                   </div>
-                  <span className="shrink-0 self-start rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">{/(^|-)sat(-|$)/.test(result.toolSlug) ? "SAT" : "ACT"}</span>
+                  <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+                    <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">{/(^|-)sat(-|$)/.test(result.toolSlug) ? "SAT" : "ACT"}</span>
+                    <CopyResultSummary summary={result.summary} />
+                  </div>
                 </li>
               ))}
             </ol>
