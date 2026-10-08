@@ -4,6 +4,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 const repository = read("../repositories/student-intelligence.ts");
 const actions = read("../../../../apps/web/src/app/actions/student-intelligence.ts");
 const page = read("../../../../apps/web/src/app/dashboard/study-plan/page.tsx");
+const workspace = read("../../../../apps/web/src/components/dashboard/study-goal-workspace.tsx");
 describe("owned study goal edits", () => {
   it("enforces ownership and non-archived state in the update query", () => {
     const update = repository.split("export async function updateStudyGoal")[1].split("export async function setStudyGoalCompleted")[0];
@@ -17,9 +18,10 @@ describe("owned study goal edits", () => {
     expect(actions).toContain('revalidatePath("/dashboard/progress")');
   });
   it("provides an accessible inline edit form with existing values", () => {
-    expect(page).toContain("<details");
-    expect(page).toContain("Edit goal");
-    expect(page).toContain("action={updateStudyGoalAction}");
-    expect(page).toContain("defaultValue={goal.title}");
+    expect(page).toContain("<StudyGoalWorkspace");
+    expect(workspace).toContain("<details");
+    expect(workspace).toContain("Edit goal");
+    expect(workspace).toContain("action={updateStudyGoalAction}");
+    expect(workspace).toContain("defaultValue={goal.title}");
   });
 });

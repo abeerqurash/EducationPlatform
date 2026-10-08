@@ -9,6 +9,7 @@ const repository = read("../repositories/student-intelligence.ts");
 const actions = read("../../../../apps/web/src/app/actions/student-intelligence.ts");
 const resultActions = read("../../../../apps/web/src/app/actions/student-results.ts");
 const plan = read("../../../../apps/web/src/app/dashboard/study-plan/page.tsx");
+const goalWorkspace = read("../../../../apps/web/src/components/dashboard/study-goal-workspace.tsx");
 const progress = read("../../../../apps/web/src/app/dashboard/progress/page.tsx");
 const settings = read("../../../../apps/web/src/app/dashboard/settings/page.tsx");
 
@@ -29,7 +30,8 @@ describe("student intelligence workspace", () => {
 
   it("promotes study plan progress and settings from placeholders", () => {
     expect(plan).toContain("createStudyGoalAction");
-    expect(plan).toContain("StudyGoalControls");
+    expect(plan).toContain("<StudyGoalWorkspace");
+    expect(goalWorkspace).toContain("<StudyGoalControls");
     expect(progress).toContain("getStudyProgress");
     expect(progress).toContain("getStudentResultOverview");
     expect(settings).toContain("saveStudentProfileAction");

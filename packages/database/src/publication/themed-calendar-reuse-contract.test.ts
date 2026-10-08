@@ -15,7 +15,9 @@ describe("calendar and dashboard filter reuse", () => {
   });
   it("keeps study goal date forms on the themed picker", () => {
     const study = read("app/dashboard/study-plan/page.tsx");
-    expect(study.match(/<ThemedFormDate/g)?.length).toBe(2);
+    const workspace = read("components/dashboard/study-goal-workspace.tsx");
+    expect(study.match(/<ThemedFormDate/g)?.length).toBe(1);
+    expect(workspace.match(/<ThemedFormDate/g)?.length).toBe(1);
     expect(read("components/shared/themed-form-date.tsx")).toContain('type="hidden" name={name}');
   });
 });

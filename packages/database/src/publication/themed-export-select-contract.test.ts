@@ -9,7 +9,7 @@ describe("shared custom export dropdown", () => {
     expect(source).toContain('type="hidden" name={name}');
     expect(source).toContain('role="listbox"');
     expect(source).toContain('role="option"');
-    expect(source).toContain('aria-selected={index === selected}');
+    expect(source).toContain('aria-selected={index === activeIndex}');
     expect(source).not.toContain("<select");
   });
   it("supports keyboard navigation, escape, focus return, and outside dismissal", () => {

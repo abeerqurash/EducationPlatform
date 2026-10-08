@@ -1,13 +1,13 @@
 import { getArchivedStudyGoals, getStudentWorkspace } from "@education/database";
 import { redirect } from "next/navigation";
 
-import { createStudyGoalAction, restoreStudyGoalAction, updateStudyGoalAction } from "@/app/actions/student-intelligence";
+import { createStudyGoalAction, restoreStudyGoalAction } from "@/app/actions/student-intelligence";
 import { auth } from "@/auth";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
-import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
+import { StudyGoalWorkspace } from "@/components/dashboard/study-goal-workspace";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { summarizeGoalHealth } from "./goal-insights";
 
@@ -122,51 +122,7 @@ export default async function StudyPlanPage() {
             </form>
           </Panel>
 
-          <Panel title={`${workspace.goals.length} active goals`} description="Completed goals stay visible until you archive them.">
-            {workspace.goals.length ? (
-              <div className="divide-y divide-slate-100">
-                {workspace.goals.map((goal) => (
-                  <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                      <div>
-                        <h2 className="text-sm font-extrabold text-slate-950">{goal.title}</h2>
-                        {goal.description ? <p className="mt-1 text-xs leading-5 text-slate-500">{goal.description}</p> : null}
-                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                          {goal.completedAt ? "Completed" : "Active"}
-                          {goal.targetDate ? ` · Target ${goal.targetDate}` : ""}
-                          {goal.targetMinutes ? ` · ${goal.targetMinutes} min` : ""}
-                        </p>
-                      </div>
-                      <div className="space-y-3">
-                        <StudyGoalControls goalId={goal.id} completed={Boolean(goal.completedAt)} />
-                        <details className="rounded-2xl border border-slate-200 p-3">
-                          <summary className="cursor-pointer text-xs font-bold text-slate-700">Edit goal</summary>
-                          <form action={updateStudyGoalAction} className="mt-3 space-y-3">
-                            <input type="hidden" name="goalId" value={goal.id} />
-                            <label className="block text-xs font-bold text-slate-700">Title
-                              <input name="title" required minLength={2} maxLength={160} defaultValue={goal.title} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
-                            </label>
-                            <label className="block text-xs font-bold text-slate-700">Notes
-                              <textarea name="description" maxLength={1000} rows={2} defaultValue={goal.description ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" />
-                            </label>
-                            <ThemedFormDate name="targetDate" label="Target date" defaultValue={goal.targetDate ?? ""} />
-                            <label className="block text-xs font-bold text-slate-700">Target minutes
-                              <input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 h-[50px] w-full rounded-xl border border-slate-200 px-3 text-sm" />
-                            </label>
-                            <button type="submit" className="button button--secondary">Save changes</button>
-                          </form>
-                        </details>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">
-                No goals yet. Create your first study target.
-              </p>
-            )}
-          </Panel>
+          <StudyGoalWorkspace goals={workspace.goals} todayUtc={todayUtc} />
         </div>
         <Panel title="Archived study goals" description="Restore a goal to your active plan. Showing up to 50 recently archived goals.">
           {archivedGoals.length ? (
