@@ -13,3 +13,17 @@ export function validateBulkGoalIds(value: unknown): string[] | null {
 export function bulkSelectionOnPage(selected: readonly string[], pageIds: readonly string[]): boolean {
   return pageIds.length > 0 && pageIds.every(id => selected.includes(id));
 }
+
+/** Keep only currently eligible goals, retaining order and the server batch limit. */
+export function reconcileBulkSelection(selected: readonly string[], eligible: readonly string[]): string[] {
+  const allowed = new Set(eligible);
+  return [...new Set(selected)].filter(id => allowed.has(id)).slice(0, MAX_BULK_GOALS);
+}
+
+/** A readable confirmation preview without exposing goal notes. */
+export function describeBulkSelection(titles: readonly string[], operation: GoalBulkOperation): string {
+  const verb = operation === "archive" ? "Archive" : operation === "reopen" ? "Reopen" : "Complete";
+  const preview = titles.slice(0, 5).map(title => `• ${title.slice(0, 100)}`).join("\n");
+  const remainder = titles.length > 5 ? `\n…and ${titles.length - 5} more.` : "";
+  return `${verb} ${titles.length} selected goal(s)?\n\n${preview}${remainder}\n\nThis updates saved goals in your account.`;
+}

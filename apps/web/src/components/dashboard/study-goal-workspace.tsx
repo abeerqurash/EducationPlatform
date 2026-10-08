@@ -7,7 +7,7 @@ import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
-import { bulkSelectionOnPage, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
+import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
 import { paginateGoals } from "./study-goal-pagination";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
@@ -56,16 +56,19 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const pagination = paginateGoals(visible, page, Number(pageSize));
   const pageIds = pagination.items.map(goal => goal.id);
   const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
+  const selectedGoals = visible.filter(goal => selectedIds.includes(goal.id));
+  const eligibleIds = visible.map(goal => goal.id);
   const toggleGoal = (id: string, checked: boolean) => setSelectedIds(previous => checked ? previous.includes(id) || previous.length >= MAX_BULK_GOALS ? previous : [...previous, id] : previous.filter(item => item !== id));
   const togglePage = (checked: boolean) => setSelectedIds(previous => checked ? [...previous, ...pageIds.filter(id => !previous.includes(id))].slice(0, MAX_BULK_GOALS) : previous.filter(id => !pageIds.includes(id)));
   const applyBulk = async () => {
     if (!selectedIds.length || bulkBusy) return;
-    const message = bulkOperation === "archive" ? "Archive" : bulkOperation === "complete" ? "Complete" : "Reopen";
-    if (!window.confirm(`${message} ${selectedIds.length} selected goal(s)? This changes their saved status.`)) return;
+    const safeIds = reconcileBulkSelection(selectedIds, eligibleIds);
+    if (!safeIds.length) { setSelectedIds([]); return; }
+    if (!window.confirm(describeBulkSelection(selectedGoals.map(goal => goal.title), bulkOperation))) return;
     setBulkBusy(true);
     setBulkMessage("");
     try {
-      const result = await bulkStudyGoalAction(selectedIds, bulkOperation);
+      const result = await bulkStudyGoalAction(safeIds, bulkOperation);
       if (!result.ok) { setBulkMessage("Bulk update could not be completed."); return; }
       setBulkMessage(`${result.updated} goal(s) updated. Refreshing the workspace…`);
       setSelectedIds([]);
@@ -88,12 +91,12 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
     // Defer revocation until the browser has initiated the download.
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
-  const changeFilter = (callback: (value: string) => void) => (value: string) => { callback(value); setPage(1); };
+  const changeFilter = (callback: (value: string) => void) => (value: string) => { callback(value); setPage(1); setSelectedIds([]); setBulkMessage(""); };
   return (
     <Panel title={`${goals.length} active goals`} description="Find, review and edit your goals. Completed goals remain available until archived.">
       <div className="mb-5 grid gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] p-4 sm:grid-cols-2 xl:grid-cols-4">
         <label className="block text-xs font-bold text-[#171912]">Search goals
-          <input value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} placeholder="Title or notes" type="search" className="mt-1 h-[44px] w-full rounded-full border border-[#dfe0d5] bg-white px-4 text-xs text-[#171912] outline-offset-2 focus-visible:outline-2 focus-visible:outline-[#171912]" />
+          <input value={query} onChange={event => { setQuery(event.target.value); setPage(1); setSelectedIds([]); setBulkMessage(""); }} placeholder="Title or notes" type="search" className="mt-1 h-[44px] w-full rounded-full border border-[#dfe0d5] bg-white px-4 text-xs text-[#171912] outline-offset-2 focus-visible:outline-2 focus-visible:outline-[#171912]" />
         </label>
         <ThemedExportSelect name="goalWorkspaceStatus" label="Status" defaultValue="all" options={statusOptions} value={status} onValueChange={changeFilter(setStatus)} />
         <ThemedExportSelect name="goalWorkspaceDeadline" label="Deadline" defaultValue="all" options={deadlineOptions} value={deadline} onValueChange={changeFilter(setDeadline)} />
@@ -102,7 +105,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       </div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
         <p role="status" aria-live="polite">Showing {pagination.start}–{pagination.end} of {visible.length} matching goals ({goals.length} total)</p>
-        <button type="button" className="font-bold text-[#171912] underline underline-offset-4" onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); }}>Clear filters</button>
+        <button type="button" className="font-bold text-[#171912] underline underline-offset-4" onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); setSelectedIds([]); setBulkMessage(""); }}>Clear filters</button>
       </div>
       <section aria-label="Export filtered study goals" className="mb-5 flex flex-wrap items-center gap-2">
         <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
@@ -110,9 +113,10 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       </section>
       <section aria-label="Bulk study goal actions" className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
         <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
-          <input type="checkbox" checked={selectedOnPage} disabled={!pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={event => togglePage(event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select current page
+          <input type="checkbox" checked={selectedOnPage} disabled={bulkBusy || !pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={event => togglePage(event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select current page
         </label>
-        <p className="text-xs text-slate-600" role="status">{selectedIds.length} selected (maximum {MAX_BULK_GOALS})</p>
+        <p className="text-xs text-slate-600" role="status" aria-live="polite">{selectedIds.length} selected (maximum {MAX_BULK_GOALS}); {selectedGoals.length} match the current view</p>
+        {selectedGoals.length > 0 && <details className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Review selected goals ({selectedGoals.length})</summary><ul className="mt-2 list-inside list-disc space-y-1">{selectedGoals.slice(0, 10).map(goal => <li key={goal.id} className="break-words">{goal.title}</li>)}</ul>{selectedGoals.length > 10 && <p className="mt-2">And {selectedGoals.length - 10} more selected goals.</p>}</details>}
         <ThemedExportSelect name="goalBulkOperation" label="Bulk action" defaultValue="complete" value={bulkOperation} onValueChange={value => setBulkOperation(value as GoalBulkOperation)} options={[{ value: "complete", label: "Mark completed" }, { value: "reopen", label: "Mark open" }, { value: "archive", label: "Archive selected" }]} />
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={applyBulk} className="button button--secondary disabled:cursor-not-allowed disabled:opacity-40">{bulkBusy ? "Updating…" : "Apply to selected"}</button>
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className="text-xs font-bold underline disabled:opacity-40">Clear selection</button>
