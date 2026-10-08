@@ -8,6 +8,7 @@ import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
 import { paginateGoals } from "./study-goal-pagination";
+import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
 type Goal = {
   id: string;
@@ -48,6 +49,21 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
     return filterAndSortGoals(goals, filter, todayUtc);
   }, [goals, query, status, deadline, sort, todayUtc]);
   const pagination = paginateGoals(visible, page, Number(pageSize));
+  const downloadFiltered = (format: GoalExportFormat) => {
+    if (!visible.length) return;
+    const now = new Date().toISOString();
+    const content = formatFilteredGoals(visible, { query, status, deadline, sort }, format, now);
+    const mime = format === "json" ? "application/json" : format === "csv" ? "text/csv" : "text/plain";
+    const url = URL.createObjectURL(new Blob(["\uFEFF", content], { type: `${mime};charset=utf-8` }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filteredGoalFilename(format, now.slice(0, 10));
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    // Defer revocation until the browser has initiated the download.
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
   const changeFilter = (callback: (value: string) => void) => (value: string) => { callback(value); setPage(1); };
   return (
     <Panel title={`${goals.length} active goals`} description="Find, review and edit your goals. Completed goals remain available until archived.">
@@ -64,6 +80,10 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
         <p role="status" aria-live="polite">Showing {pagination.start}–{pagination.end} of {visible.length} matching goals ({goals.length} total)</p>
         <button type="button" className="font-bold text-[#171912] underline underline-offset-4" onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); }}>Clear filters</button>
       </div>
+      <section aria-label="Export filtered study goals" className="mb-5 flex flex-wrap items-center gap-2">
+        <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
+        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadFiltered(format)} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+      </section>
       {visible.length ? <div className="divide-y divide-slate-100">{pagination.items.map(goal => (
         <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
