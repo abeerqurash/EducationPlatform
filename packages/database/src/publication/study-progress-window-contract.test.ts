@@ -3,9 +3,9 @@ import { readFileSync } from "node:fs";
 const repository = readFileSync(new URL("../repositories/student-intelligence.ts", import.meta.url), "utf8");
 const page = readFileSync(new URL("../../../../apps/web/src/app/dashboard/progress/page.tsx", import.meta.url), "utf8");
 describe("study progress calendar window and accessibility", () => {
-  it("excludes future-dated activities from all five weekly and monthly queries", () => {
+  it("excludes future-dated activities from all weekly, monthly, and export queries", () => {
     expect(repository).toContain("until.setUTCDate(until.getUTCDate() + 1)");
-    expect(repository.split("lt(studyActivities.createdAt, until)").length - 1).toBe(5);
+    expect(repository.split("lt(studyActivities.createdAt, until)").length - 1).toBeGreaterThanOrEqual(7);
   });
   it("exposes every bar as a labeled accessible graphic", () => {
     expect(page).toContain('role="group" aria-label="Daily recorded study minutes"');

@@ -49,14 +49,21 @@ export default async function ProgressPage() {
 
         <section aria-label="Export study progress" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-5 py-4">
           <div>
-            <p className="text-sm font-extrabold text-[#171912]">Download your 30-day progress</p>
-            <p className="mt-1 text-xs text-slate-600">Export the 30 UTC calendar days shown below, including zero-activity days. Your records stay unchanged.</p>
+            <p className="text-sm font-extrabold text-[#171912]">Download your study progress</p>
+            <p className="mt-1 text-xs text-slate-600">Choose 7, 30 or 90 UTC days. Zero-activity days are included and saved records remain unchanged.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <a href="/dashboard/progress/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export CSV</a>
-            <a href="/dashboard/progress/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export TXT</a>
-            <a href="/dashboard/progress/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Export JSON</a>
-          </div>
+          <form method="GET" action="/dashboard/progress/export-csv" className="flex flex-wrap items-end gap-2">
+            <label className="flex flex-col gap-1 text-xs font-bold text-[#171912]">Period
+              <select name="days" defaultValue="30" className="min-h-[44px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+              </select>
+            </label>
+            <button type="submit" formAction="/dashboard/progress/export-csv" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export CSV</button>
+            <button type="submit" formAction="/dashboard/progress/export-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export TXT</button>
+            <button type="submit" formAction="/dashboard/progress/export-json" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912]">Export JSON</button>
+          </form>
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

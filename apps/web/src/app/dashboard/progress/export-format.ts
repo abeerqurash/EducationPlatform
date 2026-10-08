@@ -9,7 +9,7 @@ export type ProgressExport = {
 export function formatProgressJson(progress: ProgressExport): string {
   return JSON.stringify({
     schemaVersion: 1,
-    exportType: "study-progress-30-day",
+    exportType: `study-progress-${progress.daily.length}-day`,
     timezone: "UTC",
     periodStart: progress.daily[0]?.day ?? null,
     periodEnd: progress.daily.at(-1)?.day ?? null,
@@ -37,7 +37,7 @@ export function formatProgressCsv(progress: ProgressExport): string {
 
 /** Accessible plain-text daily study log, including days without activity. */
 export function formatProgressText(progress: ProgressExport): string {
-  const lines = ["EducationPlatform — 30-Day Study Progress", "Timezone: UTC",
+  const lines = [`EducationPlatform — ${progress.daily.length}-Day Study Progress`, "Timezone: UTC",
     `Period: ${progress.daily[0]?.day ?? "N/A"} to ${progress.daily.at(-1)?.day ?? "N/A"}`,
     `Total recorded minutes: ${progress.totalMinutes}`,
     `Active days: ${progress.activeDays}`,

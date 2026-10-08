@@ -296,3 +296,51 @@ export async function getStudyMonthlyTrend(userId: string) {
     activeDays: summary[0]?.activeDays ?? 0,
   };
 }
+
+
+/** Bounded, account-scoped UTC export windows; dashboard charts retain their 30-day source. */
+export async function getStudyProgressExportWindow(userId: string, days: 7 | 30 | 90) {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const since = new Date(today);
+  since.setUTCDate(since.getUTCDate() - (days - 1));
+  const until = new Date(today);
+  until.setUTCDate(until.getUTCDate() + 1);
+
+  const [summary, rows] = await Promise.all([
+    db.select({
+      minutes: sql<number>`coalesce(sum(${studyActivities.durationMinutes}), 0)::int`,
+      activities: sql<number>`count(*)::int`,
+      activeDays: sql<number>`count(distinct date(${studyActivities.createdAt} at time zone 'UTC'))::int`,
+    }).from(studyActivities).where(and(
+      eq(studyActivities.userId, userId),
+      gte(studyActivities.createdAt, since),
+      lt(studyActivities.createdAt, until),
+    )),
+    db.select({
+      day: sql<string>`(date(${studyActivities.createdAt} at time zone 'UTC'))::text`,
+      minutes: sql<number>`coalesce(sum(${studyActivities.durationMinutes}), 0)::int`,
+      activities: sql<number>`count(*)::int`,
+    }).from(studyActivities).where(and(
+      eq(studyActivities.userId, userId),
+      gte(studyActivities.createdAt, since),
+      lt(studyActivities.createdAt, until),
+    )).groupBy(sql`date(${studyActivities.createdAt} at time zone 'UTC')`)
+      .orderBy(sql`date(${studyActivities.createdAt} at time zone 'UTC')`),
+  ]);
+
+  const byDay = new Map(rows.map((row) => [row.day, row]));
+  const daily = Array.from({ length: days }, (_, offset) => {
+    const date = new Date(since);
+    date.setUTCDate(since.getUTCDate() + offset);
+    const day = date.toISOString().slice(0, 10);
+    const value = byDay.get(day);
+    return { day, minutes: value?.minutes ?? 0, activities: value?.activities ?? 0 };
+  });
+  return {
+    daily,
+    totalMinutes: summary[0]?.minutes ?? 0,
+    activityCount: summary[0]?.activities ?? 0,
+    activeDays: summary[0]?.activeDays ?? 0,
+  };
+}

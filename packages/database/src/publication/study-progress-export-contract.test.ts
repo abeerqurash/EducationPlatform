@@ -10,7 +10,7 @@ describe("30-day study progress export", () => {
     for (const format of ["csv", "json"]) {
       const route = source(`export-${format}/route.ts`);
       expect(route).toContain("await auth()");
-      expect(route).toContain("getStudyMonthlyTrend(userId)");
+      expect(route).toContain("getStudyProgressExportWindow(userId, days)");
       expect(route).toContain('"Cache-Control": "private, no-store"');
       expect(route).toContain('"X-Content-Type-Options": "nosniff"');
     }
