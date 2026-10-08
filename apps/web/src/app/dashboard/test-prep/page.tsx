@@ -151,7 +151,10 @@ export default async function TestPrepPage({ searchParams }: {
           </nav>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-slate-500">Exports include up to 1,000 matching records in the selected order.</p>
-            <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered CSV</Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered CSV</Link>
+              <Link href={`/dashboard/test-prep/export-json?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered JSON</Link>
+            </div>
           </div>
           {activeFilterChips.length > 0 ? (
             <section aria-label="Active history filters" className="mb-4 flex flex-wrap items-center gap-2">
