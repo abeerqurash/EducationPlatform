@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type CopyKind = "summary" | "details";
-type CopyStatus = "idle" | "summary" | "details" | "error";
+type CopyStatus = "idle" | "summary" | "details" | "download" | "error";
 
 /** Format already-authorized, displayed fields; never request additional private data. */
 export function formatSavedResultDetails(input: {
@@ -18,6 +18,15 @@ export function formatSavedResultDetails(input: {
     `Saved: ${input.savedDateUtc} UTC`,
     ...(input.calculatorVersion ? [`Calculator version: ${input.calculatorVersion}`] : []),
   ].join("\n");
+}
+
+/** Stable filename for a browser-generated text file; no paths or unsafe characters. */
+export function savedResultFilename(toolName: string, savedDateUtc: string): string {
+  const slug = toolName.toLowerCase().normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "exam-result";
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(savedDateUtc) ? savedDateUtc : "undated";
+  return `${slug}-${date}.txt`;
 }
 
 /** Copies an existing saved summary or its displayed details without modifying the result. */
@@ -51,6 +60,29 @@ export function CopyResultSummary({ summary, details }: {
     }
   };
 
+  const download = () => {
+    if (!details) return;
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    try {
+      const content = formatSavedResultDetails({ ...details, summary });
+      const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
+      try {
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = savedResultFilename(details.toolName, details.savedDateUtc);
+        anchor.click();
+        setStatus("download");
+      } finally {
+        // Revoke after the browser has initiated the download.
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      resetTimer.current = setTimeout(() => setStatus("idle"), 2500);
+    } catch {
+      setStatus("error");
+      resetTimer.current = setTimeout(() => setStatus("idle"), 3500);
+    }
+  };
+
   const buttonClass = "inline-flex min-h-9 items-center justify-center rounded-full border border-[#dfe0d5] bg-white px-3 text-[11px] font-bold text-[#171912] transition hover:border-[#171912] hover:bg-[#f7f8f2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]";
 
   return (
@@ -65,8 +97,14 @@ export function CopyResultSummary({ summary, details }: {
           {status === "details" ? "Copied" : "Copy details"}
         </button>
       ) : null}
+      {details ? (
+        <button type="button" onClick={download}
+          aria-label="Download saved result details as text" className={buttonClass}>
+          {status === "download" ? "Downloaded" : "Download .txt"}
+        </button>
+      ) : null}
       <span role="status" aria-live="polite" className="text-[11px] text-slate-600">
-        {status === "error" ? "Clipboard unavailable; select the text to copy." : status === "summary" ? "Summary copied" : status === "details" ? "Result details copied" : ""}
+        {status === "error" ? "Copy or download unavailable; select the text to copy." : status === "summary" ? "Summary copied" : status === "details" ? "Result details copied" : status === "download" ? "Text download started" : ""}
       </span>
     </div>
   );
