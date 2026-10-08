@@ -20,7 +20,7 @@ describe("UTC test-prep date presets", () => {
   });
   it("preserves exam selection and resets pagination for preset navigation", () => {
     expect(page).toContain('aria-label="Quick date ranges"');
-    expect(page).toContain('exam: history.exam, ...getTestPrepDatePreset(preset), page: "1"');
+    expect(page).toContain('exam: history.exam, sort: history.sort, ...getTestPrepDatePreset(preset), page: "1"');
     expect(page).toContain('active={activePreset === preset}');
     expect(filterPill).toContain('aria-current={active ? "page" : undefined}');
   });

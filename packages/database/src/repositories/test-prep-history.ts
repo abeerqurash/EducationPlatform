@@ -1,8 +1,9 @@
-import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lt, sql } from "drizzle-orm";
 import { db } from "../client";
 import { studentCalculatorResults } from "../schema";
 
 export type TestPrepExamFilter = "all" | "sat" | "act";
+export type TestPrepSort = "newest" | "oldest";
 export const TEST_PREP_PAGE_SIZE = 15;
 export const TEST_PREP_EXPORT_LIMIT = 1000;
 
@@ -13,13 +14,14 @@ function validDate(value: unknown): value is string {
 }
 
 /** All query inputs are untrusted; date boundaries are inclusive UTC calendar dates. */
-export function normalizeTestPrepHistoryQuery(input: { exam?: string; page?: string; from?: string; to?: string }) {
+export function normalizeTestPrepHistoryQuery(input: { exam?: string; page?: string; from?: string; to?: string; sort?: string }) {
+  const sort: TestPrepSort = input.sort === "oldest" ? "oldest" : "newest";
   const exam: TestPrepExamFilter = input.exam === "sat" || input.exam === "act" ? input.exam : "all";
   const raw = input.page ?? "1";
   const page = /^\d{1,5}$/.test(raw) ? Math.max(1, Math.min(1000, Number(raw))) : 1;
   const from = validDate(input.from) ? input.from : undefined;
   const to = validDate(input.to) ? input.to : undefined;
-  return from && to && from > to ? { exam, page, from: undefined, to: undefined } : { exam, page, from, to };
+  return from && to && from > to ? { exam, page, from: undefined, to: undefined, sort } : { exam, page, from, to, sort };
 }
 
 type HistoryQuery = ReturnType<typeof normalizeTestPrepHistoryQuery>;
@@ -51,7 +53,7 @@ const historyFields = {
 /** A bounded, owner-scoped view of saved exam calculator outputs. */
 export async function getStudentTestPrepHistory(
   userId: string,
-  input: { exam?: string; page?: string; from?: string; to?: string } = {},
+  input: { exam?: string; page?: string; from?: string; to?: string; sort?: string } = {},
 ) {
   const query = normalizeTestPrepHistoryQuery(input);
   const ownership = historyWhere(userId, query);
@@ -61,8 +63,9 @@ export async function getStudentTestPrepHistory(
   const total = countRows[0]?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / TEST_PREP_PAGE_SIZE));
   const page = Math.min(query.page, totalPages);
+  const order = query.sort === "oldest" ? asc : desc;
   const rows = await db.select(historyFields).from(studentCalculatorResults).where(ownership)
-    .orderBy(desc(studentCalculatorResults.createdAt), desc(studentCalculatorResults.id))
+    .orderBy(order(studentCalculatorResults.createdAt), order(studentCalculatorResults.id))
     .limit(TEST_PREP_PAGE_SIZE).offset((page - 1) * TEST_PREP_PAGE_SIZE);
   return { ...query, page, pageSize: TEST_PREP_PAGE_SIZE, total, totalPages, rows };
 }
@@ -70,10 +73,11 @@ export async function getStudentTestPrepHistory(
 /** Export is capped to avoid unbounded downloads; all filters are applied in SQL. */
 export async function getStudentTestPrepExport(
   userId: string,
-  input: { exam?: string; from?: string; to?: string } = {},
+  input: { exam?: string; from?: string; to?: string; sort?: string } = {},
 ) {
   const query = normalizeTestPrepHistoryQuery(input);
+  const order = query.sort === "oldest" ? asc : desc;
   return db.select(historyFields).from(studentCalculatorResults).where(historyWhere(userId, query))
-    .orderBy(desc(studentCalculatorResults.createdAt), desc(studentCalculatorResults.id))
+    .orderBy(order(studentCalculatorResults.createdAt), order(studentCalculatorResults.id))
     .limit(TEST_PREP_EXPORT_LIMIT);
 }

@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 const read = (path: string) => readFileSync(new URL(`../../../../apps/web/src/${path}`, import.meta.url), "utf8");
 describe("calendar and dashboard filter reuse", () => {
-  it("shares the same pill component for exam and date presets", () => {
+  it("shares the same pill component for exam, date presets and sorting", () => {
     const page = read("app/dashboard/test-prep/page.tsx");
-    expect(page.match(/<ThemedFilterPill/g)?.length).toBe(2);
+    expect(page.match(/<ThemedFilterPill/g)?.length).toBe(3);
     expect(read("components/shared/themed-filter-pill.tsx")).toContain('aria-current={active ? "page" : undefined}');
   });
   it("validates actual calendar days and supports keyboard dismissal", () => {

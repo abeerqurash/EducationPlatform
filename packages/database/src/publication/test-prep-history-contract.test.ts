@@ -5,8 +5,8 @@ const repo = readFileSync(new URL("../repositories/test-prep-history.ts", import
 const page = readFileSync(new URL("../../../../apps/web/src/app/dashboard/test-prep/page.tsx", import.meta.url), "utf8");
 describe("test prep history pagination and filtering", () => {
   it("bounds untrusted URL inputs", () => {
-    expect(normalizeTestPrepHistoryQuery({ exam: "act", page: "3" })).toEqual({ exam: "act", page: 3 });
-    expect(normalizeTestPrepHistoryQuery({ exam: "invalid", page: "-5" })).toEqual({ exam: "all", page: 1 });
+    expect(normalizeTestPrepHistoryQuery({ exam: "act", page: "3" })).toMatchObject({ exam: "act", page: 3, sort: "newest" });
+    expect(normalizeTestPrepHistoryQuery({ exam: "invalid", page: "-5" })).toMatchObject({ exam: "all", page: 1, sort: "newest" });
     expect(normalizeTestPrepHistoryQuery({ page: "99999" }).page).toBe(1000);
     expect(normalizeTestPrepHistoryQuery({ page: "1 OR 1=1" }).page).toBe(1);
     expect(TEST_PREP_PAGE_SIZE).toBe(15);
