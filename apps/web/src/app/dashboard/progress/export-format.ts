@@ -34,3 +34,16 @@ export function formatProgressCsv(progress: ProgressExport): string {
   const lines = progress.daily.map((day) => [day.day, day.minutes, day.activities]);
   return "\uFEFF" + [header, ...lines].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
 }
+
+/** Accessible plain-text daily study log, including days without activity. */
+export function formatProgressText(progress: ProgressExport): string {
+  const lines = ["EducationPlatform — 30-Day Study Progress", "Timezone: UTC",
+    `Period: ${progress.daily[0]?.day ?? "N/A"} to ${progress.daily.at(-1)?.day ?? "N/A"}`,
+    `Total recorded minutes: ${progress.totalMinutes}`,
+    `Active days: ${progress.activeDays}`,
+    `Activities: ${progress.activityCount}`, "", "Daily activity:"];
+  for (const day of progress.daily) {
+    lines.push(`${day.day}: ${day.minutes} minutes, ${day.activities} activities`);
+  }
+  return lines.join("\n") + "\n";
+}

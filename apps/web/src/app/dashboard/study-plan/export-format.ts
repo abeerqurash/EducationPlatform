@@ -40,3 +40,16 @@ export function formatStudyGoalsCsv(rows: StudyGoalExportRow[]): string {
 export function formatStudyGoalsJson(rows: StudyGoalExportRow[]): string {
   return JSON.stringify({ schemaVersion: 1, exportType: "study-goals", exportedCount: rows.length, limit: 1000, goals: studyGoalExportRecords(rows) }, null, 2) + "\n";
 }
+
+/** Readable, portable study-goal backup; never includes account identifiers. */
+export function formatStudyGoalsText(rows: StudyGoalExportRow[]): string {
+  const records = studyGoalExportRecords(rows);
+  const lines = ["EducationPlatform — Study Goals", `Exported goals: ${records.length}`, "Includes active, completed and archived goals", ""];
+  for (const [index, goal] of records.entries()) {
+    lines.push(`${index + 1}. ${goal.title}`, `Status: ${goal.status}`,
+      `Description: ${goal.description || "None"}`, `Target date: ${goal.targetDate || "Not set"}`,
+      `Target minutes: ${goal.targetMinutes ?? "Not set"}`, `Completed: ${goal.completedAt || "Not completed"}`,
+      `Created UTC: ${goal.createdAtUtc}`, `Updated UTC: ${goal.updatedAtUtc}`, "");
+  }
+  return lines.join("\n") + "\n";
+}
