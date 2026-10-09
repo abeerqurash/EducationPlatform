@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { summarizeStudyActivities } from "./study-activity-insights";
 import { activityExportFilename, formatStudyActivityExport, type StudyActivityExportFormat } from "./study-activity-export";
 import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
@@ -16,6 +17,7 @@ export function StudyActivityHistory({ activities }: { activities: StudyActivity
   const change = (setter: (value: string) => void) => (value: string) => { setter(value); setPage(1); };
   const filtered = filterStudyActivities(activities, { query, type, sort });
   const pagination = paginateStudyActivities(filtered, page, Number(size));
+  const insights = summarizeStudyActivities(filtered);
   function download(format: StudyActivityExportFormat) {
     if (!filtered.length) return;
     const content = formatStudyActivityExport(filtered, format);
@@ -43,6 +45,26 @@ export function StudyActivityHistory({ activities }: { activities: StudyActivity
       <p role="status" aria-live="polite" className="text-xs font-semibold text-slate-600">Showing {pagination.start}–{pagination.end} of {pagination.total} matching activities (from {activities.length} recent records)</p>
       {(query || type !== "all" || sort !== "newest") && <button type="button" onClick={() => {setQuery("");setType("all");setSort("newest");setPage(1);}} className="inline-flex min-h-10 items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:bg-[#f1f2ea] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Clear filters</button>}
     </div>
+    <section aria-label="Filtered activity insights" className="rounded-2xl border border-[#dfe0d5] bg-white p-4 sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-extrabold text-[#171912]">Activity insights</h3>
+        <span className="rounded-full bg-[#f1f2ea] px-3 py-1 text-xs font-semibold text-[#414638]">{insights.count} matching records</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {([
+          ["Recorded minutes", `${insights.totalMinutes} min`],
+          ["Study sessions", String(insights.sessions)],
+          ["Calculator activities", String(insights.calculators)],
+          ["Average duration", `${insights.averageMinutes} min`],
+        ] as const).map(([label, value]) => <div key={label} className="rounded-xl bg-[#f7f8f2] px-3 py-4"><p className="text-xs font-semibold text-slate-600">{label}</p><p className="mt-1 text-lg font-extrabold tabular-nums text-[#171912]">{value}</p></div>)}
+      </div>
+      <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
+        <p><span className="font-bold text-[#171912]">Active UTC days:</span> {insights.activeDays}</p>
+        <p><span className="font-bold text-[#171912]">Busiest UTC day:</span> {insights.busiestDay ? `${insights.busiestDay} (${insights.busiestDayMinutes} min)` : "No recorded activity"}</p>
+        {insights.longestTitle && <p className="break-words sm:col-span-2"><span className="font-bold text-[#171912]">Longest activity:</span> {insights.longestTitle} ({insights.longestMinutes} min)</p>}
+      </div>
+      <p className="mt-3 text-xs text-slate-500">Insights reflect the current filters across all loaded pages, not the entire account history.</p>
+    </section>
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-4 py-3">
       <div><p className="text-xs font-extrabold text-[#171912]">Export matching activity</p><p className="mt-1 text-xs text-slate-600">Includes all {filtered.length} matching records across pages, in the current sort order.</p></div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Export filtered activity">
