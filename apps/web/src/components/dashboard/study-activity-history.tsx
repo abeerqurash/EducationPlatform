@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { activityExportFilename, formatStudyActivityExport, type StudyActivityExportFormat } from "./study-activity-export";
 import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { filterStudyActivities, paginateStudyActivities, type StudyActivityRow } from "./study-activity-filter";
@@ -15,6 +16,20 @@ export function StudyActivityHistory({ activities }: { activities: StudyActivity
   const change = (setter: (value: string) => void) => (value: string) => { setter(value); setPage(1); };
   const filtered = filterStudyActivities(activities, { query, type, sort });
   const pagination = paginateStudyActivities(filtered, page, Number(size));
+  function download(format: StudyActivityExportFormat) {
+    if (!filtered.length) return;
+    const content = formatStudyActivityExport(filtered, format);
+    const mime = format === "json" ? "application/json;charset=utf-8" : format === "csv" ? "text/csv;charset=utf-8" : "text/plain;charset=utf-8";
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = activityExportFilename(format);
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    // Defer revocation until the browser has processed the download.
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   return <div className="space-y-4">
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <label className="block text-xs font-bold text-[#171912]">Search activity
@@ -27,6 +42,12 @@ export function StudyActivityHistory({ activities }: { activities: StudyActivity
     <div className="flex flex-wrap items-center justify-between gap-2">
       <p role="status" aria-live="polite" className="text-xs font-semibold text-slate-600">Showing {pagination.start}–{pagination.end} of {pagination.total} matching activities (from {activities.length} recent records)</p>
       {(query || type !== "all" || sort !== "newest") && <button type="button" onClick={() => {setQuery("");setType("all");setSort("newest");setPage(1);}} className="inline-flex min-h-10 items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:bg-[#f1f2ea] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912]">Clear filters</button>}
+    </div>
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] px-4 py-3">
+      <div><p className="text-xs font-extrabold text-[#171912]">Export matching activity</p><p className="mt-1 text-xs text-slate-600">Includes all {filtered.length} matching records across pages, in the current sort order.</p></div>
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Export filtered activity">
+        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!filtered.length} onClick={() => download(format)} className="inline-flex min-h-10 items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase tracking-wide text-[#171912] transition hover:border-[#171912] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+      </div>
     </div>
     {pagination.items.length ? <ol className="divide-y divide-slate-100">
       {pagination.items.map(activity => <li key={activity.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
