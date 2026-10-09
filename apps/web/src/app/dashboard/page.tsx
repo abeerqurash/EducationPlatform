@@ -1,20 +1,24 @@
-import { getStudentResultOverview } from "@education/database";
+import { getStudentResultOverview, getStudyGoalSummary, getStudyProgress } from "@education/database";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { SiteButton } from "@/components/app-shell/site-button";
+import { PanelActionLink } from "@/components/app-shell/panel-action-link";
+import { summarizeOverviewActivity } from "./overview-insights";
 import { Eyebrow, MetricCard, Panel, QuickTool } from "@/components/app-shell/dashboard-ui";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const resultOverview =
-    await getStudentResultOverview(
-      session.user.id,
-    );
+  const [resultOverview, goalSummary, progress] = await Promise.all([
+    getStudentResultOverview(session.user.id),
+    getStudyGoalSummary(session.user.id),
+    getStudyProgress(session.user.id),
+  ]);
+  const insights = summarizeOverviewActivity(progress.daily, new Date().toISOString().slice(0, 10));
 
   const firstName = session.user.name?.trim().split(/\s+/)[0] || "Student";
 
@@ -32,14 +36,14 @@ export default async function DashboardPage() {
 
         <section aria-label="Study overview" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Saved results" value={String(resultOverview.savedResultCount)} note="Your saved calculations will appear here" icon="bookmark" />
-          <MetricCard label="Practice sessions" value="0" note="Start a test-prep session to track progress" icon="target" />
-          <MetricCard label="Study streak" value="0 days" note="Complete an activity to begin your streak" icon="calendar" />
+          <MetricCard label="Open study goals" value={String(goalSummary.activeGoals)} note={`${goalSummary.completedGoals} goals completed`} icon="target" />
+          <MetricCard label="Study streak" value={`${insights.streak} ${insights.streak === 1 ? "day" : "days"}`} note="Consecutive UTC days with recorded activity" icon="calendar" />
           <MetricCard label="Tools used" value={String(resultOverview.toolsUsed)} note="Explore calculators built for your goals" icon="calculator" />
         </section>
 
         <div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
           <Panel title="Continue learning" description="Your recent activities and study plan will stay organized here."
-            action={<Link href="/tools" className="text-xs font-bold text-violet-600 hover:text-violet-800">View all tools</Link>}>
+            action={<PanelActionLink href="/tools">View all tools <AppIcon name="arrow" className="h-3.5 w-3.5" /></PanelActionLink>}>
             {resultOverview.recentResults.length > 0 ? (
               <div className="mb-5 space-y-2">
                 {resultOverview.recentResults.slice(0, 3).map((item) => (
@@ -71,11 +75,11 @@ export default async function DashboardPage() {
             </div>
           </Panel>
 
-          <Panel title="This week" description="A clean starting point for your study routine.">
+          <Panel title="This week" description="Your recorded activity during the last seven UTC days.">
             <div className="rounded-2xl bg-[#f7f7fb] p-5">
-              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-violet-600 shadow-sm"><AppIcon name="clock" className="h-[18px] w-[18px]" /></span><div><p className="text-sm font-bold text-slate-900">Build your first plan</p><p className="mt-0.5 text-[11px] text-slate-500">Set a target and we’ll organize the next steps.</p></div></div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full w-0 rounded-full bg-violet-600" /></div>
-              <div className="mt-2 flex justify-between text-[10px] font-semibold text-slate-400"><span>0 activities</span><span>Start today</span></div>
+              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-violet-600 shadow-sm"><AppIcon name="clock" className="h-[18px] w-[18px]" /></span><div><p className="text-sm font-bold text-slate-900">Weekly study activity</p><p className="mt-0.5 text-[11px] text-slate-500">Your completed sessions and saved calculator activity.</p></div></div>
+              <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-violet-600" style={{ width: `${Math.round(insights.activeDays / 7 * 100)}%` }} /></div>
+              <div className="mt-2 flex justify-between text-[10px] font-semibold text-slate-400"><span>{progress.activityCount} activities · {progress.totalMinutes} min</span><span>{insights.activeDays}/7 active days</span></div>
             </div>
             <SiteButton href="/tools" variant="secondary" className="mt-4 flex">Find a study tool <AppIcon name="arrow" className="h-4 w-4" /></SiteButton>
           </Panel>
