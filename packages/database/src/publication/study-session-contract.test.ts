@@ -4,6 +4,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 const actions = read("../../../../apps/web/src/app/actions/student-intelligence.ts");
 const page = read("../../../../apps/web/src/app/dashboard/progress/page.tsx");
 const repository = read("../repositories/student-intelligence.ts");
+const history = read("../../../../apps/web/src/components/dashboard/study-activity-history.tsx");
 describe("student study session workflow", () => {
   it("requires an authenticated account and validated completed minutes", () => {
     expect(actions).toContain("export async function recordStudySessionAction");
@@ -20,6 +21,7 @@ describe("student study session workflow", () => {
   it("provides a labeled form and a bounded recent activity list", () => {
     expect(page).toContain("action={recordStudySessionAction}");
     expect(page).toContain('name="durationMinutes"');
-    expect(page).toContain("progress.activities.slice(0, 12)");
+    expect(page).toContain("<StudyActivityHistory activities={progress.activities.map(");
+    expect(history).toContain("paginateStudyActivities(filtered, page, Number(size))");
   });
 });

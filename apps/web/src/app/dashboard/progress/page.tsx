@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { recordStudySessionAction } from "@/app/actions/student-intelligence";
-import { ConfirmStudySessionDelete } from "@/components/dashboard/confirm-study-session-delete";
+import { StudyActivityHistory } from "@/components/dashboard/study-activity-history";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { parseProgressExportDays } from "./export-window";
@@ -186,28 +186,15 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
               <button type="submit" className="button button--primary">Record session</button>
             </form>
           </Panel>
-          <Panel title="Recent study activity" description="Latest 7-day records; weekly totals include all qualifying records.">
-            {progress.activities.length ? (
-              <ol className="divide-y divide-slate-100">
-                {progress.activities.slice(0, 12).map((activity) => (
-                  <li key={activity.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
-                    <div className="min-w-0">
-                      <p className="break-words text-sm font-bold text-slate-900">{activity.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">{activity.activityType === "study_session" ? "Study session" : "Calculator activity"} · {activity.createdAt.toLocaleDateString("en-GB", { timeZone: "UTC" })}</p>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1">
-                      <span className="text-xs font-bold text-slate-600">{activity.durationMinutes} min</span>
-                      {activity.activityType === "study_session" &&
-                        (activity.metadata as Record<string, unknown> | null)?.source === "manual_study_log" && (
-                          <ConfirmStudySessionDelete activityId={activity.id} title={activity.title} />
-                        )}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p role="status" className="text-sm text-slate-500">No recorded study activity in the last 7 days.</p>
-            )}
+          <Panel title="Recent study activity" description="Search and organize your recent seven-day records. Weekly totals include all qualifying records.">
+            <StudyActivityHistory activities={progress.activities.map(activity => ({
+              id: activity.id,
+              title: activity.title,
+              activityType: activity.activityType,
+              durationMinutes: activity.durationMinutes,
+              createdAt: activity.createdAt.toISOString(),
+              manual: activity.activityType === "study_session" && (activity.metadata as Record<string, unknown> | null)?.source === "manual_study_log",
+            }))} />
           </Panel>
         </div>
       </div>
