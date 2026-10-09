@@ -7,7 +7,7 @@ import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
-import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
+import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, selectMatchingGoals, bulkSelectionRemainder, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
 import { paginateGoals } from "./study-goal-pagination";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
@@ -45,6 +45,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const [sort, setSort] = useState("deadline");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
+  const [pageJump, setPageJump] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkOperation, setBulkOperation] = useState<GoalBulkOperation>("complete");
   const [bulkBusy, setBulkBusy] = useState(false);
@@ -58,6 +59,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
   const selectedGoals = visible.filter(goal => selectedIds.includes(goal.id));
   const eligibleIds = visible.map(goal => goal.id);
+  const allMatchingSelected = eligibleIds.length > 0 && selectMatchingGoals(eligibleIds).every(id => selectedIds.includes(id));
   const toggleGoal = (id: string, checked: boolean) => setSelectedIds(previous => checked ? previous.includes(id) || previous.length >= MAX_BULK_GOALS ? previous : [...previous, id] : previous.filter(item => item !== id));
   const togglePage = (checked: boolean) => setSelectedIds(previous => checked ? [...previous, ...pageIds.filter(id => !previous.includes(id))].slice(0, MAX_BULK_GOALS) : previous.filter(id => !pageIds.includes(id)));
   const applyBulk = async () => {
@@ -116,6 +118,8 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
           <input type="checkbox" checked={selectedOnPage} disabled={bulkBusy || !pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={event => togglePage(event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select current page
         </label>
         <p className="text-xs text-slate-600" role="status" aria-live="polite">{selectedIds.length} selected (maximum {MAX_BULK_GOALS}); {selectedGoals.length} match the current view</p>
+        <button type="button" disabled={bulkBusy || !eligibleIds.length || allMatchingSelected} onClick={() => setSelectedIds(selectMatchingGoals(eligibleIds))} className="text-xs font-bold text-[#171912] underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-40">Select matching across all pages ({Math.min(eligibleIds.length, MAX_BULK_GOALS)})</button>
+        {bulkSelectionRemainder(eligibleIds.length) > 0 && <p className="w-full text-xs text-amber-800" role="note">Only the first {MAX_BULK_GOALS} matching goals can be selected at once. {bulkSelectionRemainder(eligibleIds.length)} additional matching goals will remain unchanged. Refine filters to manage them.</p>}
         {selectedGoals.length > 0 && <details className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Review selected goals ({selectedGoals.length})</summary><ul className="mt-2 list-inside list-disc space-y-1">{selectedGoals.slice(0, 10).map(goal => <li key={goal.id} className="break-words">{goal.title}</li>)}</ul>{selectedGoals.length > 10 && <p className="mt-2">And {selectedGoals.length - 10} more selected goals.</p>}</details>}
         <ThemedExportSelect name="goalBulkOperation" label="Bulk action" defaultValue="complete" value={bulkOperation} onValueChange={value => setBulkOperation(value as GoalBulkOperation)} options={[{ value: "complete", label: "Mark completed" }, { value: "reopen", label: "Mark open" }, { value: "archive", label: "Archive selected" }]} />
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={applyBulk} className="button button--secondary disabled:cursor-not-allowed disabled:opacity-40">{bulkBusy ? "Updating…" : "Apply to selected"}</button>
@@ -152,7 +156,12 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       ))}</div> : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No goals match these filters.</p>}
       {pagination.totalPages > 1 && <nav aria-label="Study goal pages" className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
         <p className="text-xs font-semibold tabular-nums text-slate-600">Page {pagination.page} of {pagination.totalPages}</p>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <form className="flex items-center gap-2" onSubmit={event => { event.preventDefault(); const requested = Number(pageJump); if (pageJump.trim() && Number.isSafeInteger(requested) && requested >= 1 && requested <= pagination.totalPages) { setPage(requested); setPageJump(""); } }}>
+            <label htmlFor="goal-page-jump" className="text-xs font-semibold text-slate-700">Go to page</label>
+            <input id="goal-page-jump" type="number" min={1} max={pagination.totalPages} step={1} required value={pageJump} onChange={event => setPageJump(event.target.value)} className="h-[44px] w-20 rounded-full border border-[#dfe0d5] bg-white px-3 text-xs text-[#171912]" />
+            <button type="submit" className="button button--secondary" disabled={!pageJump.trim() || !Number.isSafeInteger(Number(pageJump)) || Number(pageJump) < 1 || Number(pageJump) > pagination.totalPages}>Go</button>
+          </form>
           <button type="button" className="button button--secondary" disabled={pagination.page <= 1} onClick={() => setPage(previous => Math.max(1, previous - 1))}>Previous</button>
           <button type="button" className="button button--secondary" disabled={pagination.page >= pagination.totalPages} onClick={() => setPage(previous => Math.min(pagination.totalPages, previous + 1))}>Next</button>
         </div>

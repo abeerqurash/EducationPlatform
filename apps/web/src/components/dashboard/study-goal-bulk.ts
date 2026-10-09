@@ -27,3 +27,14 @@ export function describeBulkSelection(titles: readonly string[], operation: Goal
   const remainder = titles.length > 5 ? `\n…and ${titles.length - 5} more.` : "";
   return `${verb} ${titles.length} selected goal(s)?\n\n${preview}${remainder}\n\nThis updates saved goals in your account.`;
 }
+
+/** Select the first matching goals in the current sort order, across every page. */
+export function selectMatchingGoals(eligible: readonly string[], limit = MAX_BULK_GOALS): string[] {
+  const safeLimit = Number.isSafeInteger(limit) ? Math.max(0, Math.min(MAX_BULK_GOALS, limit)) : MAX_BULK_GOALS;
+  return [...new Set(eligible)].slice(0, safeLimit);
+}
+
+/** Number of matching goals omitted because of the bulk safety limit. */
+export function bulkSelectionRemainder(matchingCount: number): number {
+  return Math.max(0, matchingCount - MAX_BULK_GOALS);
+}
