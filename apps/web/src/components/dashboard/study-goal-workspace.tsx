@@ -11,6 +11,7 @@ import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, sel
 import { paginateGoals } from "./study-goal-pagination";
 import { summarizeWorkspaceGoals } from "./study-goal-workspace-insights";
 import { StudyGoalInsightsPanel } from "./study-goal-insights-panel";
+import { groupGoalsByDeadline } from "./study-goal-deadline-groups";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
 type Goal = {
@@ -47,6 +48,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const [sort, setSort] = useState("deadline");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<"list" | "grouped">("list");
   const [pageJump, setPageJump] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkOperation, setBulkOperation] = useState<GoalBulkOperation>("complete");
@@ -59,6 +61,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const insights = useMemo(() => summarizeWorkspaceGoals(visible, todayUtc), [visible, todayUtc]);
   const pagination = paginateGoals(visible, page, Number(pageSize));
   const pageIds = pagination.items.map(goal => goal.id);
+  const deadlineGroups = groupGoalsByDeadline(pagination.items, todayUtc);
   const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
   const selectedGoals = visible.filter(goal => selectedIds.includes(goal.id));
   const eligibleIds = visible.map(goal => goal.id);
@@ -97,6 +100,34 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
   const changeFilter = (callback: (value: string) => void) => (value: string) => { callback(value); setPage(1); setSelectedIds([]); setBulkMessage(""); };
+  const renderGoal = (goal: Goal) => (
+        <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
+          <label className="mb-3 flex w-fit items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" aria-label={`Select goal: ${goal.title}`} checked={selectedIds.includes(goal.id)} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && !selectedIds.includes(goal.id))} onChange={event => toggleGoal(goal.id, event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select goal</label>
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div className="min-w-0">
+              <h2 className="break-words text-sm font-extrabold text-slate-950">{goal.title}</h2>
+              {goal.description ? <p className="mt-1 break-words text-xs leading-5 text-slate-500">{goal.description}</p> : null}
+              <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                {goal.completedAt ? "Completed" : "Open"}{goal.targetDate ? ` · Target ${goal.targetDate}` : ""}{goal.targetMinutes ? ` · ${goal.targetMinutes} min` : ""}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <StudyGoalControls goalId={goal.id} completed={Boolean(goal.completedAt)} />
+              <details className="rounded-2xl border border-slate-200 p-3">
+                <summary className="cursor-pointer text-xs font-bold text-slate-700">Edit goal</summary>
+                <form action={updateStudyGoalAction} className="mt-3 space-y-3">
+                  <input type="hidden" name="goalId" value={goal.id} />
+                  <label className="block text-xs font-bold text-slate-700">Title<input name="title" required minLength={2} maxLength={160} defaultValue={goal.title} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" /></label>
+                  <label className="block text-xs font-bold text-slate-700">Notes<textarea name="description" maxLength={1000} rows={2} defaultValue={goal.description ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" /></label>
+                  <ThemedFormDate name="targetDate" label="Target date" defaultValue={goal.targetDate ?? ""} />
+                  <label className="block text-xs font-bold text-slate-700">Target minutes<input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 h-[50px] w-full rounded-xl border border-slate-200 px-3 text-sm" /></label>
+                  <button type="submit" className="button button--secondary">Save changes</button>
+                </form>
+              </details>
+            </div>
+          </div>
+        </article>
+  );
   return (
     <Panel title={`${goals.length} active goals`} description="Find, review and edit your goals. Completed goals remain available until archived.">
       <div className="mb-5 grid gap-3 rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] p-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -130,34 +161,21 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className="text-xs font-bold underline disabled:opacity-40">Clear selection</button>
         {bulkMessage ? <p role="status" className="w-full text-xs text-slate-700">{bulkMessage}</p> : null}
       </section>
-      {visible.length ? <div className="divide-y divide-slate-100">{pagination.items.map(goal => (
-        <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
-          <label className="mb-3 flex w-fit items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" aria-label={`Select goal: ${goal.title}`} checked={selectedIds.includes(goal.id)} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && !selectedIds.includes(goal.id))} onChange={event => toggleGoal(goal.id, event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select goal</label>
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-            <div className="min-w-0">
-              <h2 className="break-words text-sm font-extrabold text-slate-950">{goal.title}</h2>
-              {goal.description ? <p className="mt-1 break-words text-xs leading-5 text-slate-500">{goal.description}</p> : null}
-              <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                {goal.completedAt ? "Completed" : "Open"}{goal.targetDate ? ` · Target ${goal.targetDate}` : ""}{goal.targetMinutes ? ` · ${goal.targetMinutes} min` : ""}
-              </p>
-            </div>
-            <div className="space-y-3">
-              <StudyGoalControls goalId={goal.id} completed={Boolean(goal.completedAt)} />
-              <details className="rounded-2xl border border-slate-200 p-3">
-                <summary className="cursor-pointer text-xs font-bold text-slate-700">Edit goal</summary>
-                <form action={updateStudyGoalAction} className="mt-3 space-y-3">
-                  <input type="hidden" name="goalId" value={goal.id} />
-                  <label className="block text-xs font-bold text-slate-700">Title<input name="title" required minLength={2} maxLength={160} defaultValue={goal.title} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" /></label>
-                  <label className="block text-xs font-bold text-slate-700">Notes<textarea name="description" maxLength={1000} rows={2} defaultValue={goal.description ?? ""} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" /></label>
-                  <ThemedFormDate name="targetDate" label="Target date" defaultValue={goal.targetDate ?? ""} />
-                  <label className="block text-xs font-bold text-slate-700">Target minutes<input name="targetMinutes" type="number" min={1} max={100000} defaultValue={goal.targetMinutes ?? ""} className="mt-1 h-[50px] w-full rounded-xl border border-slate-200 px-3 text-sm" /></label>
-                  <button type="submit" className="button button--secondary">Save changes</button>
-                </form>
-              </details>
-            </div>
-          </div>
-        </article>
-      ))}</div> : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No goals match these filters.</p>}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <p className="text-xs text-slate-600">View the current page as a list or by deadline urgency.</p>
+        <div role="group" aria-label="Goal display mode" className="inline-flex rounded-full border border-[#dfe0d5] bg-[#f7f8f2] p-1">
+          <button type="button" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")} className={`min-h-[40px] rounded-full px-4 text-xs font-bold transition ${viewMode === "list" ? "bg-[#171912] text-white" : "text-[#171912] hover:bg-white"}`}>List</button>
+          <button type="button" aria-pressed={viewMode === "grouped"} onClick={() => setViewMode("grouped")} className={`min-h-[40px] rounded-full px-4 text-xs font-bold transition ${viewMode === "grouped" ? "bg-[#171912] text-white" : "text-[#171912] hover:bg-white"}`}>By deadline</button>
+        </div>
+      </div>
+      {visible.length ? (viewMode === "list" ? <div className="divide-y divide-slate-100">{pagination.items.map(renderGoal)}</div> :
+        <div className="space-y-6">{deadlineGroups.map(group => <section key={group.key} aria-label={`${group.label} goals`} className="overflow-hidden rounded-2xl border border-[#dfe0d5]">
+          <header className="flex flex-wrap items-center justify-between gap-2 bg-[#f7f8f2] px-4 py-3">
+            <h3 className="text-sm font-extrabold text-[#171912]">{group.label} <span className="font-medium text-slate-500">({group.goals.length})</span></h3>
+            <p className="text-xs font-semibold tabular-nums text-slate-600">{group.minutes.toLocaleString()} target min</p>
+          </header>
+          <div className="divide-y divide-slate-100 px-4">{group.goals.map(renderGoal)}</div>
+        </section>)}</div>) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No goals match these filters.</p>}
       {pagination.totalPages > 1 && <nav aria-label="Study goal pages" className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
         <p className="text-xs font-semibold tabular-nums text-slate-600">Page {pagination.page} of {pagination.totalPages}</p>
         <div className="flex flex-wrap items-center gap-2">
