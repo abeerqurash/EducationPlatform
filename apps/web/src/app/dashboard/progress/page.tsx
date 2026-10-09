@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { recordStudySessionAction } from "@/app/actions/student-intelligence";
 import { StudyActivityHistory } from "@/components/dashboard/study-activity-history";
+import { StudyActivityCalendar } from "@/components/dashboard/study-activity-calendar";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { parseProgressExportDays } from "./export-window";
@@ -93,6 +94,10 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
             <div className="mt-2 flex justify-between text-[10px] font-semibold tabular-nums text-slate-500"><span>{trend.daily[0]?.day}</span><span>{trend.daily.at(-1)?.day}</span></div>
           </div>
           <p className="mt-3 text-xs text-slate-500">{trend.activityCount} recorded activities. Dates are UTC; empty bars mean no recorded minutes. Daily average includes inactive days.</p>
+        </Panel>
+
+        <Panel title="Activity calendar" description={`Explore recorded study activity across the selected ${trendDays}-day UTC reporting window. Color intensity represents recorded minutes.`}>
+          <StudyActivityCalendar days={trend.daily} />
         </Panel>
 
         <Panel title="Study consistency" description="Streaks and weekly summaries use the selected UTC period above. Activity on a day means a recorded session or saved tool activity.">
