@@ -9,6 +9,8 @@ import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
 import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, selectMatchingGoals, bulkSelectionRemainder, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
 import { paginateGoals } from "./study-goal-pagination";
+import { summarizeWorkspaceGoals } from "./study-goal-workspace-insights";
+import { StudyGoalInsightsPanel } from "./study-goal-insights-panel";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
 
 type Goal = {
@@ -54,6 +56,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
     const filter: GoalWorkspaceFilter = { query, status, deadline, sort };
     return filterAndSortGoals(goals, filter, todayUtc);
   }, [goals, query, status, deadline, sort, todayUtc]);
+  const insights = useMemo(() => summarizeWorkspaceGoals(visible, todayUtc), [visible, todayUtc]);
   const pagination = paginateGoals(visible, page, Number(pageSize));
   const pageIds = pagination.items.map(goal => goal.id);
   const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
@@ -109,6 +112,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
         <p role="status" aria-live="polite">Showing {pagination.start}–{pagination.end} of {visible.length} matching goals ({goals.length} total)</p>
         <button type="button" className="font-bold text-[#171912] underline underline-offset-4" onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); setSelectedIds([]); setBulkMessage(""); }}>Clear filters</button>
       </div>
+      <StudyGoalInsightsPanel insights={insights} onFocus={(nextDeadline, nextStatus) => { setDeadline(nextDeadline); setStatus(nextStatus); setPage(1); setPageJump(""); setSelectedIds([]); setBulkMessage(""); }} />
       <section aria-label="Export filtered study goals" className="mb-5 flex flex-wrap items-center gap-2">
         <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
         {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadFiltered(format)} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
