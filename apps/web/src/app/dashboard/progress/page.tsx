@@ -12,6 +12,7 @@ import { auth } from "@/auth";
 import { recordStudySessionAction } from "@/app/actions/student-intelligence";
 import { StudyActivityHistory } from "@/components/dashboard/study-activity-history";
 import { StudyActivityCalendar } from "@/components/dashboard/study-activity-calendar";
+import { StudyLearningRecommendations } from "@/components/dashboard/study-learning-recommendations";
 import { AppIcon } from "@/components/app-shell/app-icon";
 import { DashboardShell } from "@/components/app-shell/dashboard-shell";
 import { parseProgressExportDays } from "./export-window";
@@ -104,6 +105,10 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
             durationMinutes: activity.durationMinutes,
             createdAt: activity.createdAt.toISOString(),
           }))} />
+        </Panel>
+
+        <Panel title="Learning recommendations" description="Practical suggestions based on recorded activity in the selected reporting period.">
+          <StudyLearningRecommendations days={trend.daily} />
         </Panel>
 
         <Panel title="Study consistency" description="Streaks and weekly summaries use the selected UTC period above. Activity on a day means a recorded session or saved tool activity.">
