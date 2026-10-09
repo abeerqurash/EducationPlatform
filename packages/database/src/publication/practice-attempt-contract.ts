@@ -93,19 +93,22 @@ export function gradeTrustedPracticeAttempt(
   for (const raw of data.answers as unknown[]) {
     if (!own(raw)) fail("Invalid answer");
     const answer = raw as Record<string, unknown>;
-    const questionId = answer.questionId;
-    const choice = answer.choice;
-    if (typeof questionId !== "string" || !validId(questionId)) {
+    const rawQuestionId = answer.questionId;
+    const rawChoice = answer.choice;
+    if (typeof rawQuestionId !== "string" || !validId(rawQuestionId)) {
       fail("Invalid answer question ID");
     }
+    if (typeof rawChoice !== "number" || !Number.isSafeInteger(rawChoice)) {
+      fail("Invalid answer choice");
+    }
+    // Explicitly type validated values: avoid TS control-flow issues with fail().
+    const questionId: string = rawQuestionId as string;
+    const choice: number = rawChoice as number;
     if (!allowedIds.has(questionId) || seen.has(questionId)) {
       fail("Unknown or duplicate answer");
     }
-    const question = trusted.get(questionId)!;
-    if (typeof choice !== "number" || !Number.isSafeInteger(choice)) {
-      fail("Invalid answer choice");
-    }
-    if (choice < 0 || choice >= question.choiceCount) {
+    const question = trusted.get(questionId);
+    if (!question || choice < 0 || choice >= question.choiceCount) {
       fail("Invalid answer choice");
     }
     seen.add(questionId);
