@@ -13,6 +13,7 @@ import { summarizeWorkspaceGoals } from "./study-goal-workspace-insights";
 import { StudyGoalInsightsPanel } from "./study-goal-insights-panel";
 import { groupGoalsByDeadline } from "./study-goal-deadline-groups";
 import { filteredGoalFilename, formatFilteredGoals, type GoalExportFormat } from "./study-goal-filtered-export";
+import { formatSelectedGoals, selectedGoalFilename, selectGoalsForExport } from "./study-goal-selected-export";
 
 type Goal = {
   id: string;
@@ -64,7 +65,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const pageIds = pagination.items.map(goal => goal.id);
   const deadlineGroups = groupGoalsByDeadline(pagination.items, todayUtc);
   const selectedOnPage = bulkSelectionOnPage(selectedIds, pageIds);
-  const selectedGoals = visible.filter(goal => selectedIds.includes(goal.id));
+  const selectedGoals = selectGoalsForExport(visible, selectedIds);
   const eligibleIds = visible.map(goal => goal.id);
   const allMatchingSelected = eligibleIds.length > 0 && selectMatchingGoals(eligibleIds).every(id => selectedIds.includes(id));
   const toggleGoal = (id: string, checked: boolean) => setSelectedIds(previous => checked ? previous.includes(id) || previous.length >= MAX_BULK_GOALS ? previous : [...previous, id] : previous.filter(item => item !== id));
@@ -86,15 +87,17 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
     } catch { setBulkMessage("Bulk update failed. Please try again."); }
     finally { setBulkBusy(false); }
   };
-  const downloadFiltered = (format: GoalExportFormat) => {
-    if (!visible.length) return;
+  const downloadGoals = (format: GoalExportFormat, scope: "filtered" | "selected") => {
+    const records = scope === "selected" ? selectedGoals : visible;
+    if (!records.length) return;
     const now = new Date().toISOString();
-    const content = formatFilteredGoals(visible, { query, status, deadline, sort }, format, now);
+    const filters = { query, status, deadline, sort };
+    const content = scope === "selected" ? formatSelectedGoals(records, filters, format, now) : formatFilteredGoals(records, filters, format, now);
     const mime = format === "json" ? "application/json" : format === "csv" ? "text/csv" : "text/plain";
     const url = URL.createObjectURL(new Blob(["\uFEFF", content], { type: `${mime};charset=utf-8` }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = filteredGoalFilename(format, now.slice(0, 10));
+    anchor.download = scope === "selected" ? selectedGoalFilename(format, now.slice(0, 10)) : filteredGoalFilename(format, now.slice(0, 10));
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -148,7 +151,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       <StudyGoalInsightsPanel insights={insights} onFocus={(nextDeadline, nextStatus) => { setDeadline(nextDeadline); setStatus(nextStatus); setPage(1); setPageJump(""); setSelectedIds([]); setBulkMessage(""); }} />
       <section aria-label="Export filtered study goals" className="mb-5 flex flex-wrap items-center gap-2">
         <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
-        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadFiltered(format)} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadGoals(format, "filtered")} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
       </section>
       <section aria-label="Bulk study goal actions" className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
         <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
@@ -161,10 +164,18 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
         <ThemedExportSelect name="goalBulkOperation" label="Bulk action" defaultValue="complete" value={bulkOperation} onValueChange={value => setBulkOperation(value as GoalBulkOperation)} options={[{ value: "complete", label: "Mark completed" }, { value: "reopen", label: "Mark open" }, { value: "archive", label: "Archive selected" }]} />
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={applyBulk} className="button button--secondary disabled:cursor-not-allowed disabled:opacity-40">{bulkBusy ? "Updating…" : "Apply to selected"}</button>
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className="text-xs font-bold underline disabled:opacity-40">Clear selection</button>
+        <div className="flex w-full flex-wrap items-center gap-2 border-t border-slate-100 pt-3" aria-label="Export selected study goals">
+          <p className="mr-2 text-xs font-semibold text-slate-600">Export {selectedGoals.length} selected goal(s), across pages:</p>
+          {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!selectedGoals.length || bulkBusy} onClick={() => downloadGoals(format, "selected")} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+        </div>
         {bulkMessage ? <p role="status" className="w-full text-xs text-slate-700">{bulkMessage}</p> : null}
       </section>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
         <p className="text-xs text-slate-600">View the current page as a list or by deadline urgency.</p>
+        {viewMode === "grouped" && deadlineGroups.length > 0 && <div className="flex flex-wrap items-center gap-2">
+          <button type="button" className="text-xs font-bold text-[#171912] underline underline-offset-4" onClick={() => setCollapsedGroups(deadlineGroups.map(group => group.key))}>Collapse all</button>
+          <button type="button" className="text-xs font-bold text-[#171912] underline underline-offset-4" onClick={() => setCollapsedGroups([])}>Expand all</button>
+        </div>}
         <div role="group" aria-label="Goal display mode" className="inline-flex rounded-full border border-[#dfe0d5] bg-[#f7f8f2] p-1">
           <button type="button" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")} className={`min-h-[40px] rounded-full px-4 text-xs font-bold transition ${viewMode === "list" ? "bg-[#171912] text-white" : "text-[#171912] hover:bg-white"}`}>List</button>
           <button type="button" aria-pressed={viewMode === "grouped"} onClick={() => setViewMode("grouped")} className={`min-h-[40px] rounded-full px-4 text-xs font-bold transition ${viewMode === "grouped" ? "bg-[#171912] text-white" : "text-[#171912] hover:bg-white"}`}>By deadline</button>
