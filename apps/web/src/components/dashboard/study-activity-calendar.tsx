@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createActivityCalendar, type CalendarActivityDay } from "@/app/dashboard/progress/activity-calendar";
 import { groupActivityMonths, moveCalendarSelection } from "@/app/dashboard/progress/calendar-months";
+import { StudyActivityWeeklySummary } from "@/components/dashboard/study-activity-weekly-summary";
 import { activityDetailsForDay, summarizeCalendarDayDetails, type CalendarRecentActivity } from "@/app/dashboard/progress/calendar-day-details";
 
 const LEVELS = ["bg-slate-100", "bg-violet-200", "bg-violet-400", "bg-violet-600", "bg-violet-800"] as const;
@@ -32,6 +33,7 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
         </div>)}
         {!months.length && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No recorded dates in this period.</p>}
       </div>
+      <StudyActivityWeeklySummary days={calendar.cells} onSelectDay={setSelected} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-500">Select a square to inspect its UTC date. Empty squares indicate no recorded activity.</p>
         <div className="flex items-center gap-1.5 text-xs text-slate-600" aria-label="Activity intensity from none to high"><span>Less</span>{LEVELS.map((level, index) => <span key={index} className={`h-4 w-4 rounded ${level}`} />)}<span>More</span></div>
@@ -53,6 +55,10 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
         </> : <p className="mt-3 rounded-xl bg-white px-4 py-4 text-sm text-slate-600">No individual records are available for this date in the recent activity window. The daily totals above still reflect the selected reporting period.</p>}
         <p className="mt-3 text-xs text-slate-500">Individual records come from the bounded recent seven-day history and may not cover older dates or every record. The calendar totals are calculated separately from the selected reporting period.</p>
       </section>}
+      <div className="flex flex-wrap gap-2" aria-label="Calendar quick actions">
+        <button type="button" disabled={!calendar.busiest} onClick={() => setSelected(calendar.busiest?.day ?? null)} className="inline-flex min-h-11 items-center rounded-full border border-violet-200 bg-violet-50 px-4 text-xs font-bold text-violet-900 transition hover:bg-violet-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Jump to busiest day</button>
+        <button type="button" disabled={!selected} onClick={() => setSelected(null)} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Clear selection</button>
+      </div>
       <div className="flex flex-wrap gap-2" aria-label="Selected date navigation">
         <button type="button" disabled={!orderedDays.length || selected === orderedDays[0]?.day} onClick={() => setSelected(moveCalendarSelection(orderedDays, selected, -1))} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Previous day</button>
         <button type="button" disabled={!orderedDays.length || selected === orderedDays.at(-1)?.day} onClick={() => setSelected(moveCalendarSelection(orderedDays, selected, 1))} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Next day</button>
