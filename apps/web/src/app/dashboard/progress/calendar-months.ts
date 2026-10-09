@@ -1,15 +1,16 @@
 import type { CalendarActivityDay } from "./activity-calendar";
 
-export function groupActivityMonths(days: readonly CalendarActivityDay[]) {
-  const groups = new Map<string, CalendarActivityDay[]>();
+export function groupActivityMonths<T extends CalendarActivityDay>(days: readonly T[]) {
+  const groups = new Map<string, T[]>();
   for (const day of days) {
     if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(day.day)) continue;
     const key = day.day.slice(0, 7);
     groups.set(key, [...(groups.get(key) ?? []), {
+      ...day,
       day: day.day,
       minutes: Number.isFinite(day.minutes) ? Math.max(0, day.minutes) : 0,
       activities: Number.isFinite(day.activities) ? Math.max(0, day.activities) : 0,
-    }]);
+    } as T]);
   }
   return [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([key, values]) => {
     const entries = [...values].sort((a, b) => a.day.localeCompare(b.day));

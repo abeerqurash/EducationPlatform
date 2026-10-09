@@ -13,3 +13,11 @@ describe("calendar monthly insights", () => {
   it("clamps navigation", () => expect(moveCalendarSelection(records, "2026-10-02", 1)).toBe("2026-10-02"));
   it("handles empty selection", () => expect(moveCalendarSelection([], null, 1)).toBeNull());
 });
+
+
+describe("calendar intensity preservation", () => {
+  it("retains intensity on grouped calendar cells", () => {
+    const grouped = groupActivityMonths([{ day: "2026-10-09", minutes: 90, activities: 2, intensity: 3 as const, active: true }]);
+    expect(grouped[0]?.entries[0]?.intensity).toBe(3);
+  });
+});
