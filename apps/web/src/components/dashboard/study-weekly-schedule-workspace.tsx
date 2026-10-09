@@ -7,6 +7,7 @@ import { formatWeeklyScheduleCsv, formatWeeklyScheduleIcs } from "@/app/dashboar
 import { STUDY_SCHEDULE_PRESETS, findStudySchedulePreset, formatWeeklySchedulePrintableHtml } from "@/app/dashboard/progress/study-schedule-presets";
 import { summarizeWeeklySchedule, formatWeeklyScheduleInsightsText } from "@/app/dashboard/progress/study-schedule-insights";
 import { compareStudySchedules, formatStudyScheduleComparisonText, formatStudyScheduleComparisonCsv } from "@/app/dashboard/progress/study-schedule-comparison";
+import { compareScheduleWithHistory, formatScheduleRealityText, formatScheduleRealityCsv, type RecordedStudyDay } from "@/app/dashboard/progress/study-schedule-reality";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 
 const actionClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
@@ -22,7 +23,7 @@ function download(content: string, filename: string, type: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }) {
+export function StudyWeeklyScheduleWorkspace({ plan, history = [] }: { plan: StudyActionPlan; history?: RecordedStudyDay[] }) {
   const [days, setDays] = useState<WeekDay[]>(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
   const [minutes, setMinutes] = useState(30);
   const [dayMinutes, setDayMinutes] = useState<Partial<Record<WeekDay, number>>>({});
@@ -35,6 +36,7 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
   const referencePreset = findStudySchedulePreset(comparisonPreset) ?? STUDY_SCHEDULE_PRESETS[0];
   const referenceSchedule = buildWeeklyStudySchedule(plan, referencePreset.days, referencePreset.minutes, referencePreset.overrides);
   const comparison = compareStudySchedules(schedule, referenceSchedule, referencePreset.title);
+  const reality = compareScheduleWithHistory(schedule, history);
 
   return <section aria-label="Weekly study schedule" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -79,6 +81,14 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
       <p className="text-xs text-slate-600">Added days: {comparison.daysAdded.join(", ") || "None"} · Removed days: {comparison.daysRemoved.join(", ") || "None"}</p>
       {comparison.daysChanged.length > 0 && <ul className="space-y-1 text-xs text-slate-700">{comparison.daysChanged.map(item => <li key={item.day}>{item.day}: {item.baseline} → {item.planned} minutes</li>)}</ul>}
       <div className="flex flex-wrap gap-2"><button type="button" className={actionClass} onClick={() => { download(formatStudyScheduleComparisonText(comparison), "study-schedule-comparison.txt", "text/plain;charset=utf-8"); setFeedback("Comparison TXT prepared."); }}>Download comparison TXT</button><button type="button" className={actionClass} onClick={() => { download(formatStudyScheduleComparisonCsv(comparison), "study-schedule-comparison.csv", "text/csv;charset=utf-8"); setFeedback("Comparison CSV prepared."); }}>Download comparison CSV</button></div>
+    </section>
+    <section aria-label="Planned versus recorded study activity" className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4">
+      <h4 className="text-sm font-extrabold text-slate-950">Plan versus recorded activity</h4>
+      <p className="text-xs leading-5 text-slate-600">Compare your proposed recurring schedule against the actual study minutes recorded in the selected UTC reporting window. This is a historical comparison, not a completion score.</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[{ label: "Proposed weekly", value: `${reality.plannedWeeklyMinutes} min` }, { label: "Historical weekly avg", value: `${reality.recordedWeeklyAverage} min` }, { label: "Difference", value: `${reality.differenceMinutes > 0 ? "+" : ""}${reality.differenceMinutes} min` }, { label: "Observed UTC days", value: String(reality.observedDays) }].map(item => <div key={item.label} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs text-slate-600">{item.label}</p><p className="mt-1 text-base font-extrabold text-slate-900">{item.value}</p></div>)}</div>
+      <div className="overflow-x-auto"><table className="w-full min-w-[420px] text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-600"><th className="py-2">Day</th><th>Proposed</th><th>Recorded weekday avg</th><th>Observations</th></tr></thead><tbody>{reality.daily.map(item => <tr key={item.day} className="border-b border-slate-100"><th className="py-2 font-bold text-slate-800">{item.day}</th><td>{item.plannedMinutes} min</td><td>{item.recordedWeeklyAverage} min</td><td>{item.observedOccurrences}</td></tr>)}</tbody></table></div>
+      <p className="text-xs text-slate-500">{reality.note}</p>
+      <div className="flex flex-wrap gap-2"><button type="button" className={actionClass} onClick={() => { download(formatScheduleRealityText(reality), "study-plan-vs-history.txt", "text/plain;charset=utf-8"); setFeedback("Historical comparison TXT prepared."); }}>Download history comparison TXT</button><button type="button" className={actionClass} onClick={() => { download(formatScheduleRealityCsv(reality), "study-plan-vs-history.csv", "text/csv;charset=utf-8"); setFeedback("Historical comparison CSV prepared."); }}>Download history comparison CSV</button></div>
     </section>
     <ol className="space-y-2" aria-label="Planned study sessions">{schedule.entries.map(entry => <li key={entry.day} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-extrabold text-slate-900">{entry.day} · {entry.minutes} min</p><p className="mt-1 text-xs leading-5 text-slate-600">{entry.action}</p></li>)}</ol>
     {!schedule.entries.length && <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-600">Select at least one day to create a weekly schedule.</p>}

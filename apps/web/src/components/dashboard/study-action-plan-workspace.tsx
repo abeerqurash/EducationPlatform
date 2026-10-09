@@ -65,7 +65,7 @@ export function StudyActionPlanWorkspace({ days }: { days: LearningDay[] }) {
       </div>
       <p aria-live="polite" className="mt-3 text-xs text-slate-600">{status}</p>
     </div>
-    <StudyWeeklyScheduleWorkspace plan={plan} />
+    <StudyWeeklyScheduleWorkspace plan={plan} history={days} />
     <p className="text-xs leading-5 text-slate-500">This plan contains only aggregate study metrics and the selected recommendations. It does not include your name, email, or individual study records.</p>
   </section>;
 }
