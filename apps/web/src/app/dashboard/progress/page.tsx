@@ -97,7 +97,13 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
         </Panel>
 
         <Panel title="Activity calendar" description={`Explore recorded study activity across the selected ${trendDays}-day UTC reporting window. Color intensity represents recorded minutes.`}>
-          <StudyActivityCalendar days={trend.daily} />
+          <StudyActivityCalendar days={trend.daily} recentActivities={progress.activities.map(activity => ({
+            id: activity.id,
+            title: activity.title,
+            activityType: activity.activityType,
+            durationMinutes: activity.durationMinutes,
+            createdAt: activity.createdAt.toISOString(),
+          }))} />
         </Panel>
 
         <Panel title="Study consistency" description="Streaks and weekly summaries use the selected UTC period above. Activity on a day means a recorded session or saved tool activity.">
