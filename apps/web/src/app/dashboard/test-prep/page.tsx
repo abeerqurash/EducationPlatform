@@ -9,6 +9,7 @@ import { Eyebrow, MetricCard, Panel, QuickTool } from "@/components/app-shell/da
 import { SiteButton } from "@/components/app-shell/site-button";
 import { ThemedDateRange } from "@/components/shared/themed-date-range";
 import { ThemedFilterPill } from "@/components/shared/themed-filter-pill";
+import { dashboardAction } from "@/components/shared/dashboard-action-styles";
 import { historyPageWindow, historyResultRange } from "@/components/shared/history-page-window";
 import { HighlightSearchMatch } from "@/components/shared/highlight-search-match";
 import { CopyResultSummary } from "@/components/shared/copy-result-summary";
@@ -96,12 +97,12 @@ export default async function TestPrepPage({ searchParams }: {
                 ))}
               </ul>
             ) : <p role="status" className="text-sm text-slate-500">No exam-related goals found in your recent study plan. Add a goal with the exam name to see it here.</p>}
-            <Link href="/dashboard/study-plan" className="mt-5 inline-flex text-xs font-bold text-violet-700 underline underline-offset-4">Manage study goals</Link>
+            <Link href="/dashboard/study-plan" className={`${dashboardAction} mt-5`}>Manage study goals</Link>
           </Panel>
         </div>
 
         <Panel title="Saved exam result history" description="Filter and browse your saved SAT and ACT calculator outputs. Results are shown as recorded, without estimating improvement or predicting admissions outcomes."
-          action={<Link href="/dashboard/saved" className="shrink-0 text-xs font-bold text-violet-700 hover:underline">All saved results</Link>}>
+          action={<Link href="/dashboard/saved" className={`${dashboardAction} shrink-0`}>All saved results</Link>}>
           <form action="/dashboard/test-prep" method="get" role="search" aria-label="Search saved exam results" className="mb-5 flex flex-wrap items-end gap-3">
             <input type="hidden" name="exam" value={history.exam} />
             <input type="hidden" name="sort" value={history.sort} />
@@ -152,8 +153,8 @@ export default async function TestPrepPage({ searchParams }: {
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-slate-500">Exports include up to 1,000 matching records in the selected order.</p>
             <div className="flex flex-wrap items-center gap-4">
-              <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered CSV</Link>
-              <Link href={`/dashboard/test-prep/export-json?${filterParams.toString()}`} className="text-xs font-bold text-violet-700 underline underline-offset-4">Export filtered JSON</Link>
+              <Link href={`/dashboard/test-prep/export?${filterParams.toString()}`} className={dashboardAction}>Export filtered CSV</Link>
+              <Link href={`/dashboard/test-prep/export-json?${filterParams.toString()}`} className={dashboardAction}>Export filtered JSON</Link>
             </div>
           </div>
           {activeFilterChips.length > 0 ? (
@@ -210,9 +211,9 @@ export default async function TestPrepPage({ searchParams }: {
           ) : null}
           <nav aria-label="Exam result history pages" className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-            {history.page > 1 ? <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(1)}>First page</Link> : null}
+            {history.page > 1 ? <Link className={dashboardAction} href={historyUrl(1)}>First page</Link> : null}
             {history.page > 1 ? (
-              <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.page - 1)}>Previous page</Link>
+              <Link className={dashboardAction} href={historyUrl(history.page - 1)}>Previous page</Link>
             ) : null}
             </div>
             <div className="flex flex-wrap items-center justify-center gap-1.5" aria-label="Choose history page">
@@ -226,9 +227,9 @@ export default async function TestPrepPage({ searchParams }: {
             </div>
             <div className="flex items-center gap-3">
             {history.page < history.totalPages ? (
-              <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.page + 1)}>Next page</Link>
+              <Link className={dashboardAction} href={historyUrl(history.page + 1)}>Next page</Link>
             ) : null}
-            {history.page < history.totalPages ? <Link className="text-xs font-bold text-violet-700 underline underline-offset-4" href={historyUrl(history.totalPages)}>Last page</Link> : null}
+            {history.page < history.totalPages ? <Link className={dashboardAction} href={historyUrl(history.totalPages)}>Last page</Link> : null}
             </div>
           </nav>
         </Panel>

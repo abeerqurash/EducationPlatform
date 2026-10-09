@@ -5,6 +5,8 @@ import { bulkStudyGoalAction, updateStudyGoalAction } from "@/app/actions/studen
 import { StudyGoalControls } from "@/components/dashboard/study-goal-controls";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
+import { ThemedCheckbox } from "@/components/shared/themed-checkbox";
+import { dashboardAction, dashboardActionPrimary } from "@/components/shared/dashboard-action-styles";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
 import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, selectMatchingGoals, bulkSelectionRemainder, toggleBulkGoalGroup, remainingGroupGoals, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
@@ -107,7 +109,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const changeFilter = (callback: (value: string) => void) => (value: string) => { callback(value); setPage(1); setSelectedIds([]); setBulkMessage(""); };
   const renderGoal = (goal: Goal) => (
         <article key={goal.id} className="py-4 first:pt-0 last:pb-0">
-          <label className="mb-3 flex w-fit items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" aria-label={`Select goal: ${goal.title}`} checked={selectedIds.includes(goal.id)} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && !selectedIds.includes(goal.id))} onChange={event => toggleGoal(goal.id, event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select goal</label>
+          <div className="mb-3"><ThemedCheckbox label="Select goal" ariaLabel={`Select goal: ${goal.title}`} checked={selectedIds.includes(goal.id)} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && !selectedIds.includes(goal.id))} onChange={checked => toggleGoal(goal.id, checked)} /></div>
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div className="min-w-0">
               <h2 className="break-words text-sm font-extrabold text-slate-950">{goal.title}</h2>
@@ -146,35 +148,33 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       </div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
         <p role="status" aria-live="polite">Showing {pagination.start}–{pagination.end} of {visible.length} matching goals ({goals.length} total)</p>
-        <button type="button" className="font-bold text-[#171912] underline underline-offset-4" onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); setSelectedIds([]); setBulkMessage(""); }}>Clear filters</button>
+        <button type="button" className={dashboardAction} onClick={() => { setQuery(""); setStatus("all"); setDeadline("all"); setSort("deadline"); setPageSize("10"); setPage(1); setSelectedIds([]); setBulkMessage(""); }}>Clear filters</button>
       </div>
       <StudyGoalInsightsPanel insights={insights} onFocus={(nextDeadline, nextStatus) => { setDeadline(nextDeadline); setStatus(nextStatus); setPage(1); setPageJump(""); setSelectedIds([]); setBulkMessage(""); }} />
       <section aria-label="Export filtered study goals" className="mb-5 flex flex-wrap items-center gap-2">
         <p className="mr-2 text-xs font-semibold text-slate-600">Export all {visible.length} matching goals (not just this page):</p>
-        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadGoals(format, "filtered")} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+        {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!visible.length} onClick={() => downloadGoals(format, "filtered")} className={dashboardAction}>{format}</button>)}
       </section>
       <section aria-label="Bulk study goal actions" className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-        <label className="flex items-center gap-2 text-xs font-bold text-slate-700">
-          <input type="checkbox" checked={selectedOnPage} disabled={bulkBusy || !pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={event => togglePage(event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select current page
-        </label>
+        <ThemedCheckbox label="Select current page" checked={selectedOnPage} disabled={bulkBusy || !pageIds.length || (selectedIds.length >= MAX_BULK_GOALS && !selectedOnPage)} onChange={togglePage} />
         <p className="text-xs text-slate-600" role="status" aria-live="polite">{selectedIds.length} selected (maximum {MAX_BULK_GOALS}); {selectedGoals.length} match the current view</p>
-        <button type="button" disabled={bulkBusy || !eligibleIds.length || allMatchingSelected} onClick={() => setSelectedIds(selectMatchingGoals(eligibleIds))} className="text-xs font-bold text-[#171912] underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-40">Select matching across all pages ({Math.min(eligibleIds.length, MAX_BULK_GOALS)})</button>
+        <button type="button" disabled={bulkBusy || !eligibleIds.length || allMatchingSelected} onClick={() => setSelectedIds(selectMatchingGoals(eligibleIds))} className={dashboardActionPrimary}>Select matching across all pages ({Math.min(eligibleIds.length, MAX_BULK_GOALS)})</button>
         {bulkSelectionRemainder(eligibleIds.length) > 0 && <p className="w-full text-xs text-amber-800" role="note">Only the first {MAX_BULK_GOALS} matching goals can be selected at once. {bulkSelectionRemainder(eligibleIds.length)} additional matching goals will remain unchanged. Refine filters to manage them.</p>}
         {selectedGoals.length > 0 && <details className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Review selected goals ({selectedGoals.length})</summary><ul className="mt-2 list-inside list-disc space-y-1">{selectedGoals.slice(0, 10).map(goal => <li key={goal.id} className="break-words">{goal.title}</li>)}</ul>{selectedGoals.length > 10 && <p className="mt-2">And {selectedGoals.length - 10} more selected goals.</p>}</details>}
         <ThemedExportSelect name="goalBulkOperation" label="Bulk action" defaultValue="complete" value={bulkOperation} onValueChange={value => setBulkOperation(value as GoalBulkOperation)} options={[{ value: "complete", label: "Mark completed" }, { value: "reopen", label: "Mark open" }, { value: "archive", label: "Archive selected" }]} />
         <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={applyBulk} className="button button--secondary disabled:cursor-not-allowed disabled:opacity-40">{bulkBusy ? "Updating…" : "Apply to selected"}</button>
-        <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className="text-xs font-bold underline disabled:opacity-40">Clear selection</button>
+        <button type="button" disabled={!selectedIds.length || bulkBusy} onClick={() => setSelectedIds([])} className={dashboardAction}>Clear selection</button>
         <div className="flex w-full flex-wrap items-center gap-2 border-t border-slate-100 pt-3" aria-label="Export selected study goals">
           <p className="mr-2 text-xs font-semibold text-slate-600">Export {selectedGoals.length} selected goal(s), across pages:</p>
-          {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!selectedGoals.length || bulkBusy} onClick={() => downloadGoals(format, "selected")} className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold uppercase text-[#171912] transition hover:border-[#171912] disabled:cursor-not-allowed disabled:opacity-40">{format}</button>)}
+          {(["csv", "json", "txt"] as const).map(format => <button key={format} type="button" disabled={!selectedGoals.length || bulkBusy} onClick={() => downloadGoals(format, "selected")} className={dashboardAction}>{format}</button>)}
         </div>
         {bulkMessage ? <p role="status" className="w-full text-xs text-slate-700">{bulkMessage}</p> : null}
       </section>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
         <p className="text-xs text-slate-600">View the current page as a list or by deadline urgency.</p>
         {viewMode === "grouped" && deadlineGroups.length > 0 && <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className="text-xs font-bold text-[#171912] underline underline-offset-4" onClick={() => setCollapsedGroups(deadlineGroups.map(group => group.key))}>Collapse all</button>
-          <button type="button" className="text-xs font-bold text-[#171912] underline underline-offset-4" onClick={() => setCollapsedGroups([])}>Expand all</button>
+          <button type="button" className={dashboardAction} onClick={() => setCollapsedGroups(deadlineGroups.map(group => group.key))}>Collapse all</button>
+          <button type="button" className={dashboardAction} onClick={() => setCollapsedGroups([])}>Expand all</button>
         </div>}
         <div role="group" aria-label="Goal display mode" className="inline-flex rounded-full border border-[#dfe0d5] bg-[#f7f8f2] p-1">
           <button type="button" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")} className={`min-h-[40px] rounded-full px-4 text-xs font-bold transition ${viewMode === "list" ? "bg-[#171912] text-white" : "text-[#171912] hover:bg-white"}`}>List</button>
@@ -189,9 +189,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
               <p className="mt-1 text-xs font-semibold tabular-nums text-slate-600">{group.minutes.toLocaleString()} target min · {remainingGroupGoals(selectedIds, group.goals.map(goal => goal.id))} unselected</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <label className="flex items-center gap-2 text-xs font-bold text-[#171912]">
-                <input type="checkbox" aria-label={`Select all ${group.label.toLowerCase()} goals on this page`} checked={group.goals.every(goal => selectedIds.includes(goal.id))} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && group.goals.every(goal => !selectedIds.includes(goal.id)))} onChange={event => toggleGroup(group.goals.map(goal => goal.id), event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select group
-              </label>
+              <ThemedCheckbox label="Select group" ariaLabel={`Select all ${group.label.toLowerCase()} goals on this page`} checked={group.goals.every(goal => selectedIds.includes(goal.id))} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && group.goals.every(goal => !selectedIds.includes(goal.id)))} onChange={checked => toggleGroup(group.goals.map(goal => goal.id), checked)} />
               <button type="button" aria-expanded={!collapsedGroups.includes(group.key)} aria-controls={`goal-deadline-group-${group.key}`} onClick={() => setCollapsedGroups(previous => previous.includes(group.key) ? previous.filter(key => key !== group.key) : [...previous, group.key])} className="min-h-[40px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] hover:border-[#171912]">{collapsedGroups.includes(group.key) ? "Expand" : "Collapse"}</button>
             </div>
           </header>
