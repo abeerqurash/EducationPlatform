@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { buildStudyActionPlan, formatStudyActionPlanText, studyActionPlanFilename } from "@/app/dashboard/progress/study-action-plan";
 import { summarizeLearningRecommendations, type LearningDay } from "@/app/dashboard/progress/learning-recommendations";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
+import { StudyWeeklyScheduleWorkspace } from "@/components/dashboard/study-weekly-schedule-workspace";
 
 const buttonClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -64,6 +65,7 @@ export function StudyActionPlanWorkspace({ days }: { days: LearningDay[] }) {
       </div>
       <p aria-live="polite" className="mt-3 text-xs text-slate-600">{status}</p>
     </div>
+    <StudyWeeklyScheduleWorkspace plan={plan} />
     <p className="text-xs leading-5 text-slate-500">This plan contains only aggregate study metrics and the selected recommendations. It does not include your name, email, or individual study records.</p>
   </section>;
 }
