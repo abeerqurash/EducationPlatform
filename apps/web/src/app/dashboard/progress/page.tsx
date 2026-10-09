@@ -113,7 +113,7 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
         </Panel>
 
         <Panel title="Personal study action plan" description="Select practical next steps and download a portable plan based on your recorded study activity.">
-          <StudyActionPlanWorkspace days={trend.daily} />
+          <StudyActionPlanWorkspace days={trend.daily} weeklyTarget={target} />
         </Panel>
 
         <Panel title="Study consistency" description="Streaks and weekly summaries use the selected UTC period above. Activity on a day means a recorded session or saved tool activity.">

@@ -8,6 +8,7 @@ import { STUDY_SCHEDULE_PRESETS, findStudySchedulePreset, formatWeeklySchedulePr
 import { summarizeWeeklySchedule, formatWeeklyScheduleInsightsText } from "@/app/dashboard/progress/study-schedule-insights";
 import { compareStudySchedules, formatStudyScheduleComparisonText, formatStudyScheduleComparisonCsv } from "@/app/dashboard/progress/study-schedule-comparison";
 import { compareScheduleWithHistory, formatScheduleRealityText, formatScheduleRealityCsv, type RecordedStudyDay } from "@/app/dashboard/progress/study-schedule-reality";
+import { reviewWeeklyStudyTarget, formatWeeklyTargetReviewText, formatWeeklyTargetReviewCsv } from "@/app/dashboard/progress/study-schedule-target";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 
 const actionClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
@@ -23,7 +24,7 @@ function download(content: string, filename: string, type: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function StudyWeeklyScheduleWorkspace({ plan, history = [] }: { plan: StudyActionPlan; history?: RecordedStudyDay[] }) {
+export function StudyWeeklyScheduleWorkspace({ plan, history = [], weeklyTarget = 300 }: { plan: StudyActionPlan; history?: RecordedStudyDay[]; weeklyTarget?: number }) {
   const [days, setDays] = useState<WeekDay[]>(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
   const [minutes, setMinutes] = useState(30);
   const [dayMinutes, setDayMinutes] = useState<Partial<Record<WeekDay, number>>>({});
@@ -37,6 +38,7 @@ export function StudyWeeklyScheduleWorkspace({ plan, history = [] }: { plan: Stu
   const referenceSchedule = buildWeeklyStudySchedule(plan, referencePreset.days, referencePreset.minutes, referencePreset.overrides);
   const comparison = compareStudySchedules(schedule, referenceSchedule, referencePreset.title);
   const reality = compareScheduleWithHistory(schedule, history);
+  const targetReview = reviewWeeklyStudyTarget(schedule, weeklyTarget);
 
   return <section aria-label="Weekly study schedule" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -63,6 +65,14 @@ export function StudyWeeklyScheduleWorkspace({ plan, history = [] }: { plan: Stu
       <button type="button" className={actionClass} onClick={() => { setDayMinutes({}); setFeedback("Daily durations reset to the default."); }}>Use default duration for every day</button>
     </div>}
     <div className="flex flex-wrap gap-2"><span className="rounded-full bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">{schedule.scheduledDays} planned days</span><span className="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-800">{schedule.scheduledMinutes} planned minutes</span></div>
+    <section aria-label="Weekly target planning" className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <h4 className="text-sm font-extrabold text-slate-950">Weekly target planning</h4>
+      <p className="text-xs text-slate-600">Compare your proposed schedule with your account weekly study target. These minutes are planned, not completed.</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[{label:"Account target",value:`${targetReview.targetMinutes} min`},{label:"Planned",value:`${targetReview.plannedMinutes} min`},{label:"Target coverage",value:`${targetReview.coveragePercent}%`},{label:"Minutes remaining",value:`${targetReview.missingMinutes} min`}].map(item => <div key={item.label} className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-600">{item.label}</p><p className="mt-1 text-base font-extrabold text-slate-900">{item.value}</p></div>)}</div>
+      <div role="progressbar" aria-label="Planned weekly target coverage" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(100, targetReview.coveragePercent)} className="h-3 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-violet-600" style={{width:`${Math.min(100,targetReview.coveragePercent)}%`}} /></div>
+      <p className="text-xs font-semibold leading-5 text-slate-700">{targetReview.guidance}</p>
+      <div className="flex flex-wrap gap-2"><button type="button" className={actionClass} onClick={() => { download(formatWeeklyTargetReviewText(targetReview), "weekly-target-review.txt", "text/plain;charset=utf-8"); setFeedback("Target review TXT prepared."); }}>Download target review TXT</button><button type="button" className={actionClass} onClick={() => { download(formatWeeklyTargetReviewCsv(targetReview), "weekly-target-review.csv", "text/csv;charset=utf-8"); setFeedback("Target review CSV prepared."); }}>Download target review CSV</button></div>
+    </section>
     <section aria-label="Weekly schedule review" className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/40 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-extrabold text-slate-950">Weekly schedule review</h4><button type="button" className={actionClass} onClick={() => { download(formatWeeklyScheduleInsightsText(insights), "weekly-schedule-review.txt", "text/plain;charset=utf-8"); setFeedback("Schedule review prepared."); }}>Download review</button></div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

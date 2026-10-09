@@ -19,7 +19,7 @@ function saveFile(content: string, filename: string, type: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function StudyActionPlanWorkspace({ days }: { days: LearningDay[] }) {
+export function StudyActionPlanWorkspace({ days, weeklyTarget = 300 }: { days: LearningDay[]; weeklyTarget?: number }) {
   const [benchmark, setBenchmark] = useState(30);
   const [excluded, setExcluded] = useState<string[]>([]);
   const [status, setStatus] = useState("");
@@ -65,7 +65,7 @@ export function StudyActionPlanWorkspace({ days }: { days: LearningDay[] }) {
       </div>
       <p aria-live="polite" className="mt-3 text-xs text-slate-600">{status}</p>
     </div>
-    <StudyWeeklyScheduleWorkspace plan={plan} history={days} />
+    <StudyWeeklyScheduleWorkspace plan={plan} history={days} weeklyTarget={weeklyTarget} />
     <p className="text-xs leading-5 text-slate-500">This plan contains only aggregate study metrics and the selected recommendations. It does not include your name, email, or individual study records.</p>
   </section>;
 }
