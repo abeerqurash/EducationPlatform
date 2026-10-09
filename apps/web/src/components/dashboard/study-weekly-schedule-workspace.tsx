@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { StudyActionPlan } from "@/app/dashboard/progress/study-action-plan";
 import { buildWeeklyStudySchedule, formatWeeklyStudyScheduleText, weeklyStudyScheduleFilename, WEEK_DAYS, type WeekDay } from "@/app/dashboard/progress/study-weekly-schedule";
+import { formatWeeklyScheduleCsv, formatWeeklyScheduleIcs } from "@/app/dashboard/progress/study-schedule-exports";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 
 const actionClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
@@ -21,6 +22,7 @@ function download(content: string, filename: string, type: string) {
 export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }) {
   const [days, setDays] = useState<WeekDay[]>(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
   const [minutes, setMinutes] = useState(30);
+  const [startHour, setStartHour] = useState(9);
   const [feedback, setFeedback] = useState("");
   const schedule = useMemo(() => buildWeeklyStudySchedule(plan, days, minutes), [plan, days, minutes]);
   const text = formatWeeklyStudyScheduleText(schedule);
@@ -30,6 +32,7 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
       <div><h3 className="text-sm font-extrabold text-slate-950">Build a seven-day schedule</h3><p className="mt-1 text-xs leading-5 text-slate-600">Choose study days and a daily target. This is a plan only; it does not log sessions or modify saved goals.</p></div>
       <ThemedExportSelect name="weeklyMinutes" label="Minutes per study day" defaultValue="30" value={String(minutes)} onValueChange={value => { setMinutes(Number(value)); setFeedback(""); }} options={[15, 30, 45, 60, 90, 120].map(value => ({ value: String(value), label: `${value} minutes` }))} />
     </div>
+    <div className="flex flex-wrap items-end gap-3"><ThemedExportSelect name="calendarStartHour" label="Calendar start (UTC)" defaultValue="9" value={String(startHour)} onValueChange={value => { setStartHour(Number(value)); setFeedback(""); }} options={[8, 9, 12, 15, 17, 19].map(value => ({ value: String(value), label: `${String(value).padStart(2, "0")}:00 UTC` }))} /><p className="max-w-lg text-xs leading-5 text-slate-500">Calendar download schedules the next Monday–Sunday week, at your selected UTC time. Imported events are tentative plans, not completed activity.</p></div>
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7" aria-label="Choose study days">
       {WEEK_DAYS.map(day => {
         const active = days.includes(day);
@@ -42,7 +45,10 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
     <div className="flex flex-wrap gap-2">
       <button type="button" disabled={!schedule.entries.length} className={actionClass} onClick={() => { download(text, weeklyStudyScheduleFilename("txt"), "text/plain;charset=utf-8"); setFeedback("TXT schedule prepared."); }}>Download TXT</button>
       <button type="button" disabled={!schedule.entries.length} className={actionClass} onClick={() => { download(JSON.stringify(schedule, null, 2) + "\n", weeklyStudyScheduleFilename("json"), "application/json;charset=utf-8"); setFeedback("JSON schedule prepared."); }}>Download JSON</button>
-      <button type="button" className={actionClass} onClick={() => { setDays(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]); setMinutes(30); setFeedback("Schedule reset."); }}>Reset schedule</button>
+      <button type="button" disabled={!schedule.entries.length} className={actionClass} onClick={() => { download(formatWeeklyScheduleCsv(schedule), "weekly-study-schedule.csv", "text/csv;charset=utf-8"); setFeedback("CSV schedule prepared."); }}>Download CSV</button>
+      <button type="button" disabled={!schedule.entries.length} className={actionClass} onClick={() => { download(formatWeeklyScheduleIcs(schedule, new Date(), startHour), "weekly-study-schedule.ics", "text/calendar;charset=utf-8"); setFeedback("Calendar file prepared for the next UTC week."); }}>Download calendar (.ics)</button>
+      <button type="button" disabled={!schedule.entries.length} className={actionClass} onClick={() => { void navigator.clipboard.writeText(text).then(() => setFeedback("Schedule copied.")).catch(() => setFeedback("Clipboard unavailable. Use TXT download.")); }}>Copy schedule</button>
+      <button type="button" className={actionClass} onClick={() => { setDays(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]); setMinutes(30); setStartHour(9); setFeedback("Schedule reset."); }}>Reset schedule</button>
     </div>
     <p aria-live="polite" className="text-xs text-slate-600">{feedback}</p>
     <p className="text-xs text-slate-500">{schedule.note} This schedule is generated locally and is not stored in your account.</p>

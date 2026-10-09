@@ -1,0 +1,23 @@
+import { describe, expect, it } from "vitest";
+import { buildStudyActionPlan } from "../../../../apps/web/src/app/dashboard/progress/study-action-plan";
+import { buildWeeklyStudySchedule } from "../../../../apps/web/src/app/dashboard/progress/study-weekly-schedule";
+import { formatWeeklyScheduleCsv, formatWeeklyScheduleIcs, nextMondayUtc } from "../../../../apps/web/src/app/dashboard/progress/study-schedule-exports";
+const schedule = buildWeeklyStudySchedule(buildStudyActionPlan([]), ["Monday", "Wednesday"], 45);
+const reference = new Date("2026-10-10T10:00:00Z");
+describe("weekly schedule exports", () => {
+  it("produces spreadsheet-safe quoted CSV", () => expect(formatWeeklyScheduleCsv(schedule)).toContain('"Monday","45"'));
+  it("marks CSV sessions as planned", () => expect(formatWeeklyScheduleCsv(schedule)).toContain("Planned, not completed"));
+  it("includes a UTF-8 BOM for spreadsheet tools", () => expect(formatWeeklyScheduleCsv(schedule).charCodeAt(0)).toBe(65279));
+  it("does not create calendar events for empty schedules", () => expect(formatWeeklyScheduleIcs(buildWeeklyStudySchedule(buildStudyActionPlan([]), [], 30), reference)).not.toContain("BEGIN:VEVENT"));
+  it("finds the next Monday in UTC", () => expect(nextMondayUtc(reference).toISOString()).toBe("2026-10-12T00:00:00.000Z"));
+  it("chooses the following week when today is Monday", () => expect(nextMondayUtc(new Date("2026-10-12T12:00:00Z")).toISOString()).toBe("2026-10-19T00:00:00.000Z"));
+  it("supports year boundaries", () => expect(nextMondayUtc(new Date("2026-12-31T23:00:00Z")).toISOString()).toBe("2027-01-04T00:00:00.000Z"));
+  it("writes valid calendar framing", () => { const ics = formatWeeklyScheduleIcs(schedule, reference); expect(ics).toContain("BEGIN:VCALENDAR\r\n"); expect(ics).toContain("END:VCALENDAR\r\n"); });
+  it("writes one event per selected weekday", () => expect(formatWeeklyScheduleIcs(schedule, reference).match(/BEGIN:VEVENT/g)).toHaveLength(2));
+  it("preserves exact UTC times and duration", () => { const ics = formatWeeklyScheduleIcs(schedule, reference, 17); expect(ics).toContain("DTSTART:20261012T170000Z"); expect(ics).toContain("DTEND:20261012T174500Z"); });
+  it("marks imported events tentative", () => expect(formatWeeklyScheduleIcs(schedule, reference)).toContain("STATUS:TENTATIVE"));
+  it("includes no recurring event rule", () => expect(formatWeeklyScheduleIcs(schedule, reference)).not.toContain("RRULE"));
+  it("rejects invalid start hours", () => expect(() => formatWeeklyScheduleIcs(schedule, reference, 24)).toThrow());
+  it("rejects invalid reference dates", () => expect(() => nextMondayUtc(new Date(NaN))).toThrow());
+  it("folds long calendar lines", () => { const ics = formatWeeklyScheduleIcs(schedule, reference); expect(ics.split("\r\n").every(line => new TextEncoder().encode(line).length <= 75)).toBe(true); });
+});
