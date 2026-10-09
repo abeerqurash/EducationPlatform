@@ -38,3 +38,23 @@ export function selectMatchingGoals(eligible: readonly string[], limit = MAX_BUL
 export function bulkSelectionRemainder(matchingCount: number): number {
   return Math.max(0, matchingCount - MAX_BULK_GOALS);
 }
+
+/** Toggle all eligible members of a deadline group without disturbing selections in other groups. */
+export function toggleBulkGoalGroup(selected: readonly string[], groupIds: readonly string[], checked: boolean, limit = MAX_BULK_GOALS): string[] {
+  const safeLimit = Number.isSafeInteger(limit) ? Math.max(0, Math.min(MAX_BULK_GOALS, limit)) : MAX_BULK_GOALS;
+  const group = new Set(groupIds);
+  const current = [...new Set(selected)].slice(0, safeLimit);
+  if (!checked) return current.filter(id => !group.has(id));
+  const result = [...current];
+  for (const id of group) {
+    if (result.length >= safeLimit) break;
+    if (!result.includes(id)) result.push(id);
+  }
+  return result;
+}
+
+/** Returns the number of unselected group goals, including those beyond the batch limit. */
+export function remainingGroupGoals(selected: readonly string[], groupIds: readonly string[]): number {
+  const chosen = new Set(selected);
+  return new Set(groupIds).size - [...new Set(groupIds)].filter(id => chosen.has(id)).length;
+}

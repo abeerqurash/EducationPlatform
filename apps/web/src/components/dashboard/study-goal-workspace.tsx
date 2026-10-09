@@ -7,7 +7,7 @@ import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { Panel } from "@/components/app-shell/dashboard-ui";
 import { filterAndSortGoals, type GoalWorkspaceFilter } from "./study-goal-filter";
-import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, selectMatchingGoals, bulkSelectionRemainder, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
+import { bulkSelectionOnPage, describeBulkSelection, reconcileBulkSelection, selectMatchingGoals, bulkSelectionRemainder, toggleBulkGoalGroup, remainingGroupGoals, MAX_BULK_GOALS, type GoalBulkOperation } from "./study-goal-bulk";
 import { paginateGoals } from "./study-goal-pagination";
 import { summarizeWorkspaceGoals } from "./study-goal-workspace-insights";
 import { StudyGoalInsightsPanel } from "./study-goal-insights-panel";
@@ -48,6 +48,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const [sort, setSort] = useState("deadline");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<"list" | "grouped">("list");
   const [pageJump, setPageJump] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -67,6 +68,7 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
   const eligibleIds = visible.map(goal => goal.id);
   const allMatchingSelected = eligibleIds.length > 0 && selectMatchingGoals(eligibleIds).every(id => selectedIds.includes(id));
   const toggleGoal = (id: string, checked: boolean) => setSelectedIds(previous => checked ? previous.includes(id) || previous.length >= MAX_BULK_GOALS ? previous : [...previous, id] : previous.filter(item => item !== id));
+  const toggleGroup = (ids: string[], checked: boolean) => setSelectedIds(previous => toggleBulkGoalGroup(previous, ids, checked));
   const togglePage = (checked: boolean) => setSelectedIds(previous => checked ? [...previous, ...pageIds.filter(id => !previous.includes(id))].slice(0, MAX_BULK_GOALS) : previous.filter(id => !pageIds.includes(id)));
   const applyBulk = async () => {
     if (!selectedIds.length || bulkBusy) return;
@@ -170,11 +172,19 @@ export function StudyGoalWorkspace({ goals, todayUtc }: { goals: Goal[]; todayUt
       </div>
       {visible.length ? (viewMode === "list" ? <div className="divide-y divide-slate-100">{pagination.items.map(renderGoal)}</div> :
         <div className="space-y-6">{deadlineGroups.map(group => <section key={group.key} aria-label={`${group.label} goals`} className="overflow-hidden rounded-2xl border border-[#dfe0d5]">
-          <header className="flex flex-wrap items-center justify-between gap-2 bg-[#f7f8f2] px-4 py-3">
-            <h3 className="text-sm font-extrabold text-[#171912]">{group.label} <span className="font-medium text-slate-500">({group.goals.length})</span></h3>
-            <p className="text-xs font-semibold tabular-nums text-slate-600">{group.minutes.toLocaleString()} target min</p>
+          <header className="flex flex-wrap items-center justify-between gap-3 bg-[#f7f8f2] px-4 py-3">
+            <div className="min-w-0">
+              <h3 className="text-sm font-extrabold text-[#171912]">{group.label} <span className="font-medium text-slate-500">({group.goals.length})</span></h3>
+              <p className="mt-1 text-xs font-semibold tabular-nums text-slate-600">{group.minutes.toLocaleString()} target min · {remainingGroupGoals(selectedIds, group.goals.map(goal => goal.id))} unselected</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="flex items-center gap-2 text-xs font-bold text-[#171912]">
+                <input type="checkbox" aria-label={`Select all ${group.label.toLowerCase()} goals on this page`} checked={group.goals.every(goal => selectedIds.includes(goal.id))} disabled={bulkBusy || (selectedIds.length >= MAX_BULK_GOALS && group.goals.every(goal => !selectedIds.includes(goal.id)))} onChange={event => toggleGroup(group.goals.map(goal => goal.id), event.target.checked)} className="h-4 w-4 accent-[#171912]" /> Select group
+              </label>
+              <button type="button" aria-expanded={!collapsedGroups.includes(group.key)} aria-controls={`goal-deadline-group-${group.key}`} onClick={() => setCollapsedGroups(previous => previous.includes(group.key) ? previous.filter(key => key !== group.key) : [...previous, group.key])} className="min-h-[40px] rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] hover:border-[#171912]">{collapsedGroups.includes(group.key) ? "Expand" : "Collapse"}</button>
+            </div>
           </header>
-          <div className="divide-y divide-slate-100 px-4">{group.goals.map(renderGoal)}</div>
+          <div id={`goal-deadline-group-${group.key}`} hidden={collapsedGroups.includes(group.key)} className="divide-y divide-slate-100 px-4">{group.goals.map(renderGoal)}</div>
         </section>)}</div>) : <p role="status" className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No goals match these filters.</p>}
       {pagination.totalPages > 1 && <nav aria-label="Study goal pages" className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
         <p className="text-xs font-semibold tabular-nums text-slate-600">Page {pagination.page} of {pagination.totalPages}</p>
