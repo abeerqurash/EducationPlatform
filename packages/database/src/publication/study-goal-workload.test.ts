@@ -1,0 +1,23 @@
+import { describe, expect, it } from "vitest";
+import { forecastGoalWorkload, workloadForecastCsv, workloadForecastText } from "../../../../apps/web/src/app/dashboard/study-plan/goal-workload";
+import type { PrioritizedGoal } from "../../../../apps/web/src/app/dashboard/study-plan/goal-priority";
+const goal = (id: string, targetDate: string | null, targetMinutes = 30): PrioritizedGoal => ({ id, title: `Goal ${id}`, targetDate, targetMinutes, daysUntilDue: null, priority: "later" });
+const today = "2026-10-10";
+describe("goal workload forecast", () => {
+  it("groups overdue deadlines", () => expect(forecastGoalWorkload([goal("a", "2026-10-09")], today).buckets[0].minutes).toBe(30));
+  it("groups due today into first week", () => expect(forecastGoalWorkload([goal("a", today)], today).buckets[1].goals).toBe(1));
+  it("groups seventh day into second bucket", () => expect(forecastGoalWorkload([goal("a", "2026-10-17")], today).buckets[2].goals).toBe(1));
+  it("groups day 27 into fourth week", () => expect(forecastGoalWorkload([goal("a", "2026-11-06")], today).buckets[4].goals).toBe(1));
+  it("groups day 28 as later", () => expect(forecastGoalWorkload([goal("a", "2026-11-07")], today).buckets[5].goals).toBe(1));
+  it("groups absent dates separately", () => expect(forecastGoalWorkload([goal("a", null)], today).unscheduledMinutes).toBe(30));
+  it("handles invalid dates without guessing", () => expect(forecastGoalWorkload([goal("a", "2026-02-30")], today).buckets[6].goals).toBe(1));
+  it("does not process invalid reference dates", () => expect(forecastGoalWorkload([goal("a", today)], "invalid").totalGoals).toBe(0));
+  it("clamps negative and nonfinite minutes", () => expect(forecastGoalWorkload([goal("a", today, -1), goal("b", today, NaN)], today).scheduledMinutes).toBe(0));
+  it("caps extreme minutes", () => expect(forecastGoalWorkload([goal("a", today, 999999)], today).scheduledMinutes).toBe(100000));
+  it("counts overloaded weeks", () => expect(forecastGoalWorkload([goal("a", today, 400)], today, 300).overloadedWeeks).toBe(1));
+  it("does not flag equal capacity", () => expect(forecastGoalWorkload([goal("a", today, 300)], today, 300).overloadedWeeks).toBe(0));
+  it("clamps invalid capacity", () => expect(forecastGoalWorkload([], today, Infinity).capacity).toBe(300));
+  it("exports readable forecast", () => expect(workloadForecastText(forecastGoalWorkload([], today), today)).toContain("not completed study time"));
+  it("exports CSV with all buckets", () => expect(workloadForecastCsv(forecastGoalWorkload([], today)).split("\r\n")).toHaveLength(9));
+  it("does not treat arbitrary text as a deadline", () => expect(forecastGoalWorkload([goal("a", "tomorrow")], today).buckets[6].goals).toBe(1));
+});

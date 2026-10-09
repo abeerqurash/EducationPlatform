@@ -11,6 +11,7 @@ import { StudyGoalWorkspace } from "@/components/dashboard/study-goal-workspace"
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { summarizeGoalHealth } from "./goal-insights";
 import { prioritizeStudyGoals } from "./goal-priority";
+import { StudyGoalWorkloadForecast } from "@/components/dashboard/study-goal-workload-forecast";
 import { StudyGoalPriorityQueue } from "@/components/dashboard/study-goal-priority-queue";
 
 export const metadata = { title: "Study plan" };
@@ -64,6 +65,10 @@ export default async function StudyPlanPage() {
 
         <Panel title="Goal priority queue" description="Read-only deadline-based prioritization of up to 50 open account goals, with filtering and a portable text report.">
           <StudyGoalPriorityQueue goals={priorityQueue} todayUtc={todayUtc} />
+        </Panel>
+
+        <Panel title="Four-week goal workload forecast" description="Review deadline pressure against a configurable weekly study capacity. This is a read-only planning estimate.">
+          <StudyGoalWorkloadForecast goals={prioritizeStudyGoals(workspace.goals, todayUtc, 100)} todayUtc={todayUtc} />
         </Panel>
 
         <Panel title="Goal health overview" description="Live insights from your current, non-archived goals. Deadlines are compared using UTC dates.">
