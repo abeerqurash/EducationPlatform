@@ -10,6 +10,8 @@ import { Eyebrow, Panel } from "@/components/app-shell/dashboard-ui";
 import { StudyGoalWorkspace } from "@/components/dashboard/study-goal-workspace";
 import { ThemedFormDate } from "@/components/shared/themed-form-date";
 import { summarizeGoalHealth } from "./goal-insights";
+import { prioritizeStudyGoals } from "./goal-priority";
+import { StudyGoalPriorityQueue } from "@/components/dashboard/study-goal-priority-queue";
 
 export const metadata = { title: "Study plan" };
 
@@ -24,6 +26,7 @@ export default async function StudyPlanPage() {
 
   const todayUtc = new Date().toISOString().slice(0, 10);
   const goalHealth = summarizeGoalHealth(workspace.goals, todayUtc);
+  const priorityQueue = prioritizeStudyGoals(workspace.goals, todayUtc, 50);
 
   return (
     <DashboardShell userName={session.user.name} userEmail={session.user.email} active="Study plan">
@@ -58,6 +61,10 @@ export default async function StudyPlanPage() {
             <a href="/dashboard/study-plan/health-text" className="inline-flex min-h-[44px] items-center rounded-full border border-[#dfe0d5] bg-white px-4 text-xs font-bold text-[#171912] transition hover:border-[#171912]">Report TXT</a>
           </div>
         </section>
+
+        <Panel title="Goal priority queue" description="Read-only deadline-based prioritization of up to 50 open account goals, with filtering and a portable text report.">
+          <StudyGoalPriorityQueue goals={priorityQueue} todayUtc={todayUtc} />
+        </Panel>
 
         <Panel title="Goal health overview" description="Live insights from your current, non-archived goals. Deadlines are compared using UTC dates.">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
