@@ -11,19 +11,26 @@ export type WeeklyStudySchedule = {
   note: string;
 };
 
-export function buildWeeklyStudySchedule(plan: StudyActionPlan, selectedDays: readonly WeekDay[], minutesPerDay: number): WeeklyStudySchedule {
+/** Clamp day-specific targets to a safe, finite duration; undefined inherits the weekly default. */
+export function normalizeDayMinutes(value: number | undefined, fallback: number): number {
+  if (value === undefined) return fallback;
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return Math.min(720, Math.max(5, Math.floor(value)));
+}
+
+export function buildWeeklyStudySchedule(plan: StudyActionPlan, selectedDays: readonly WeekDay[], minutesPerDay: number, dayMinutes: Partial<Record<WeekDay, number>> = {}): WeeklyStudySchedule {
   const allowed = new Set(selectedDays.filter(day => WEEK_DAYS.includes(day)));
   const safeMinutes = Number.isFinite(minutesPerDay) && minutesPerDay > 0 ? Math.min(720, Math.floor(minutesPerDay)) : 30;
   const actions = plan.actions.map(item => item.nextStep);
   const entries = WEEK_DAYS.filter(day => allowed.has(day)).map((day, index) => ({
     day,
-    minutes: safeMinutes,
+    minutes: normalizeDayMinutes(dayMinutes[day], safeMinutes),
     action: actions.length ? actions[index % actions.length] : "Review your learning goals and record a focused study session.",
   }));
   return {
     version: 1,
     benchmarkMinutes: plan.benchmarkMinutes,
-    scheduledMinutes: entries.length * safeMinutes,
+    scheduledMinutes: entries.reduce((total, entry) => total + entry.minutes, 0),
     scheduledDays: entries.length,
     entries,
     note: "This is a proposed weekly schedule, not recorded study activity. Adjust it to your needs.",
