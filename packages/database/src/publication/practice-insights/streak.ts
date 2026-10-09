@@ -1,0 +1,2 @@
+import { type Attempt, dayKey } from "./shared";
+export function practiceStreak(entries:readonly Attempt[]) {const days=[...new Set(entries.map(a=>dayKey(a.createdAt)))].sort();let best=0,run=0;for(let i=0;i<days.length;i++){const delta=i?Math.round((Date.parse(days[i])-Date.parse(days[i-1]))/86400000):0;run=i===0||delta!==1?1:run+1;best=Math.max(best,run);}return {longest:best,activeDays:days.length};}

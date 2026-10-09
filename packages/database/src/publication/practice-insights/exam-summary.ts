@@ -1,0 +1,2 @@
+import { type Attempt, percent } from "./shared";
+export function examSummary(entries:readonly Attempt[]) {const map=new Map<string,{exam:string;sessions:number;correct:number;questions:number}>();for(const a of entries){const x=map.get(a.exam)??{exam:a.exam,sessions:0,correct:0,questions:0};x.sessions++;x.correct+=a.correct;x.questions+=a.total;map.set(a.exam,x);}return [...map.values()].map(x=>({...x,accuracy:percent(x.correct,x.questions)})).sort((a,b)=>a.exam.localeCompare(b.exam));}

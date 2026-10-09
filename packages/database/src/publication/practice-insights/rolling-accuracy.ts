@@ -1,0 +1,2 @@
+import { type Attempt, byDate, percent, dayKey } from "./shared";
+export function rollingAccuracy(entries:readonly Attempt[],window=5) {const ordered=[...entries].sort(byDate);const n=Math.max(1,Math.floor(window));return ordered.map((a,i)=>{const part=ordered.slice(Math.max(0,i-n+1),i+1);return {date:dayKey(a.createdAt),accuracy:percent(part.reduce((s,x)=>s+x.correct,0),part.reduce((s,x)=>s+x.total,0))};});}

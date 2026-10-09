@@ -1,0 +1,2 @@
+import { type Attempt, percent } from "./shared";
+export function weakTopics(entries:readonly Attempt[]) {const map=new Map<string,{topic:string;correct:number;total:number}>();for(const a of entries)for(const t of a.topicBreakdown??[]){const key=a.exam+" / "+t.topic;const x=map.get(key)??{topic:key,correct:0,total:0};x.correct+=t.correct;x.total+=t.total;map.set(key,x);}return [...map.values()].map(x=>({...x,accuracy:percent(x.correct,x.total)})).sort((a,b)=>a.accuracy-b.accuracy||b.total-a.total);}

@@ -1,0 +1,2 @@
+import { type Attempt, dayKey } from "./shared";
+export function dailyActivity(entries:readonly Attempt[]) {const map=new Map<string,{day:string;sessions:number;questions:number}>();for(const a of entries){const day=dayKey(a.createdAt);const x=map.get(day)??{day,sessions:0,questions:0};x.sessions++;x.questions+=a.total;map.set(day,x);}return [...map.values()].sort((a,b)=>a.day.localeCompare(b.day));}
