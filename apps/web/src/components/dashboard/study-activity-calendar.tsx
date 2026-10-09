@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DAILY_TARGET_OPTIONS, summarizeDailyTarget, visibleCalendarDays, type CalendarViewMode } from "@/app/dashboard/progress/calendar-view";
 import { createActivityCalendar, type CalendarActivityDay } from "@/app/dashboard/progress/activity-calendar";
 import { groupActivityMonths, moveCalendarSelection } from "@/app/dashboard/progress/calendar-months";
 import { StudyActivityWeeklySummary } from "@/components/dashboard/study-activity-weekly-summary";
@@ -11,10 +12,14 @@ const LEVELS = ["bg-slate-100", "bg-violet-200", "bg-violet-400", "bg-violet-600
 
 export function StudyActivityCalendar({ days, recentActivities = [] }: { days: CalendarActivityDay[]; recentActivities?: CalendarRecentActivity[] }) {
   const calendar = createActivityCalendar(days);
-  const months = groupActivityMonths(calendar.cells);
+  const [dailyTarget, setDailyTarget] = useState(30);
+  const [viewMode, setViewMode] = useState<CalendarViewMode>("all");
+  const filteredDays = visibleCalendarDays(calendar.cells, viewMode, dailyTarget);
+  const months = groupActivityMonths(filteredDays);
   const orderedDays = months.flatMap(month => month.entries);
   const [selected, setSelected] = useState<string | null>(null);
   const active = calendar.cells.find(day => day.day === selected) ?? null;
+  const selectedTarget = active ? summarizeDailyTarget(active.minutes, dailyTarget) : null;
   const dayRecords = active ? activityDetailsForDay(recentActivities, active.day) : [];
   const daySummary = summarizeCalendarDayDetails(dayRecords);
   return (
@@ -25,6 +30,15 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
         <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-500">Study minutes</p><p className="mt-1 text-xl font-extrabold text-slate-950">{calendar.totalMinutes}</p></div>
         <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-500">Activities</p><p className="mt-1 text-xl font-extrabold text-slate-950">{calendar.totalActivities}</p></div>
       </div>
+      <div className="flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4" aria-label="Calendar display controls">
+        <div className="space-y-2"><p className="text-xs font-bold text-slate-700">Daily study benchmark</p><div className="flex flex-wrap gap-2" role="group" aria-label="Daily benchmark in minutes">
+          {DAILY_TARGET_OPTIONS.map(value => <button key={value} type="button" aria-pressed={dailyTarget === value} onClick={() => setDailyTarget(value)} className={`min-h-11 rounded-full border px-4 text-xs font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 ${dailyTarget === value ? "border-violet-700 bg-violet-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:bg-violet-50"}`}>{value} min</button>)}
+        </div></div>
+        <div className="space-y-2"><p className="text-xs font-bold text-slate-700">Show dates</p><div className="flex flex-wrap gap-2" role="group" aria-label="Calendar date filter">
+          {([{ value: "all", label: "All" }, { value: "active", label: "Active" }, { value: "target", label: "Target met" }, { value: "missed", label: "Below target" }] as const).map(option => <button key={option.value} type="button" aria-pressed={viewMode === option.value} onClick={() => setViewMode(option.value)} className={`min-h-11 rounded-full border px-4 text-xs font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 ${viewMode === option.value ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:bg-violet-50"}`}>{option.label}</button>)}
+        </div></div>
+        <p className="w-full text-xs text-slate-600" aria-live="polite">Showing {filteredDays.length} of {calendar.cells.length} UTC dates. Filters change visible date squares only; totals and streaks retain the full reporting period.</p>
+      </div>
       <div className="space-y-4">
         {months.map(month => <div key={month.key} className="rounded-2xl border border-slate-200 bg-white p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-950">{month.label}</h3><p className="text-xs text-slate-500">{month.activeDays}/{month.entries.length} active · {month.minutes} min · {month.coverage}% consistency</p></div>
@@ -32,9 +46,9 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
             {month.entries.map(day => <button key={day.day} type="button" onClick={() => setSelected(day.day)} aria-pressed={selected === day.day} aria-label={`${day.day}: ${day.minutes} study minutes, ${day.activities} activities`} title={`${day.day} · ${day.minutes} min · ${day.activities} activities`} className={`h-9 w-9 rounded-xl border-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 ${selected === day.day ? "border-slate-900" : "border-transparent"} ${LEVELS[day.intensity]} hover:border-violet-500`} />)}
           </div>
         </div>)}
-        {!months.length && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No recorded dates in this period.</p>}
+        {!months.length && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No dates match this filter. Choose All to see the entire reporting period.</p>}
       </div>
-      <StudyCalendarMilestones days={calendar.cells} />
+      <StudyCalendarMilestones days={calendar.cells} dailyTarget={dailyTarget} />
       <StudyActivityWeeklySummary days={calendar.cells} onSelectDay={setSelected} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-500">Select a square to inspect its UTC date. Empty squares indicate no recorded activity.</p>
@@ -43,6 +57,11 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
       <div aria-live="polite" className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
         {active ? <p><strong className="text-slate-950">{active.day} (UTC)</strong> · {active.minutes} recorded minutes · {active.activities} activities</p> : <p>Choose a date to view its recorded activity.</p>}
       </div>
+      {selectedTarget && <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4" aria-label="Selected date benchmark">
+        <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-extrabold text-violet-950">{active?.day} · Daily benchmark</p><span className="text-xs font-bold text-violet-900">{selectedTarget.achieved ? "Benchmark achieved" : `${selectedTarget.remaining} minutes remaining`}</span></div>
+        <div role="progressbar" aria-label="Selected date benchmark completion" aria-valuemin={0} aria-valuemax={100} aria-valuenow={selectedTarget.percent} className="mt-3 h-2.5 overflow-hidden rounded-full bg-violet-200"><div className="h-full rounded-full bg-violet-700" style={{ width: `${selectedTarget.percent}%` }} /></div>
+        <p className="mt-2 text-xs text-violet-900">{selectedTarget.recorded} recorded / {selectedTarget.target} target minutes{selectedTarget.exceeded > 0 ? ` · ${selectedTarget.exceeded} minutes above target` : ""}</p>
+      </div>}
       {active && <section aria-label="Selected date recent activity" className="rounded-2xl border border-[#dfe0d5] bg-[#f7f8f2] p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div><h3 className="text-sm font-extrabold text-[#171912]">Activity details · {active.day}</h3><p className="mt-1 text-xs text-slate-600">Recent records loaded for this UTC date</p></div>
