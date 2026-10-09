@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { createActivityCalendar, type CalendarActivityDay } from "@/app/dashboard/progress/activity-calendar";
+import { groupActivityMonths, moveCalendarSelection } from "@/app/dashboard/progress/calendar-months";
 
 const LEVELS = ["bg-slate-100", "bg-violet-200", "bg-violet-400", "bg-violet-600", "bg-violet-800"] as const;
 
 export function StudyActivityCalendar({ days }: { days: CalendarActivityDay[] }) {
   const calendar = createActivityCalendar(days);
+  const months = groupActivityMonths(calendar.cells);
+  const orderedDays = months.flatMap(month => month.entries);
   const [selected, setSelected] = useState<string | null>(null);
   const active = calendar.cells.find(day => day.day === selected) ?? null;
   return (
@@ -17,8 +20,14 @@ export function StudyActivityCalendar({ days }: { days: CalendarActivityDay[] })
         <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-500">Study minutes</p><p className="mt-1 text-xl font-extrabold text-slate-950">{calendar.totalMinutes}</p></div>
         <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-500">Activities</p><p className="mt-1 text-xl font-extrabold text-slate-950">{calendar.totalActivities}</p></div>
       </div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Daily recorded activity, dates in UTC">
-        {calendar.cells.map(day => <button key={day.day} type="button" onClick={() => setSelected(day.day)} aria-pressed={selected === day.day} aria-label={`${day.day}: ${day.minutes} study minutes, ${day.activities} activities`} title={`${day.day} · ${day.minutes} min · ${day.activities} activities`} className={`h-9 w-9 rounded-xl border-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 ${selected === day.day ? "border-slate-900" : "border-transparent"} ${LEVELS[day.intensity]} hover:border-violet-500`} />)}
+      <div className="space-y-4">
+        {months.map(month => <div key={month.key} className="rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-950">{month.label}</h3><p className="text-xs text-slate-500">{month.activeDays}/{month.entries.length} active · {month.minutes} min · {month.coverage}% consistency</p></div>
+          <div className="flex flex-wrap gap-2" role="group" aria-label={`Recorded activity in ${month.label}, UTC`}>
+            {month.entries.map(day => <button key={day.day} type="button" onClick={() => setSelected(day.day)} aria-pressed={selected === day.day} aria-label={`${day.day}: ${day.minutes} study minutes, ${day.activities} activities`} title={`${day.day} · ${day.minutes} min · ${day.activities} activities`} className={`h-9 w-9 rounded-xl border-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 ${selected === day.day ? "border-slate-900" : "border-transparent"} ${LEVELS[day.intensity]} hover:border-violet-500`} />)}
+          </div>
+        </div>)}
+        {!months.length && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No recorded dates in this period.</p>}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-500">Select a square to inspect its UTC date. Empty squares indicate no recorded activity.</p>
@@ -26,6 +35,10 @@ export function StudyActivityCalendar({ days }: { days: CalendarActivityDay[] })
       </div>
       <div aria-live="polite" className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
         {active ? <p><strong className="text-slate-950">{active.day} (UTC)</strong> · {active.minutes} recorded minutes · {active.activities} activities</p> : <p>Choose a date to view its recorded activity.</p>}
+      </div>
+      <div className="flex flex-wrap gap-2" aria-label="Selected date navigation">
+        <button type="button" disabled={!orderedDays.length || selected === orderedDays[0]?.day} onClick={() => setSelected(moveCalendarSelection(orderedDays, selected, -1))} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Previous day</button>
+        <button type="button" disabled={!orderedDays.length || selected === orderedDays.at(-1)?.day} onClick={() => setSelected(moveCalendarSelection(orderedDays, selected, 1))} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 disabled:opacity-40">Next day</button>
       </div>
     </section>
   );
