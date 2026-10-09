@@ -91,13 +91,25 @@ export function gradeTrustedPracticeAttempt(
   const answers: PracticeAnswerInput[] = [];
   const seen = new Set<string>();
   for (const raw of data.answers as unknown[]) {
-    if (!own(raw) || !validId(raw.questionId) || !allowedIds.has(raw.questionId) ||
-        seen.has(raw.questionId)) fail("Unknown or duplicate answer");
-    const question = trusted.get(raw.questionId)!;
-    if (!Number.isSafeInteger(raw.choice) || (raw.choice as number) < 0 ||
-        (raw.choice as number) >= question.choiceCount) fail("Invalid answer choice");
-    seen.add(raw.questionId);
-    answers.push({ questionId: raw.questionId, choice: raw.choice as number });
+    if (!own(raw)) fail("Invalid answer");
+    const answer = raw as Record<string, unknown>;
+    const questionId = answer.questionId;
+    const choice = answer.choice;
+    if (typeof questionId !== "string" || !validId(questionId)) {
+      fail("Invalid answer question ID");
+    }
+    if (!allowedIds.has(questionId) || seen.has(questionId)) {
+      fail("Unknown or duplicate answer");
+    }
+    const question = trusted.get(questionId)!;
+    if (typeof choice !== "number" || !Number.isSafeInteger(choice)) {
+      fail("Invalid answer choice");
+    }
+    if (choice < 0 || choice >= question.choiceCount) {
+      fail("Invalid answer choice");
+    }
+    seen.add(questionId);
+    answers.push({ questionId, choice });
   }
   if (!validDate(data.startedAt) || !validDate(data.submittedAt)) fail("Invalid attempt timestamps");
   const start = Date.parse(data.startedAt as string);

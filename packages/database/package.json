@@ -1,33 +1,35 @@
 {
-    "name": "@education/database",
-    "version": "0.1.0",
-    "private": true,
-    "type": "module",
-    "exports": {
-        ".": "./src/index.ts",
-        "./schema": "./src/schema/index.ts"
-    },
-    "scripts": {
-        "db:generate": "drizzle-kit generate",
-        "db:migrate": "drizzle-kit migrate",
-        "db:studio": "drizzle-kit studio",
-        "db:seed": "tsx src/seed/index.ts",
-        "typecheck": "tsc --noEmit",
-        "seed:gpa": "tsx src/seeds/run-gpa.ts",
-        "test": "vitest run",
-        "seed:rbac": "tsx src/seeds/run-rbac.ts",
-        "seed:grades": "tsx src/seeds/run-grade-calculators.ts",
-        "seed:math": "tsx src/seeds/run-math-calculators.ts",
-        "seed:math:batch9": "tsx src/seeds/run-math-calculators-batch-9.ts",
-        "seed:sat": "tsx src/seeds/run-digital-sat.ts"
-    },
-    "dependencies": {
-        "drizzle-orm": "^0.45.3",
-        "postgres": "^3.4.9"
-    },
-    "devDependencies": {
-        "dotenv": "^18.0.6",
-        "drizzle-kit": "^0.31.11",
-        "tsx": "^4.23.15"
-    }
+  "name": "@education/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./practice-contract": "./src/publication/practice-attempt-contract.ts",
+    "./practice-progress": "./src/publication/practice-progress.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/seed/index.ts",
+    "typecheck": "tsc --noEmit",
+    "seed:gpa": "tsx src/seeds/run-gpa.ts",
+    "test": "vitest run",
+    "seed:rbac": "tsx src/seeds/run-rbac.ts",
+    "seed:grades": "tsx src/seeds/run-grade-calculators.ts",
+    "seed:math": "tsx src/seeds/run-math-calculators.ts",
+    "seed:math:batch9": "tsx src/seeds/run-math-calculators-batch-9.ts",
+    "seed:sat": "tsx src/seeds/run-digital-sat.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.3",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "dotenv": "^18.0.6",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15"
+  }
 }
