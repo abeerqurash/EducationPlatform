@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createActivityCalendar, type CalendarActivityDay } from "@/app/dashboard/progress/activity-calendar";
 import { groupActivityMonths, moveCalendarSelection } from "@/app/dashboard/progress/calendar-months";
 import { StudyActivityWeeklySummary } from "@/components/dashboard/study-activity-weekly-summary";
+import { StudyCalendarMilestones } from "@/components/dashboard/study-calendar-milestones";
 import { activityDetailsForDay, summarizeCalendarDayDetails, type CalendarRecentActivity } from "@/app/dashboard/progress/calendar-day-details";
 
 const LEVELS = ["bg-slate-100", "bg-violet-200", "bg-violet-400", "bg-violet-600", "bg-violet-800"] as const;
@@ -33,6 +34,7 @@ export function StudyActivityCalendar({ days, recentActivities = [] }: { days: C
         </div>)}
         {!months.length && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No recorded dates in this period.</p>}
       </div>
+      <StudyCalendarMilestones days={calendar.cells} />
       <StudyActivityWeeklySummary days={calendar.cells} onSelectDay={setSelected} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-500">Select a square to inspect its UTC date. Empty squares indicate no recorded activity.</p>
