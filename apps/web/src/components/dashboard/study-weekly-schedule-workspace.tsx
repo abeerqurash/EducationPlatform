@@ -6,6 +6,7 @@ import { buildWeeklyStudySchedule, formatWeeklyStudyScheduleText, weeklyStudySch
 import { formatWeeklyScheduleCsv, formatWeeklyScheduleIcs } from "@/app/dashboard/progress/study-schedule-exports";
 import { STUDY_SCHEDULE_PRESETS, findStudySchedulePreset, formatWeeklySchedulePrintableHtml } from "@/app/dashboard/progress/study-schedule-presets";
 import { summarizeWeeklySchedule, formatWeeklyScheduleInsightsText } from "@/app/dashboard/progress/study-schedule-insights";
+import { compareStudySchedules, formatStudyScheduleComparisonText, formatStudyScheduleComparisonCsv } from "@/app/dashboard/progress/study-schedule-comparison";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 
 const actionClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
@@ -26,10 +27,14 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
   const [minutes, setMinutes] = useState(30);
   const [dayMinutes, setDayMinutes] = useState<Partial<Record<WeekDay, number>>>({});
   const [startHour, setStartHour] = useState(9);
+  const [comparisonPreset, setComparisonPreset] = useState("weekdays");
   const [feedback, setFeedback] = useState("");
   const schedule = useMemo(() => buildWeeklyStudySchedule(plan, days, minutes, dayMinutes), [plan, days, minutes, dayMinutes]);
   const text = formatWeeklyStudyScheduleText(schedule);
   const insights = summarizeWeeklySchedule(schedule);
+  const referencePreset = findStudySchedulePreset(comparisonPreset) ?? STUDY_SCHEDULE_PRESETS[0];
+  const referenceSchedule = buildWeeklyStudySchedule(plan, referencePreset.days, referencePreset.minutes, referencePreset.overrides);
+  const comparison = compareStudySchedules(schedule, referenceSchedule, referencePreset.title);
 
   return <section aria-label="Weekly study schedule" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -64,6 +69,16 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
       <div aria-label="Planned minutes by weekday" className="grid grid-cols-7 gap-1">{insights.dailyShare.map(item => <div key={item.day} className="min-w-0 text-center"><div className="flex h-20 items-end rounded-lg bg-white p-1"><div className="w-full rounded bg-violet-500" style={{ height: `${item.minutes ? Math.max(6, item.percent) : 0}%` }} /></div><p className="mt-1 text-[10px] font-bold text-slate-700">{item.day.slice(0, 3)}</p><p className="text-[10px] text-slate-600">{item.minutes}m</p></div>)}</div>
       <ul className="space-y-1 text-xs leading-5 text-slate-700">{insights.notices.map(notice => <li key={notice}>• {notice}</li>)}</ul>
       <p className="text-xs text-slate-500">These metrics describe planned sessions only, not completed activity.</p>
+    </section>
+    <section aria-label="Compare study schedules" className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <h4 className="text-sm font-extrabold text-slate-950">Compare with a schedule template</h4>
+      <p className="text-xs text-slate-600">See how your custom schedule differs from a reference template. This comparison does not modify your plan.</p>
+      <ThemedExportSelect name="comparisonPreset" label="Reference template" defaultValue="weekdays" value={comparisonPreset} onValueChange={value => { setComparisonPreset(value); setFeedback(""); }} options={STUDY_SCHEDULE_PRESETS.map(preset => ({ value: preset.id, label: preset.title }))} />
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{[{ label: "Your planned time", value: `${comparison.plannedMinutes} min` }, { label: "Template time", value: `${comparison.baselineMinutes} min` }, { label: "Weekly difference", value: `${comparison.differenceMinutes > 0 ? "+" : ""}${comparison.differenceMinutes} min` }].map(item => <div key={item.label} className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-600">{item.label}</p><p className="mt-1 text-base font-extrabold text-slate-900">{item.value}</p></div>)}</div>
+      <p className="text-xs font-semibold text-slate-800">{comparison.summary}</p>
+      <p className="text-xs text-slate-600">Added days: {comparison.daysAdded.join(", ") || "None"} · Removed days: {comparison.daysRemoved.join(", ") || "None"}</p>
+      {comparison.daysChanged.length > 0 && <ul className="space-y-1 text-xs text-slate-700">{comparison.daysChanged.map(item => <li key={item.day}>{item.day}: {item.baseline} → {item.planned} minutes</li>)}</ul>}
+      <div className="flex flex-wrap gap-2"><button type="button" className={actionClass} onClick={() => { download(formatStudyScheduleComparisonText(comparison), "study-schedule-comparison.txt", "text/plain;charset=utf-8"); setFeedback("Comparison TXT prepared."); }}>Download comparison TXT</button><button type="button" className={actionClass} onClick={() => { download(formatStudyScheduleComparisonCsv(comparison), "study-schedule-comparison.csv", "text/csv;charset=utf-8"); setFeedback("Comparison CSV prepared."); }}>Download comparison CSV</button></div>
     </section>
     <ol className="space-y-2" aria-label="Planned study sessions">{schedule.entries.map(entry => <li key={entry.day} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-extrabold text-slate-900">{entry.day} · {entry.minutes} min</p><p className="mt-1 text-xs leading-5 text-slate-600">{entry.action}</p></li>)}</ol>
     {!schedule.entries.length && <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-600">Select at least one day to create a weekly schedule.</p>}
