@@ -5,6 +5,7 @@ import type { StudyActionPlan } from "@/app/dashboard/progress/study-action-plan
 import { buildWeeklyStudySchedule, formatWeeklyStudyScheduleText, weeklyStudyScheduleFilename, WEEK_DAYS, type WeekDay } from "@/app/dashboard/progress/study-weekly-schedule";
 import { formatWeeklyScheduleCsv, formatWeeklyScheduleIcs } from "@/app/dashboard/progress/study-schedule-exports";
 import { STUDY_SCHEDULE_PRESETS, findStudySchedulePreset, formatWeeklySchedulePrintableHtml } from "@/app/dashboard/progress/study-schedule-presets";
+import { summarizeWeeklySchedule, formatWeeklyScheduleInsightsText } from "@/app/dashboard/progress/study-schedule-insights";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 
 const actionClass = "inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition-colors hover:border-violet-400 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:cursor-not-allowed disabled:opacity-50";
@@ -28,6 +29,7 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
   const [feedback, setFeedback] = useState("");
   const schedule = useMemo(() => buildWeeklyStudySchedule(plan, days, minutes, dayMinutes), [plan, days, minutes, dayMinutes]);
   const text = formatWeeklyStudyScheduleText(schedule);
+  const insights = summarizeWeeklySchedule(schedule);
 
   return <section aria-label="Weekly study schedule" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -54,6 +56,15 @@ export function StudyWeeklyScheduleWorkspace({ plan }: { plan: StudyActionPlan }
       <button type="button" className={actionClass} onClick={() => { setDayMinutes({}); setFeedback("Daily durations reset to the default."); }}>Use default duration for every day</button>
     </div>}
     <div className="flex flex-wrap gap-2"><span className="rounded-full bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">{schedule.scheduledDays} planned days</span><span className="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-800">{schedule.scheduledMinutes} planned minutes</span></div>
+    <section aria-label="Weekly schedule review" className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-extrabold text-slate-950">Weekly schedule review</h4><button type="button" className={actionClass} onClick={() => { download(formatWeeklyScheduleInsightsText(insights), "weekly-schedule-review.txt", "text/plain;charset=utf-8"); setFeedback("Schedule review prepared."); }}>Download review</button></div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {[{ label: "Planned hours", value: `${insights.totalHours} h` }, { label: "Average session", value: `${insights.averageMinutes} min` }, { label: "Longest session", value: `${insights.longestSession} min` }, { label: "Rest days", value: String(insights.restDays.length) }].map(item => <div key={item.label} className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-600">{item.label}</p><p className="mt-1 text-lg font-extrabold text-slate-950">{item.value}</p></div>)}
+      </div>
+      <div aria-label="Planned minutes by weekday" className="grid grid-cols-7 gap-1">{insights.dailyShare.map(item => <div key={item.day} className="min-w-0 text-center"><div className="flex h-20 items-end rounded-lg bg-white p-1"><div className="w-full rounded bg-violet-500" style={{ height: `${item.minutes ? Math.max(6, item.percent) : 0}%` }} /></div><p className="mt-1 text-[10px] font-bold text-slate-700">{item.day.slice(0, 3)}</p><p className="text-[10px] text-slate-600">{item.minutes}m</p></div>)}</div>
+      <ul className="space-y-1 text-xs leading-5 text-slate-700">{insights.notices.map(notice => <li key={notice}>• {notice}</li>)}</ul>
+      <p className="text-xs text-slate-500">These metrics describe planned sessions only, not completed activity.</p>
+    </section>
     <ol className="space-y-2" aria-label="Planned study sessions">{schedule.entries.map(entry => <li key={entry.day} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-extrabold text-slate-900">{entry.day} · {entry.minutes} min</p><p className="mt-1 text-xs leading-5 text-slate-600">{entry.action}</p></li>)}</ol>
     {!schedule.entries.length && <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-600">Select at least one day to create a weekly schedule.</p>}
     <div className="flex flex-wrap gap-2">
