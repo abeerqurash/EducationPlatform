@@ -82,6 +82,7 @@ export default async function TestPrepPage({ searchParams }: {
             <div className="space-y-3">
               <QuickTool title="ACT score calculator" description="Calculate an enhanced ACT score using entered section results" href="/tools/test-prep/act-score-calculator" icon="calculator" />
               <QuickTool title="SAT and other test-prep tools" description="Browse currently published test-prep tools" href="/tools/test-prep" icon="book" />
+              <QuickTool title="SAT / ACT practice questions" description="Answer original practice questions, review explanations, and download results" href="/dashboard/test-prep/practice" icon="book" />
               <QuickTool title="SAT / ACT practice planner" description="Create a topic-based practice schedule and export it" href="/dashboard/test-prep/practice-planner" icon="book" />
               <QuickTool title="Study plan" description="Create and update an exam preparation goal" href="/dashboard/study-plan" icon="target" />
               <QuickTool title="Study progress" description="Log completed practice time and review your activity" href="/dashboard/progress" icon="clock" />
