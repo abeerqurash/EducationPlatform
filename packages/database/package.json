@@ -8,7 +8,8 @@
     "./schema": "./src/schema/index.ts",
     "./practice-contract": "./src/publication/practice-attempt-contract.ts",
     "./practice-progress": "./src/publication/practice-progress.ts",
-    "./practice-insights": "./src/publication/practice-insights/index.ts"
+    "./practice-insights": "./src/publication/practice-insights/index.ts",
+    "./practice-coach": "./src/publication/practice-coach/index.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
