@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import type { Metadata } from 'next';
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 import { AppLogo } from "@/components/app-shell/app-logo";
 

@@ -1,0 +1,4 @@
+import { PublicShell, PublicCards } from '@/components/public/public-shell';
+import { publicMetadata } from '@/lib/public/seo';
+export const metadata = publicMetadata("Test preparation", "Use score tools, original practice sets and personal reports to choose your next study step.", '/test-prep');
+export default function Page() { return <PublicShell title={"Test preparation"} description={"Use score tools, original practice sets and personal reports to choose your next study step."}><PublicCards items={[{"title": "Score calculators", "description": "Explore SAT and ACT calculator methods and limitations.", "href": "/tools/test-prep"}, {"title": "Practice and review", "description": "Answer original illustrative questions and review explanations.", "href": "/practice"}, {"title": "Readiness reports", "description": "See practice patterns and unanswered items in your account.", "href": "/dashboard/test-prep/practice/readiness"}]} /></PublicShell>; }

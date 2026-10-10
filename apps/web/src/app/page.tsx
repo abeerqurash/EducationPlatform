@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/' },
   title: "Student Calculators & Education Tools",
   description:
     "Explore free education calculators, GPA and grade tools, test-prep calculators, admissions tools and study resources.",

@@ -1,0 +1,4 @@
+import { PublicShell, PublicCards } from '@/components/public/public-shell';
+import { publicMetadata } from '@/lib/public/seo';
+export const metadata = publicMetadata("Access and pricing", "Use the tools available today and see which features require an account.", '/pricing');
+export default function Page() { return <PublicShell title={"Access and pricing"} description={"Use the tools available today and see which features require an account."}><PublicCards items={[{"title": "Public tools: free", "description": "Use the implemented calculators and planners without signing in.", "href": "/tools"}, {"title": "Account practice: free", "description": "Create an account to save results and use study and practice history.", "href": "/register"}, {"title": "Paid plans", "description": "Paid subscriptions and checkout are not available in this release. Browse current free resources.", "href": "/resources"}]} /></PublicShell>; }

@@ -3,6 +3,8 @@ import {
   asc,
   eq,
 } from "drizzle-orm";
+import { getToolPageKeys, getToolPage } from './tool-pages';
+import { publicToolPaths } from '@/lib/public/routes';
 
 import {
   db,
@@ -192,13 +194,13 @@ const fallbackTools: PublicTool[] = [
   },
   {
     id:
-      "fallback-college-chance-planner",
+      "fallback-application-checklist",
 
     name:
-      "College Chance Planner",
+      "Application Checklist",
 
     slug:
-      "college-chance-planner",
+      "application-checklist",
 
     categoryName:
       "Admissions",
@@ -207,10 +209,10 @@ const fallbackTools: PublicTool[] = [
       "admissions",
 
     description:
-      "Organize academic factors and admission targets in one place.",
+      "Track application preparation and download your checklist.",
 
     access:
-      "premium",
+      "free",
 
     featured:
       false,
@@ -494,13 +496,22 @@ export async function getPublicTools(
     }
   }
 
+  const implemented = new Set(publicToolPaths());
+  const generated = getToolPageKeys().flatMap(key => {
+    const [category, slug] = key.split('/');
+    if (!category || !slug) return [];
+    const page = getToolPage(category, slug);
+    if (!page) return [];
+    return [{ id: `fallback-${slug}`, name: page.name, slug, categorySlug: category, categoryName: fallbackTools.find(t => t.categorySlug === category)?.categoryName ?? category, description: page.description, access: 'free' as const, featured: false, status: 'published' as const }];
+  });
   const merged =
     mergeTools(
-      fallbackTools,
+      mergeTools(generated, fallbackTools),
       databaseTools,
     );
 
   return merged
+    .filter(tool => implemented.has(`/tools/${tool.categorySlug}/${tool.slug}`))
     .filter((tool) =>
       matchesFilters(
         tool,

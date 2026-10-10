@@ -42,6 +42,7 @@ export async function generateMetadata({
   return {
     title: `${category.name} — Free Student Tools`,
     description: category.description,
+    alternates: { canonical: `/tools/${category.slug}` },
   };
 }
 

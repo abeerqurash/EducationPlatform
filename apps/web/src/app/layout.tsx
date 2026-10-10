@@ -6,6 +6,8 @@ import { SiteChrome } from "@/components/layout/site-chrome";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
+import "@/components/public/public.css";
+import { siteOrigin } from '@/lib/public/seo';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,10 +22,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ??
-      "http://localhost:3000",
-  ),
+  metadataBase: new URL(siteOrigin()),
 
   title: {
     default: `${siteConfig.name} — Smarter Tools for Students`,

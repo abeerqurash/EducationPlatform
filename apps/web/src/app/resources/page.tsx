@@ -1,0 +1,4 @@
+import { PublicShell, PublicCards } from '@/components/public/public-shell';
+import { publicMetadata } from '@/lib/public/seo';
+export const metadata = publicMetadata("Learning resources", "Start with a practical guide, a calculator or a plan for your next study session.", '/resources');
+export default function Page() { return <PublicShell title={"Learning resources"} description={"Start with a practical guide, a calculator or a plan for your next study session."}><PublicCards items={[{"title": "Learning guides", "description": "Original explanations, worked examples and next steps.", "href": "/guides"}, {"title": "Student tools", "description": "Find grade, GPA, math and test-preparation calculators.", "href": "/tools"}, {"title": "Weekly study planner", "description": "Allocate a realistic weekly time budget by subject priority.", "href": "/tools/study/study-time-planner"}]} /></PublicShell>; }

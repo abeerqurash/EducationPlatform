@@ -1,0 +1,301 @@
+{
+  "batch": 174,
+  "baseline_commit": "7e36536e664775894b9094f398c3313c46d01eca",
+  "source_files": [
+    "apps/web/src/app/(auth)/layout.tsx",
+    "apps/web/src/app/about/page.tsx",
+    "apps/web/src/app/accessibility/page.tsx",
+    "apps/web/src/app/admin/layout.tsx",
+    "apps/web/src/app/admissions/page.tsx",
+    "apps/web/src/app/blog/page.tsx",
+    "apps/web/src/app/contact/page.tsx",
+    "apps/web/src/app/cookies/page.tsx",
+    "apps/web/src/app/dashboard/layout.tsx",
+    "apps/web/src/app/guides/[slug]/page.tsx",
+    "apps/web/src/app/guides/page.tsx",
+    "apps/web/src/app/help/page.tsx",
+    "apps/web/src/app/layout.tsx",
+    "apps/web/src/app/page.tsx",
+    "apps/web/src/app/practice/page.tsx",
+    "apps/web/src/app/pricing/page.tsx",
+    "apps/web/src/app/privacy/page.tsx",
+    "apps/web/src/app/resources/page.tsx",
+    "apps/web/src/app/robots.ts",
+    "apps/web/src/app/sitemap.ts",
+    "apps/web/src/app/terms/page.tsx",
+    "apps/web/src/app/test-prep/page.tsx",
+    "apps/web/src/app/tools/[category]/page.tsx",
+    "apps/web/src/app/tools/admissions/application-checklist/page.tsx",
+    "apps/web/src/app/tools/admissions/college-chance-planner/page.tsx",
+    "apps/web/src/app/tools/page.tsx",
+    "apps/web/src/app/tools/study/study-time-planner/page.tsx",
+    "apps/web/src/app/tools/test-prep/sat-score-calculator/page.tsx",
+    "apps/web/src/components/public/admissions-checklist.tsx",
+    "apps/web/src/components/public/public-shell.tsx",
+    "apps/web/src/components/public/public.css",
+    "apps/web/src/components/public/study-planner.tsx",
+    "apps/web/src/config/site.ts",
+    "apps/web/src/lib/public/download.ts",
+    "apps/web/src/lib/public/guides/application-checklist.ts",
+    "apps/web/src/lib/public/guides/averages-and-weights.ts",
+    "apps/web/src/lib/public/guides/credit-weighted-gpa.ts",
+    "apps/web/src/lib/public/guides/final-exam-targets.ts",
+    "apps/web/src/lib/public/guides/index.ts",
+    "apps/web/src/lib/public/guides/math-review.ts",
+    "apps/web/src/lib/public/guides/percentage-basics.ts",
+    "apps/web/src/lib/public/guides/percentage-change.ts",
+    "apps/web/src/lib/public/guides/practice-error-log.ts",
+    "apps/web/src/lib/public/guides/practice-score-interpretation.ts",
+    "apps/web/src/lib/public/guides/reading-review.ts",
+    "apps/web/src/lib/public/guides/types.ts",
+    "apps/web/src/lib/public/guides/weekly-study-planning.ts",
+    "apps/web/src/lib/public/guides/weighted-course-grades.ts",
+    "apps/web/src/lib/public/planning.ts",
+    "apps/web/src/lib/public/routes.ts",
+    "apps/web/src/lib/public/seo.ts",
+    "apps/web/src/lib/tools/catalog.ts",
+    "packages/database/src/publication/public-planning.test.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/app/(auth)/layout.tsx",
+      "sha256": "988ef2b486a9dcb8363f3fd9f0f8991609db390ae9841063cffca46dce74b421"
+    },
+    {
+      "path": "apps/web/src/app/about/page.tsx",
+      "sha256": "7593f010ad4b9dbd98cbeadb00e8bfb286584110565e4da6e808fdd6372267e9"
+    },
+    {
+      "path": "apps/web/src/app/accessibility/page.tsx",
+      "sha256": "d8d232e3ffab473a34d35d2619a2c9568b24dd74206ed99e703e0c311d91708a"
+    },
+    {
+      "path": "apps/web/src/app/admin/layout.tsx",
+      "sha256": "0d76619b2200b931180083c2e6ceae81ca8885afa49c71a627e2c7afc2c9ac54"
+    },
+    {
+      "path": "apps/web/src/app/admissions/page.tsx",
+      "sha256": "382011e5ec925cddabb8440e0e070060660f927a0b319fc1d18bfde6c5dd1e4b"
+    },
+    {
+      "path": "apps/web/src/app/blog/page.tsx",
+      "sha256": "159523d03fb909d4c8510b53e2f73ab0d184eea60026da973b171879bdd7efe7"
+    },
+    {
+      "path": "apps/web/src/app/contact/page.tsx",
+      "sha256": "fcd6902922258ece269bd928fa1cbbb7519df7511561e2f3126da1e5c3d094c6"
+    },
+    {
+      "path": "apps/web/src/app/cookies/page.tsx",
+      "sha256": "ff8b873a33869fb167fc4da5bee866d29828eed794905d309e042c126f5337a7"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/layout.tsx",
+      "sha256": "0d76619b2200b931180083c2e6ceae81ca8885afa49c71a627e2c7afc2c9ac54"
+    },
+    {
+      "path": "apps/web/src/app/guides/[slug]/page.tsx",
+      "sha256": "3b182886a3809668d60f1548577eb5b9ecdd23f399820eee0ee5198934717a6c"
+    },
+    {
+      "path": "apps/web/src/app/guides/page.tsx",
+      "sha256": "b58e4c8174111bcf738d300e106da3f55a56f00e31c6a64c878d087833080212"
+    },
+    {
+      "path": "apps/web/src/app/help/page.tsx",
+      "sha256": "6b6a3d7a523f357b73d797e3a222e81266e0a8ef071dcb1dd759eab68e64178f"
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "36f7c6b7dbe8d80705e0580f2bd5c4c610262f40bcea52ecd95531443f4af121"
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "sha256": "48caca0096d1ca785d83be71450506ebc82c4542f16c9f48f49d1572c1e08e30"
+    },
+    {
+      "path": "apps/web/src/app/practice/page.tsx",
+      "sha256": "04ed3d510b93a11a833dccfbac2aff3039532790303cbfa76650d6f7fcc79310"
+    },
+    {
+      "path": "apps/web/src/app/pricing/page.tsx",
+      "sha256": "ce88fe7f1ae1518a633cc122a068da7fab5dd21bb83bafaa409da6b95e5982da"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "sha256": "9cc3a153c57707ae31b6c5668cce08bd4b5c6d77e4b6373c7254e2c46349c971"
+    },
+    {
+      "path": "apps/web/src/app/resources/page.tsx",
+      "sha256": "b7d0d6e6e48d522922e84f027ec037616f7bac7b68a15e8dca8f9334b175a1ed"
+    },
+    {
+      "path": "apps/web/src/app/robots.ts",
+      "sha256": "ef60ab2a5874b2ff29ba6a8683e928860db58ecccfc04980a3ad91e8b01c817b"
+    },
+    {
+      "path": "apps/web/src/app/sitemap.ts",
+      "sha256": "92b9318a6753100597c666d63f70514df95aa1b3a2ceda1d258c0811b7868552"
+    },
+    {
+      "path": "apps/web/src/app/terms/page.tsx",
+      "sha256": "e492c7ccbe0cee0af2a814ee9c5cf70460fe760132de2129654cfeeaba3731ed"
+    },
+    {
+      "path": "apps/web/src/app/test-prep/page.tsx",
+      "sha256": "a9c8c80cc4b152a8caae63a22cd829463260378c2c49208d26a6ebee4774d59c"
+    },
+    {
+      "path": "apps/web/src/app/tools/[category]/page.tsx",
+      "sha256": "1fac2c9d28bd562c6616e961a6fa2f4a2bc008b5d6bc92a865d06dd449e50e96"
+    },
+    {
+      "path": "apps/web/src/app/tools/admissions/application-checklist/page.tsx",
+      "sha256": "1bb6f53eab834238c47759e293da2933a11e68e06bd1002af4998e5de5815c05"
+    },
+    {
+      "path": "apps/web/src/app/tools/admissions/college-chance-planner/page.tsx",
+      "sha256": "a0b4d5ec7ac4627e281247325a119f1fefc142222a2993b1f4c452010c0d3076"
+    },
+    {
+      "path": "apps/web/src/app/tools/page.tsx",
+      "sha256": "147247b84a3844c79987846dfc2d5597775def2e4d73ab271c8176087c487a6e"
+    },
+    {
+      "path": "apps/web/src/app/tools/study/study-time-planner/page.tsx",
+      "sha256": "eeab543d80dce814e2d20ff4ba0d2234b0351a18e07e33c60799e0b39c5bd895"
+    },
+    {
+      "path": "apps/web/src/app/tools/test-prep/sat-score-calculator/page.tsx",
+      "sha256": "1c8da8aa7f98f28ac107be4e2e2e246ba2b5aab789491b10847f98ee80a534dd"
+    },
+    {
+      "path": "apps/web/src/components/public/admissions-checklist.tsx",
+      "sha256": "3298ad9897f0b034b5f189c2cc63ff6c1a768d13183963cfa01eb50e795d77dc"
+    },
+    {
+      "path": "apps/web/src/components/public/public-shell.tsx",
+      "sha256": "35be2515ced13d9a53730325bfe8ba1df3e117f3c4bcea19cc6a050cfb1234bb"
+    },
+    {
+      "path": "apps/web/src/components/public/public.css",
+      "sha256": "f00b12ae2a58510751f9e2f1499af7b0c40d475607dac443eea48899f8be9214"
+    },
+    {
+      "path": "apps/web/src/components/public/study-planner.tsx",
+      "sha256": "6128bb8c1594b135eecaf6da51eb58d48736bddcab760ce7011361cf2da60262"
+    },
+    {
+      "path": "apps/web/src/config/site.ts",
+      "sha256": "01f10cbf772c9eb41cfcf78da2c3ed8c02972b1bae456b5e9c18df8d99019c10"
+    },
+    {
+      "path": "apps/web/src/lib/public/download.ts",
+      "sha256": "4414bb477e705bf0ed214ea2cab5c325cda58c9fe449efd42afcfcbfb196da4d"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/application-checklist.ts",
+      "sha256": "9558d4ee2cebb0626873449a37dcef93f86d1365fe1fd9541855af23defa36fb"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/averages-and-weights.ts",
+      "sha256": "9a96f32e498bcfa3176da8cb26abdbd8792d7be09e5bc80bff210fafe907840f"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/credit-weighted-gpa.ts",
+      "sha256": "12cd0fb2c8eed94839ba0550a4ce34e273625311e342358a22532ba0d2804ce8"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/final-exam-targets.ts",
+      "sha256": "dbb37862051d6664f332718eb5197842002ec09ef2eca47486a90422d6f8f249"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/index.ts",
+      "sha256": "23df29868d49878d3d322db879b6058f3dd124fc73c370d8eeb1cc29c4e4d404"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/math-review.ts",
+      "sha256": "14d0186f57602805003e849731a9b6779745f6047a99550dae754fffc66733ef"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/percentage-basics.ts",
+      "sha256": "3c848142bd25d9bfe60e46845601288c96cd766f840e12124ae3cc0888fe3959"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/percentage-change.ts",
+      "sha256": "1a5212f7127eb41dce31508d51a7212383cef74ff4fdef11a805e4b13672065d"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/practice-error-log.ts",
+      "sha256": "1abb7f676888f7416fd63b67dc03b03450e672aa00f21e6cd15c6d31f8adffcb"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/practice-score-interpretation.ts",
+      "sha256": "26f227ef96a91a39e7966289c628ba9399bc671a8a36710ff9c5cce15b64020c"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/reading-review.ts",
+      "sha256": "249714d4602ef25171c95fed718815e5a0a9d3ae07cfb552b5e972ac0724e365"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/types.ts",
+      "sha256": "f1ba043e3398076821dc2ef5c2c3b95790d0ddc5500f0af426cb2b46adeeee78"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/weekly-study-planning.ts",
+      "sha256": "16f61123347c345e3f2d14a3e639b2b56fca1db76c8d0d95a8bad01196536db4"
+    },
+    {
+      "path": "apps/web/src/lib/public/guides/weighted-course-grades.ts",
+      "sha256": "1e62e23e5bfbe1fd86b742ee46dcf2f27da70632283d3c328526c8e49ded31b9"
+    },
+    {
+      "path": "apps/web/src/lib/public/planning.ts",
+      "sha256": "2ff3cdcedbf2dfc51776515481381d1ba4293297dd70b0c4d9b8461baa08e58b"
+    },
+    {
+      "path": "apps/web/src/lib/public/routes.ts",
+      "sha256": "e997967117f6fcd550d2f9d5cb35b7721b79df89998277eae5694a56d7ff66f2"
+    },
+    {
+      "path": "apps/web/src/lib/public/seo.ts",
+      "sha256": "cfd090e948229b70fda1e0f9241a638a0da0665eee853863bc59696ecb1a93b0"
+    },
+    {
+      "path": "apps/web/src/lib/tools/catalog.ts",
+      "sha256": "cd9475611f29fa7d60edb992490d7177ffbf386444428ac9f701cc8588cd7f7f"
+    },
+    {
+      "path": "docs/BATCH-174-PRODUCT-NOTES.md",
+      "sha256": "979def5d81619d07ef91c647bb7ebc4e6d80a11cdadf3e527bf5b48a70953bd1"
+    },
+    {
+      "path": "docs/BATCH-174-RELEASE.md",
+      "sha256": "d930596f36971797b7cacaf068b56e2debbf451cbcf7b095b0635705cc24d6a5"
+    },
+    {
+      "path": "docs/BATCH-174-VALIDATION.md",
+      "sha256": "8092cc24220ff6c42f9a0c09fe21edda30f104c4aab0e2b243131fa4c0cbafa1"
+    },
+    {
+      "path": "packages/database/src/publication/public-planning.test.ts",
+      "sha256": "e2c7791cd1ae919910bc70f390804a1cb0947d53bbef308b768af01cd3f885f4"
+    },
+    {
+      "path": "scripts/verify-batch-174-browser.mjs",
+      "sha256": "fb97831117301d4b135c831cb3eb000c6079b502403958d030701a111b011eb8"
+    },
+    {
+      "path": "scripts/verify-batch-174.ps1",
+      "sha256": "4da797f3a11b2e21e66402a9947255b5c7ea8f6a206bb103f7200a3c72914386"
+    },
+    {
+      "path": "scripts/verify-public-routes.mts",
+      "sha256": "569248b5d4fddf17e3b8fb5d42ea5523e3872cc94488f790c41101bd4c0a9b67"
+    }
+  ],
+  "migration_required": false,
+  "dependencies_added": false,
+  "application_database_changed": false,
+  "github_changed": false
+}

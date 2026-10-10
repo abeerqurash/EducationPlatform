@@ -95,7 +95,7 @@ export const siteConfig = {
       name: "SAT Score Calculator",
       description:
         "Estimate and understand your SAT score.",
-      href: "/tools/test-prep/sat-score-calculator",
+      href: "/tools/test-prep/digital-sat-score-calculator",
       category: "Test Prep",
     },
     {
