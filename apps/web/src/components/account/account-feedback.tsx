@@ -1,0 +1,1 @@
+export function AccountFeedback({message,error=false}:{message:string;error?:boolean}){return message?<p role={error?'alert':'status'} className={error?'account-feedback account-feedback--error':'account-feedback'}>{message}</p>:null;}

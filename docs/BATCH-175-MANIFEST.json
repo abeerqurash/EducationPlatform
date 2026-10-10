@@ -1,0 +1,407 @@
+{
+  "batch": 175,
+  "baseline_commit": "bb7173f2c827cf2390af273cb0085b7cedbdd7b0",
+  "source_files": [
+    "apps/web/src/app/(auth)/forgot-password/page.tsx",
+    "apps/web/src/app/(auth)/register/register-form.tsx",
+    "apps/web/src/app/(auth)/reset-password/page.tsx",
+    "apps/web/src/app/(auth)/verify-email/page.tsx",
+    "apps/web/src/app/api/account/change-password/route.ts",
+    "apps/web/src/app/api/account/forgot-password/route.ts",
+    "apps/web/src/app/api/account/resend-verification/route.ts",
+    "apps/web/src/app/api/account/reset-password/route.ts",
+    "apps/web/src/app/api/account/revoke-sessions/route.ts",
+    "apps/web/src/app/api/account/verify-email/route.ts",
+    "apps/web/src/app/api/auth/register/route.ts",
+    "apps/web/src/app/dashboard/settings/page.tsx",
+    "apps/web/src/app/dashboard/settings/security/error.tsx",
+    "apps/web/src/app/dashboard/settings/security/export/route.ts",
+    "apps/web/src/app/dashboard/settings/security/loading.tsx",
+    "apps/web/src/app/dashboard/settings/security/page.tsx",
+    "apps/web/src/app/help/page.tsx",
+    "apps/web/src/app/layout.tsx",
+    "apps/web/src/app/privacy/page.tsx",
+    "apps/web/src/auth.ts",
+    "apps/web/src/components/account/account-feedback.tsx",
+    "apps/web/src/components/account/account-field.tsx",
+    "apps/web/src/components/account/account-form.tsx",
+    "apps/web/src/components/account/account-security.css",
+    "apps/web/src/components/account/change-password-form.tsx",
+    "apps/web/src/components/account/email-request-form.tsx",
+    "apps/web/src/components/account/password-guidance.tsx",
+    "apps/web/src/components/account/reset-password-form.tsx",
+    "apps/web/src/components/account/revoke-sessions-form.tsx",
+    "apps/web/src/components/account/security-event-list.tsx",
+    "apps/web/src/components/account/security-status.tsx",
+    "apps/web/src/components/account/use-account-link.ts",
+    "apps/web/src/components/account/verify-email-form.tsx",
+    "apps/web/src/lib/auth/account-http.ts",
+    "apps/web/src/lib/auth/register.ts",
+    "apps/web/src/types/next-auth.d.ts",
+    "packages/database/drizzle/0007_account_security.sql",
+    "packages/database/drizzle/meta/_journal.json",
+    "packages/database/package.json",
+    "packages/database/src/account-security/cleanup.ts",
+    "packages/database/src/account-security/consume.ts",
+    "packages/database/src/account-security/contract.test.ts",
+    "packages/database/src/account-security/contract.ts",
+    "packages/database/src/account-security/crypto.test.ts",
+    "packages/database/src/account-security/crypto.ts",
+    "packages/database/src/account-security/events.ts",
+    "packages/database/src/account-security/http.test.ts",
+    "packages/database/src/account-security/http.ts",
+    "packages/database/src/account-security/index.ts",
+    "packages/database/src/account-security/mail/config.test.ts",
+    "packages/database/src/account-security/mail/config.ts",
+    "packages/database/src/account-security/mail/errors.ts",
+    "packages/database/src/account-security/mail/file.ts",
+    "packages/database/src/account-security/mail/index.ts",
+    "packages/database/src/account-security/mail/resend.test.ts",
+    "packages/database/src/account-security/mail/resend.ts",
+    "packages/database/src/account-security/mail/templates.test.ts",
+    "packages/database/src/account-security/mail/templates.ts",
+    "packages/database/src/account-security/outbox.ts",
+    "packages/database/src/account-security/passwords.ts",
+    "packages/database/src/account-security/rate-limit.test.ts",
+    "packages/database/src/account-security/rate-limit.ts",
+    "packages/database/src/account-security/registration.ts",
+    "packages/database/src/account-security/requests.ts",
+    "packages/database/src/account-security/run-cleanup.ts",
+    "packages/database/src/account-security/run-doctor.ts",
+    "packages/database/src/account-security/run-worker.ts",
+    "packages/database/src/account-security/sessions.test.ts",
+    "packages/database/src/account-security/sessions.ts",
+    "packages/database/src/account-security/status.ts",
+    "packages/database/src/account-security/transaction.ts",
+    "packages/database/src/account-security/verify-workflow.ts",
+    "packages/database/src/schema/account-security.ts",
+    "packages/database/src/schema/index.ts",
+    "packages/database/src/schema/users.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/app/(auth)/forgot-password/page.tsx",
+      "sha256": "32d02ab5f22e738f7d75c7646f91b4e8e5cf07e2b29975a31fd7b9044e5a7918"
+    },
+    {
+      "path": "apps/web/src/app/(auth)/register/register-form.tsx",
+      "sha256": "e8d169f6864e5b89a96b1f86645fb0652ab826e6d7b676d508a9517e57cd69e3"
+    },
+    {
+      "path": "apps/web/src/app/(auth)/reset-password/page.tsx",
+      "sha256": "6f4b61975d774c1fa17c51ad435dfaf17ff375269a6a97899005d3c16e1ac559"
+    },
+    {
+      "path": "apps/web/src/app/(auth)/verify-email/page.tsx",
+      "sha256": "2c3b3018774e01bbb2e8140c054a68d706a17a7a96a2a76df8ffe46d6dd861ba"
+    },
+    {
+      "path": "apps/web/src/app/api/account/change-password/route.ts",
+      "sha256": "dd6db23d583a1e4e05b85f57828fb2e3a3cad583e1492bf852e5a13291dd3ed3"
+    },
+    {
+      "path": "apps/web/src/app/api/account/forgot-password/route.ts",
+      "sha256": "9da893f087db2717e03d79d03702b0429094b08a30b8b2c3017da8c31fbda76c"
+    },
+    {
+      "path": "apps/web/src/app/api/account/resend-verification/route.ts",
+      "sha256": "ca9eecef6f274cdb44ac1192284446b82cb6d790c240e40b3ae1c879484f8eb7"
+    },
+    {
+      "path": "apps/web/src/app/api/account/reset-password/route.ts",
+      "sha256": "fa3e55fce3f6d45613018148aabfef481032ec14b5bbc1dbaf5ae7c71b4d2659"
+    },
+    {
+      "path": "apps/web/src/app/api/account/revoke-sessions/route.ts",
+      "sha256": "8c1826da356df5e09b81010e931caa682e091284f18e502939dad50e674eaa64"
+    },
+    {
+      "path": "apps/web/src/app/api/account/verify-email/route.ts",
+      "sha256": "900aaff43f17dfac48e501c5aba345f703383467cf7059224d06cd7ec0d5e5f6"
+    },
+    {
+      "path": "apps/web/src/app/api/auth/register/route.ts",
+      "sha256": "98e90e99d3f6eff7effded59a1d9c7e0d795f524d1ea2c689760590ed72b4a97"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/page.tsx",
+      "sha256": "cceba491ddec5fe906d4570196f6db214819fd29464244a93e133196f4d22083"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/security/error.tsx",
+      "sha256": "2fc7cd35ec449b8c6fce59faedda4d424dc84444b8759d92557659ca37a1eea2"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/security/export/route.ts",
+      "sha256": "57b8933883ae47ed1d148cec33b936346160cc085f81c6f0068d3fdfb71ff0cd"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/security/loading.tsx",
+      "sha256": "c557be9a29b497e3b29f58742941ac0b8ac2e4a8cfb1e3633bedf13b63acfb2d"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/security/page.tsx",
+      "sha256": "2d9505dc75706b2e00af7503445a71fe07bbaac67a4f523c24836d04b87d2e5b"
+    },
+    {
+      "path": "apps/web/src/app/help/page.tsx",
+      "sha256": "5b082c11397a9ca6577e1e4450f186e92d299b17b8e7815338f6a18981da6f25"
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "fd8abef56ab35f779ca0c40e7459ce26850633c197bd2fb57704b9cbbf1a1ce7"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "sha256": "97e023cd58825dcfc03e062cf8b6ec0362dd6a232688c57a2b34c3d9b9740562"
+    },
+    {
+      "path": "apps/web/src/auth.ts",
+      "sha256": "44f2d942b3cda3911ed89060b16baf70016612d5f5793ac038e59b6f9970cc7d"
+    },
+    {
+      "path": "apps/web/src/components/account/account-feedback.tsx",
+      "sha256": "4ac084f8e8f887cb505945385ec1baa2e1ec9fd3ccf01b153c3b916f5ac26a4a"
+    },
+    {
+      "path": "apps/web/src/components/account/account-field.tsx",
+      "sha256": "6294c615c470af2fdab8f7eec8097ee753b409b35024fa79e1dcc66121790498"
+    },
+    {
+      "path": "apps/web/src/components/account/account-form.tsx",
+      "sha256": "dcb445430db928716245ba9c3f3f70f113d3b954c87cd268d1058245ab9a42ec"
+    },
+    {
+      "path": "apps/web/src/components/account/account-security.css",
+      "sha256": "07dec4fc22d91cd6a2a5b3a0fca313b2e55f6c3f73f75a89764cdb54436b4cd8"
+    },
+    {
+      "path": "apps/web/src/components/account/change-password-form.tsx",
+      "sha256": "be103e6d73515071e85fab9c01dfd0bee53dbb4cd905391bf51a355d9f53b3ca"
+    },
+    {
+      "path": "apps/web/src/components/account/email-request-form.tsx",
+      "sha256": "42f465f2e19cdbc5f7d583376bcd171662e2b2659efbb28eadbd58212e85f460"
+    },
+    {
+      "path": "apps/web/src/components/account/password-guidance.tsx",
+      "sha256": "189339de604d9fd55874710181bef3ff2d6881baddc3b4c71cd368280bd9d293"
+    },
+    {
+      "path": "apps/web/src/components/account/reset-password-form.tsx",
+      "sha256": "03d80e7faa6641df0082e154b0e7519001b17ece41227798f91ce2147f6e52a3"
+    },
+    {
+      "path": "apps/web/src/components/account/revoke-sessions-form.tsx",
+      "sha256": "416c46167711b9f47fde9b15bc19cc088e12e6bbdf73d671e768071fb08aa606"
+    },
+    {
+      "path": "apps/web/src/components/account/security-event-list.tsx",
+      "sha256": "0c962d5014ba7a37dcf0635940fbc5894e06d92c16b0f00683d448d13ba4b3d2"
+    },
+    {
+      "path": "apps/web/src/components/account/security-status.tsx",
+      "sha256": "1ce57dca46434bd18fc4de03af7160d189a4a1ffaae61efabf1395cfc52a654d"
+    },
+    {
+      "path": "apps/web/src/components/account/use-account-link.ts",
+      "sha256": "5e1e7ea069f12b038d527292e5f3679e8eda7aa17d3e0512e7cd00458f05a687"
+    },
+    {
+      "path": "apps/web/src/components/account/verify-email-form.tsx",
+      "sha256": "c833428b85abc90e7a863aa721381061f6819471394669ef59fccefc827b1f42"
+    },
+    {
+      "path": "apps/web/src/lib/auth/account-http.ts",
+      "sha256": "e21df77aba5af24946e3eb36946953b7baf4cc09454f68374c35dafb66aa5e76"
+    },
+    {
+      "path": "apps/web/src/lib/auth/register.ts",
+      "sha256": "9aae7f03ae4ab931ad8701ab18cb47419bd46d0d77d01d26399c992b9dbf40df"
+    },
+    {
+      "path": "apps/web/src/types/next-auth.d.ts",
+      "sha256": "64a6000d85e116d7ad89d205aa0b67db3549d181fd911ad65515e15beef2d779"
+    },
+    {
+      "path": "docs/BATCH-175-PRODUCT-NOTES.md",
+      "sha256": "214042c5232ea3f4bd421fe52dc74b56b7aa453229426459b0494123524061d3"
+    },
+    {
+      "path": "docs/BATCH-175-RELEASE.md",
+      "sha256": "eee90876132b6c915a0dec1cd50999579ace4d524bd5a3ce5ab104c3542ebcac"
+    },
+    {
+      "path": "docs/BATCH-175-VALIDATION.md",
+      "sha256": "f7f614c8f070e68510e3ecc942f366254bfa73f0b17a729a8558da6f96640127"
+    },
+    {
+      "path": "packages/database/drizzle/0007_account_security.sql",
+      "sha256": "24820862dd6c4c054405313146c7ffeb0a14afadf965336dd77c82fbfb6e2941"
+    },
+    {
+      "path": "packages/database/drizzle/meta/_journal.json",
+      "sha256": "c28232064e117b4fd5a703658df06023eb7e666a86bb8d449856dc1de226070e"
+    },
+    {
+      "path": "packages/database/package.json",
+      "sha256": "5046b1f61daf23441e0ab87bc5de3e4f308d9d4c3bcbd53e2fbea89819ccdd9a"
+    },
+    {
+      "path": "packages/database/src/account-security/cleanup.ts",
+      "sha256": "80948136c0420c750a89ccb7ce08435c22336417abe6ede9d1fb05e960a376d7"
+    },
+    {
+      "path": "packages/database/src/account-security/consume.ts",
+      "sha256": "85697478e39397a716e5d098f0606a600db72802ddebefb54041730b04c08f77"
+    },
+    {
+      "path": "packages/database/src/account-security/contract.test.ts",
+      "sha256": "bb9e5249ef767d887ed40ef456bbc04ac82ab328ff8d3c41bc89ab5a8522f2f3"
+    },
+    {
+      "path": "packages/database/src/account-security/contract.ts",
+      "sha256": "0eddb3071e33d369a8ba4c8180477608aafca46b1fbf5f5d4ad44a9ed662d2c9"
+    },
+    {
+      "path": "packages/database/src/account-security/crypto.test.ts",
+      "sha256": "038f4e267793f42c3a561db9f2f55c298e3900d44285e8e0c28b86166aa0a34c"
+    },
+    {
+      "path": "packages/database/src/account-security/crypto.ts",
+      "sha256": "2de64061d4872e5b04e884e2eb8057d13e831519658cbe5ff060eaa1c6184873"
+    },
+    {
+      "path": "packages/database/src/account-security/events.ts",
+      "sha256": "9f19cc0f3d112637339c280c3479f5adf60bf03b2a3d449f6da43a4f87195b93"
+    },
+    {
+      "path": "packages/database/src/account-security/http.test.ts",
+      "sha256": "9e9496ebd44912002a5c4653ffcfe0af4620b0a05dff4063c460e4067d1daa0b"
+    },
+    {
+      "path": "packages/database/src/account-security/http.ts",
+      "sha256": "19fc9a7debb942d907c734dfe5840b080ae1e5bacecf9677f30877f3476852f6"
+    },
+    {
+      "path": "packages/database/src/account-security/index.ts",
+      "sha256": "86a67ee2d15ced6f12bcea6ae219f1011eedc8fc2c0f9b65495e13e3bfe60b77"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/config.test.ts",
+      "sha256": "b3a27d6809880f30ac9cfd7ccf57615081d3face50bb75848bba60b21e2863e2"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/config.ts",
+      "sha256": "971f35a8d4f40eb197e8a7009f8b2ae869d2d4a982c934ffbd8c753908160fa0"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/errors.ts",
+      "sha256": "cc85ecadcec80724aa63e88b871a280fb681d654ff03102d19a7e09b17207758"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/file.ts",
+      "sha256": "73fce19b4fc01491103b57a51e02c0aa03fb5c568f95cb4d5573b2123872251e"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/index.ts",
+      "sha256": "6a880cb8f5fbd1ec3c7d62985eb14c26e8331613fdcba8e1866d3ce70c538744"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/resend.test.ts",
+      "sha256": "a8ccf2e29240b3f9f5964ce6646823c04da7468e28bc15548b013399b5e82ccb"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/resend.ts",
+      "sha256": "8095c994b567fce251de62230c395aebec825592b34f7cbdd5b2ece3c0a77bb2"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/templates.test.ts",
+      "sha256": "564f0c8105d80fd2100e9a24b250e5320b7e3bf4e5c1260030af8f53ef0bc4b7"
+    },
+    {
+      "path": "packages/database/src/account-security/mail/templates.ts",
+      "sha256": "8bfa380ef27fb0acd9a422fa520fb83981ec7c791721476657f8281dd19461ea"
+    },
+    {
+      "path": "packages/database/src/account-security/outbox.ts",
+      "sha256": "d527e0f257163a4d91ac8ab5b5d5b6a2ef6176ef4dc22c06133bdc524e91f865"
+    },
+    {
+      "path": "packages/database/src/account-security/passwords.ts",
+      "sha256": "09209ab396d0f59f9de26655eb0c9d900174f9eda7c40a89f19c46ee53f04e5f"
+    },
+    {
+      "path": "packages/database/src/account-security/rate-limit.test.ts",
+      "sha256": "f90c889f81fc38ee4773f753a79cdca4dbab49a5fee2a56776cffe6a29bdb3b9"
+    },
+    {
+      "path": "packages/database/src/account-security/rate-limit.ts",
+      "sha256": "9c4ad2e9cc58b3352314c29e7e7a1113752feb14502831c40ce55ce5412ebd24"
+    },
+    {
+      "path": "packages/database/src/account-security/registration.ts",
+      "sha256": "94ac0a5d75720a3f7fe04a30b5df7d20c6ff91feeb96fc21cdc073c2fe3e5071"
+    },
+    {
+      "path": "packages/database/src/account-security/requests.ts",
+      "sha256": "2a1084671580da9b14dff453431b0172da17ec6d44d5481e8b2c2a5942cac452"
+    },
+    {
+      "path": "packages/database/src/account-security/run-cleanup.ts",
+      "sha256": "e9a48509c8e7051834e5079a0aa3479e249e2a1a4cafdc8971c42f2286406b29"
+    },
+    {
+      "path": "packages/database/src/account-security/run-doctor.ts",
+      "sha256": "b885206e8232d2e21eafb06fd204268d7978e23904897a1a8f8e7c7c941bd52b"
+    },
+    {
+      "path": "packages/database/src/account-security/run-worker.ts",
+      "sha256": "c84e39bfd2c9e88d4f05808c5e92aa914477ca6056bc841000058610842977ca"
+    },
+    {
+      "path": "packages/database/src/account-security/sessions.test.ts",
+      "sha256": "12c03f33349575083d65989301ed8bb96fc5e15e44de8905e3ee8aa5357972ab"
+    },
+    {
+      "path": "packages/database/src/account-security/sessions.ts",
+      "sha256": "1be9495773e64f68978ba2e265db278d3f04bdbe72a86bb693340fe8d3c04545"
+    },
+    {
+      "path": "packages/database/src/account-security/status.ts",
+      "sha256": "0ec9f22a88a9b937f04de09b766fdfd4bb5e56f8df04e4326ab49ee41612050f"
+    },
+    {
+      "path": "packages/database/src/account-security/transaction.ts",
+      "sha256": "176199d3612fc7d4764d9eeab60149e0ac5be47ff513a352ae7b40aefb43ac34"
+    },
+    {
+      "path": "packages/database/src/account-security/verify-workflow.ts",
+      "sha256": "2b4a13264c98ffd418c5e4e24401e5d858bbcb4b31cb44e99cd546e3feeb20df"
+    },
+    {
+      "path": "packages/database/src/schema/account-security.ts",
+      "sha256": "db1a29c898d2c67ecd99607a0dc4fa8c5bdc0123c3096cc1cdb5bab958d517a3"
+    },
+    {
+      "path": "packages/database/src/schema/index.ts",
+      "sha256": "a122fd810b273f973232d73a882e5653ba8b3cd7387ccd0aa8091ee255f54745"
+    },
+    {
+      "path": "packages/database/src/schema/users.ts",
+      "sha256": "01c5b0eced6a89daefd59b23a78254bece6604f324a1d883143031abbe3920c1"
+    },
+    {
+      "path": "scripts/verify-batch-175-browser.mjs",
+      "sha256": "1098a03f7bba42fab3d8c54d9f3b670d05cece3e85aa89d701017385a5167c46"
+    },
+    {
+      "path": "scripts/verify-batch-175.ps1",
+      "sha256": "781f49d594dd52bda071002cb2f16c6c920b9f80ed7e411e8eb2bd83036dbcfe"
+    }
+  ],
+  "migration_required": "0007_account_security",
+  "dependencies_added": false,
+  "application_database_changed": false,
+  "github_changed": false
+}

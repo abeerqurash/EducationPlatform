@@ -14,7 +14,9 @@
     "./practice-readiness": "./src/publication/practice-readiness/index.ts",
     "./practice-readiness/report": "./src/publication/practice-readiness/report.ts",
     "./question-bank": "./src/question-bank/index.ts",
-    "./question-bank/contract": "./src/question-bank/contract.ts"
+    "./question-bank/contract": "./src/question-bank/contract.ts",
+    "./account-security": "./src/account-security/index.ts",
+    "./account-security/contract": "./src/account-security/contract.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -31,7 +33,11 @@
     "seed:grades": "tsx src/seeds/run-grade-calculators.ts",
     "seed:math": "tsx src/seeds/run-math-calculators.ts",
     "seed:math:batch9": "tsx src/seeds/run-math-calculators-batch-9.ts",
-    "seed:sat": "tsx src/seeds/run-digital-sat.ts"
+    "seed:sat": "tsx src/seeds/run-digital-sat.ts",
+    "email:work": "tsx src/account-security/run-worker.ts",
+    "security:cleanup": "tsx src/account-security/run-cleanup.ts",
+    "test:accounts:postgres": "tsx src/account-security/verify-workflow.ts",
+    "security:doctor": "tsx src/account-security/run-doctor.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.3",

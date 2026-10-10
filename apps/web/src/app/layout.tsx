@@ -7,6 +7,7 @@ import { siteConfig } from "@/config/site";
 
 import "./globals.css";
 import "@/components/public/public.css";
+import '@/components/account/account-security.css';
 import { siteOrigin } from '@/lib/public/seo';
 
 const inter = Inter({

@@ -1,0 +1,1 @@
+export function PasswordGuidance(){return <p className="account-hint">Use 12–128 characters with an uppercase letter, a lowercase letter and a number. Choose a password you do not use elsewhere.</p>;}

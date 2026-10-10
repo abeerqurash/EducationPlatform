@@ -1,5 +1,6 @@
 import { getStudentWorkspace } from "@education/database";
 import { redirect } from "next/navigation";
+import Link from 'next/link';
 
 import { saveStudentProfileAction } from "@/app/actions/student-intelligence";
 import { auth } from "@/auth";
@@ -28,6 +29,7 @@ export default async function SettingsPage() {
         </div>
 
         <Panel title="Study preferences" description="These settings are server-owned and account scoped.">
+          <p className="mb-5"><Link href="/dashboard/settings/security" className="text-sm font-bold underline">Manage account security and password</Link></p>
           <form action={saveStudentProfileAction} className="max-w-2xl space-y-5">
             <label className="block text-xs font-bold text-slate-700">
               Timezone

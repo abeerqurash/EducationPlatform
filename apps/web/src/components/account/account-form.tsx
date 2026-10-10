@@ -1,0 +1,10 @@
+"use client";
+import { useState } from 'react';
+import { AccountField,type AccountFieldDefinition } from './account-field';
+import { AccountFeedback } from './account-feedback';
+import { PasswordGuidance } from './password-guidance';
+const errors:Record<string,string>={INVALID_INPUT:'Check the inputs and password requirements.',INVALID_LINK:'This link is invalid, expired or already used. Request a new link.',RATE_LIMITED:'Too many requests. Please try again later.',WRONG_PASSWORD:'Your current password could not be confirmed.',UNAUTHENTICATED:'Your session has ended. Sign in again.',DELIVERY_UNAVAILABLE:'Email delivery is not configured. Contact the site operator.'};
+export function AccountForm({endpoint,fields,label,success,token,redirect,passwordHelp=false}:{endpoint:string;fields:AccountFieldDefinition[];label:string;success:string;token?:string;redirect?:string;passwordHelp?:boolean}){
+ const [pending,setPending]=useState(false);const [message,setMessage]=useState('');const [failed,setFailed]=useState(false);const [complete,setComplete]=useState(false);
+ return <form className="account-form" onSubmit={async event=>{event.preventDefault();const form=event.currentTarget;setPending(true);setMessage('');setFailed(false);try{const values=Object.fromEntries(new FormData(form));const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,...(token!==undefined?{token}:{})})});const result=await response.json();if(!response.ok||!result.success){setFailed(true);setMessage(errors[result.error]??'The request could not be completed. Please try again.');return;}setMessage(success);setComplete(true);form.reset();if(redirect)window.location.assign(redirect);}catch{setFailed(true);setMessage('Connection failed. Please try again.');}finally{setPending(false);}}}>{fields.map(field=><AccountField key={field.name} field={field}/>)}{passwordHelp&&<PasswordGuidance/>}<AccountFeedback message={message} error={failed}/><button type="submit" disabled={pending||complete||(token!==undefined&&!token)}>{pending?'Please wait…':label}</button></form>;
+}

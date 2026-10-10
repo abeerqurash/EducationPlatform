@@ -3,6 +3,7 @@ export * from "./common";
 export * from "./users";
 export * from "./auth";
 export * from "./security-tokens";
+export * from './account-security';
 export * from "./organizations";
 export * from "./rbac";
 export * from "./tools";

@@ -50,6 +50,13 @@
       "when": 1791680400000,
       "tag": "0006_question_bank",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791687600000,
+      "tag": "0007_account_security",
+      "breakpoints": true
     }
   ]
 }

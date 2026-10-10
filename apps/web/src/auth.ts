@@ -11,7 +11,10 @@ import {
   users,
 } from "@education/database";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { validateAccountSession } from '@education/database/account-security';
+import { takeRateLimit } from '../../../packages/database/src/account-security/rate-limit';
+import { mailSettings } from '../../../packages/database/src/account-security/mail/config';
 
 export const {
   handlers,
@@ -56,6 +59,7 @@ export const {
         if (!parsed.success) {
           return null;
         }
+        try { await takeRateLimit('login', parsed.data.email, mailSettings().secret, 10, 15); } catch { return null; }
 
         const [user] = await db
           .select()
@@ -86,19 +90,22 @@ export const {
           return null;
         }
 
-        await db
+        const [signedIn] = await db
           .update(users)
           .set({
             lastLoginAt: new Date(),
             updatedAt: new Date(),
           })
-          .where(eq(users.id, user.id));
+          .where(and(eq(users.id, user.id), eq(users.passwordHash, user.passwordHash), eq(users.authVersion, user.authVersion), eq(users.isActive, true)))
+          .returning({ authVersion: users.authVersion });
+        if (!signedIn) return null;
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
+          authVersion: signedIn.authVersion,
         };
       },
     }),
@@ -111,8 +118,9 @@ export const {
     }) {
       if (user?.id) {
         token.userId = user.id;
+        token.authVersion = user.authVersion;
       }
-
+      try { if (!await validateAccountSession(token.userId, token.authVersion)) return null; } catch { return null; }
       return token;
     },
 
@@ -127,6 +135,7 @@ export const {
       ) {
         session.user.id =
           token.userId;
+        session.user.authVersion = typeof token.authVersion === 'number' ? token.authVersion : -1;
       }
 
       return session;

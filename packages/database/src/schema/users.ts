@@ -1,6 +1,7 @@
 import {
   boolean,
   index,
+  integer,
   pgTable,
   text,
   timestamp,
@@ -30,6 +31,7 @@ export const users = pgTable(
     image: text("image"),
 
     passwordHash: text("password_hash"),
+    authVersion: integer('auth_version').notNull().default(0),
 
     role: userRoleEnum("role")
       .notNull()

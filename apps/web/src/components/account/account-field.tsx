@@ -1,0 +1,2 @@
+export type AccountFieldDefinition={name:string;label:string;type?:'email'|'password'|'text';autoComplete?:string;minLength?:number;maxLength?:number};
+export function AccountField({field}:{field:AccountFieldDefinition}){return <label className="account-field">{field.label}<input name={field.name} type={field.type??'text'} autoComplete={field.autoComplete} minLength={field.minLength} maxLength={field.maxLength??(field.type==='email'?320:128)} required/></label>;}
