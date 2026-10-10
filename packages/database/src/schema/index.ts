@@ -14,4 +14,5 @@ export * from "./audit";
 export * from "./student-results";
 export * from "./student-intelligence";
 export * from "./practice-attempts";
+export * from "./question-bank";
 export * from "./relations";

@@ -10,6 +10,7 @@ const sections = [
     items: [
       ["Overview", "/admin", "home"],
       ["Publication", "/admin/publication", "book"],
+      ["Question bank", "/admin/question-bank", "book"],
       ["Tools & calculators", "/admin/tools", "calculator"],
       ["Content", "/admin/content", "bookmark"],
     ],

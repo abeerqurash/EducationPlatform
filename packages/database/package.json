@@ -12,7 +12,9 @@
     "./practice-coach": "./src/publication/practice-coach/index.ts",
     "./question-quality": "./src/publication/question-quality/index.ts",
     "./practice-readiness": "./src/publication/practice-readiness/index.ts",
-    "./practice-readiness/report": "./src/publication/practice-readiness/report.ts"
+    "./practice-readiness/report": "./src/publication/practice-readiness/report.ts",
+    "./question-bank": "./src/question-bank/index.ts",
+    "./question-bank/contract": "./src/question-bank/contract.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -23,6 +25,9 @@
     "seed:gpa": "tsx src/seeds/run-gpa.ts",
     "test": "vitest run",
     "seed:rbac": "tsx src/seeds/run-rbac.ts",
+    "seed:questions": "tsx src/seeds/run-question-bank-rbac.ts",
+    "test:questions:postgres": "tsx src/question-bank/verify-migration.ts",
+    "test:questions:workflow": "tsx src/question-bank/verify-workflow.ts",
     "seed:grades": "tsx src/seeds/run-grade-calculators.ts",
     "seed:math": "tsx src/seeds/run-math-calculators.ts",
     "seed:math:batch9": "tsx src/seeds/run-math-calculators-batch-9.ts",

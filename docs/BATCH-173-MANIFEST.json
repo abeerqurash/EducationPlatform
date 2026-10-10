@@ -1,0 +1,199 @@
+{
+  "batch": 173,
+  "baseline_commit": "48b98f83c57856df45adac98b2c896ebac131392",
+  "source_files": [
+    "apps/web/src/app/actions/question-bank.ts",
+    "apps/web/src/app/actions/question-library.ts",
+    "apps/web/src/app/admin/question-bank/[revisionId]/page.tsx",
+    "apps/web/src/app/admin/question-bank/error.tsx",
+    "apps/web/src/app/admin/question-bank/loading.tsx",
+    "apps/web/src/app/admin/question-bank/new/page.tsx",
+    "apps/web/src/app/admin/question-bank/page.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/history/[attemptId]/page.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/library/error.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/library/loading.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/library/page.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/page.tsx",
+    "apps/web/src/components/admin/question-editor.tsx",
+    "apps/web/src/components/admin/question-workflow.tsx",
+    "apps/web/src/components/app-shell/admin-shell.tsx",
+    "apps/web/src/components/dashboard/question-library.tsx",
+    "apps/web/src/lib/question-bank-access.ts",
+    "packages/database/drizzle/0006_question_bank.sql",
+    "packages/database/drizzle/meta/_journal.json",
+    "packages/database/package.json",
+    "packages/database/src/question-bank/access.ts",
+    "packages/database/src/question-bank/contract.test.ts",
+    "packages/database/src/question-bank/contract.ts",
+    "packages/database/src/question-bank/index.ts",
+    "packages/database/src/question-bank/practice.test.ts",
+    "packages/database/src/question-bank/practice.ts",
+    "packages/database/src/question-bank/repository.ts",
+    "packages/database/src/question-bank/verify-migration.ts",
+    "packages/database/src/question-bank/verify-workflow.ts",
+    "packages/database/src/schema/index.ts",
+    "packages/database/src/schema/practice-attempts.ts",
+    "packages/database/src/schema/question-bank.ts",
+    "packages/database/src/seeds/question-bank-rbac.ts",
+    "packages/database/src/seeds/run-question-bank-rbac.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/app/actions/question-bank.ts",
+      "sha256": "94ea037ee885ba1b3f95e2694e6c86a54210b3563b6ce763d933fc5d9fa1611e"
+    },
+    {
+      "path": "apps/web/src/app/actions/question-library.ts",
+      "sha256": "1fb4aa5c134fd81625beca02f4873d5d19b076784a64edb110239cd066104ec1"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/[revisionId]/page.tsx",
+      "sha256": "24226a711d15d014cc4c73804a7b6f0eb26ad482dbf9e8cbadb67190aada6e5b"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/error.tsx",
+      "sha256": "fcff3269ed490252843da31cac93a4dceb498f5b3ca8b58f70785e641982cfa4"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/loading.tsx",
+      "sha256": "e3fea4b150fb5e19b210a760c424fc6487ab3eacce74755c1d6c3f73f6ff7654"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/new/page.tsx",
+      "sha256": "9c0ca725fd9f51aff4f1fb793bf0b0850809e641bc1035f14bf38cd8e8db135c"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/page.tsx",
+      "sha256": "f8f14a97a6a83a717683c6719d473ba87753a9babef1ea2a362eb5735ffb8ecf"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/history/[attemptId]/page.tsx",
+      "sha256": "37ec71ccf0ba8b041a46b5ec2ebc6152d0af6845391362b2895c5a1ba8f24158"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/library/error.tsx",
+      "sha256": "a26442d56970b8ad690b664ebe9d4e60849122e137a306e59ddd61b4fdd517ea"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/library/loading.tsx",
+      "sha256": "e18b02507881b24c13e5d2461181c12cb211b21c5d9114fdf311f92f2cfba33f"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/library/page.tsx",
+      "sha256": "efc9845c31d25e7040fa1593b5b2505ba66d3e39b28caa328599a50fe7b0c2ca"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/page.tsx",
+      "sha256": "6213f012bc43705310921853e3a6b9bd0f8adb0722dae4a2dd485633dc9cddf6"
+    },
+    {
+      "path": "apps/web/src/components/admin/question-editor.tsx",
+      "sha256": "1630458b471c73cac6133f1cb4dbc6f063d9a45d5cfb15b866cb5ee076bf9cba"
+    },
+    {
+      "path": "apps/web/src/components/admin/question-workflow.tsx",
+      "sha256": "5426edb0e7d942dfea53ad499e4a90336f231e036c580e46a34041df880ee90b"
+    },
+    {
+      "path": "apps/web/src/components/app-shell/admin-shell.tsx",
+      "sha256": "a57852b8c677f67beaa7393c2ebf8edbb4e94effa9d584d94bb15b3c324104f4"
+    },
+    {
+      "path": "apps/web/src/components/dashboard/question-library.tsx",
+      "sha256": "4f49016308d6cf03485343ef283fea76443a3d0d8cfad34d37bc8a4103ffaa95"
+    },
+    {
+      "path": "apps/web/src/lib/question-bank-access.ts",
+      "sha256": "7afe85c86bc189d0d7b7cf26e044c64d48bba447759d3cbb93e90ef66ab24de2"
+    },
+    {
+      "path": "docs/BATCH-173-PRODUCT-NOTES.md",
+      "sha256": "ae90fb27b20e41e5c2eca61d6b4b4c9b7ef22c74cbc59de761a4565234780b52"
+    },
+    {
+      "path": "docs/BATCH-173-RELEASE.md",
+      "sha256": "af753dd4f1254636859799c231b3ceb68e7c4a9df0391d7b9e2c9a82ae27b0c8"
+    },
+    {
+      "path": "docs/BATCH-173-VALIDATION.md",
+      "sha256": "a08ae72f018d6c7be7bebfb4c4a49094d55841c55def91845a1c1cf86ce3a65a"
+    },
+    {
+      "path": "packages/database/drizzle/0006_question_bank.sql",
+      "sha256": "4f7f2eac19d015ed9c4b774406527a0d1d343f59a086d850e882d71a098fd625"
+    },
+    {
+      "path": "packages/database/drizzle/meta/_journal.json",
+      "sha256": "b44092ada2237b5888716af90267541ecde26dba214b971027ac458dd8301f8d"
+    },
+    {
+      "path": "packages/database/package.json",
+      "sha256": "1c597fdf88f68efcd869a995222ce7a68311050c32787ac6a081b309d3d741e4"
+    },
+    {
+      "path": "packages/database/src/question-bank/access.ts",
+      "sha256": "2cf2c27e9a43bda2f8ca28a19ec376940e6c9ba33e68a46959def5b160780628"
+    },
+    {
+      "path": "packages/database/src/question-bank/contract.test.ts",
+      "sha256": "04d5e1a929919ab1f392a4a786f3e89b1a3a0a5fb88fb12124332175692666be"
+    },
+    {
+      "path": "packages/database/src/question-bank/contract.ts",
+      "sha256": "db4234f1b9d59733afb80c92014a02777ceba06ebc8f2bfe647c55dee6812943"
+    },
+    {
+      "path": "packages/database/src/question-bank/index.ts",
+      "sha256": "60225206dc4d3a86b5b7ee71a43c24db8c8db4809ad1258f98ba01cce25d31ad"
+    },
+    {
+      "path": "packages/database/src/question-bank/practice.test.ts",
+      "sha256": "b0f9fa4862b280fefcbfe729af0f3976537fe3a7d881d9bbe7ebbbc789658670"
+    },
+    {
+      "path": "packages/database/src/question-bank/practice.ts",
+      "sha256": "c6e6779ff9e16ff71191b4b214c03fc6e2431465c8e92b706012923f5ce4b8a0"
+    },
+    {
+      "path": "packages/database/src/question-bank/repository.ts",
+      "sha256": "555c768e1e42a00ff6c97e282b4f36ac1892f4eb7ca2597580f4acbd2cbf5ba2"
+    },
+    {
+      "path": "packages/database/src/question-bank/verify-migration.ts",
+      "sha256": "ca5b11743777d71500f5e996060b9a1d6d16be167bf7cde0a500bde2a83ec275"
+    },
+    {
+      "path": "packages/database/src/question-bank/verify-workflow.ts",
+      "sha256": "46208f9b39fc8152652fafc36fedb116b88c791afcabd1a6b0db8206493b7bcc"
+    },
+    {
+      "path": "packages/database/src/schema/index.ts",
+      "sha256": "39c9f70d3395cefd734c3b5fe2598a2728b631fe18a9f9a494de646cd6dcea4d"
+    },
+    {
+      "path": "packages/database/src/schema/practice-attempts.ts",
+      "sha256": "a709884c7cc123dbc2d9f005e1004374a2ba7e8cd85965e17aeff197c582fe78"
+    },
+    {
+      "path": "packages/database/src/schema/question-bank.ts",
+      "sha256": "6da460fe6ed4eb7491b0ff2e25ed0073bdf8e6c2450ce9a31f2a81adaaf7c3e8"
+    },
+    {
+      "path": "packages/database/src/seeds/question-bank-rbac.ts",
+      "sha256": "31209cad3e25ffb2846307b2a3a852df273d40086ae06d44379c83d0e60e1c16"
+    },
+    {
+      "path": "packages/database/src/seeds/run-question-bank-rbac.ts",
+      "sha256": "03d85c8c088bf620bf0f44e334860c58c754d4130954924ca3dba6714591de11"
+    },
+    {
+      "path": "scripts/verify-batch-173.ps1",
+      "sha256": "201dcc8576e9d00a21a1847cf77f144e7532012f57cb8f49f2796ae384494ac8"
+    }
+  ],
+  "migration_required": "0006_question_bank",
+  "role_seed_required": "npm run seed:questions --workspace=@education/database",
+  "application_database_migrated": false,
+  "dependencies_added": false,
+  "github_changed": false
+}

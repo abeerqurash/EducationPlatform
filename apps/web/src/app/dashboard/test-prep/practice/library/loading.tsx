@@ -1,0 +1,1 @@
+export default function Loading() { return <p role="status" aria-live="polite" className="mx-auto max-w-5xl rounded-2xl border border-[#dfe0d5] bg-white p-6 text-sm">Loading your question library and saved draft…</p>; }

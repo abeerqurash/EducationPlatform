@@ -1,6 +1,7 @@
 import { index, integer, jsonb, pgTable, text, uuid, varchar } from "drizzle-orm/pg-core";
 import { timestampColumns } from "./common";
 import { users } from "./users";
+import type { QuestionSnapshot } from "../question-bank/contract";
 
 /** Saved attempts are private to the authenticated student. */
 export const practiceAttempts = pgTable("practice_attempts", {
@@ -15,6 +16,7 @@ export const practiceAttempts = pgTable("practice_attempts", {
   percentage: integer("percentage").notNull(),
   durationSeconds: integer("duration_seconds").notNull(),
   questionIds: jsonb("question_ids").$type<string[]>().notNull(),
+  questionSnapshots: jsonb("question_snapshots").$type<QuestionSnapshot[]>().default([]).notNull(),
   answers: jsonb("answers").$type<{questionId:string;choice:number}[]>().notNull(),
   topicBreakdown: jsonb("topic_breakdown").$type<{topic:string;total:number;answered:number;correct:number}[]>().notNull(),
   ...timestampColumns,
