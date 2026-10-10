@@ -3,6 +3,7 @@ import { AdminShell } from "@/components/app-shell/admin-shell";
 import { ThemedExportSelect } from "@/components/shared/themed-export-select";
 import { dashboardAction } from "@/components/shared/dashboard-action-styles";
 import { StarterQuestionImport } from "@/components/admin/question-workflow";
+import { ExpansionQuestionImport } from '@/components/admin/expansion-question-import';
 import { listQuestionRevisions } from "@education/database/question-bank";
 import { requireQuestionBankAccess } from "@/lib/question-bank-access";
 export const metadata = { title: "Question bank", robots: { index: false, follow: false } };
@@ -18,7 +19,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   return <AdminShell active="Question bank" userName={access.user.name} userEmail={access.user.email}>
     <div className="space-y-6">
       <header><h1 className="text-3xl font-extrabold">Question bank</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Original, versioned questions with independent review. Published revisions appear in the student question library. Drafts and rejected versions stay out of student sessions.</p></header>
-      {access.canAuthor && <div className="flex flex-wrap items-start gap-3"><Link href="/admin/question-bank/new" className={dashboardAction}>Create question</Link><StarterQuestionImport /></div>}
+      {access.canAuthor && <div className="flex flex-wrap items-start gap-3"><Link href="/admin/question-bank/new" className={dashboardAction}>Create question</Link><StarterQuestionImport /><ExpansionQuestionImport/></div>}
       <form className="flex flex-wrap items-end gap-3" action="/admin/question-bank">
         <label className="block text-xs font-bold">Search slug<input name="q" defaultValue={q} maxLength={100} className="mt-1 block h-11 rounded-full border border-[#dfe0d5] bg-white px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2" /></label>
         <ThemedExportSelect name="status" label="State" defaultValue={status} options={[{ value: "", label: "All states" }, ...["draft", "in_review", "published", "rejected", "retired"].map(value => ({ value, label: value.replaceAll("_", " ") }))]} />

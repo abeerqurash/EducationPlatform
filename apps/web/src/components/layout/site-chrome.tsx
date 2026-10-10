@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ConsentControls } from '@/components/privacy/consent-controls';
 
 const standalonePrefixes = [
   "/admin",
@@ -36,7 +37,7 @@ export function SiteChrome({
   }
 
   if (position === "footer") {
-    return <Footer />;
+    return <><Footer /><ConsentControls banner/></>;
   }
 
   return (

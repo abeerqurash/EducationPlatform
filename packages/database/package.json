@@ -15,8 +15,12 @@
     "./practice-readiness/report": "./src/publication/practice-readiness/report.ts",
     "./question-bank": "./src/question-bank/index.ts",
     "./question-bank/contract": "./src/question-bank/contract.ts",
+    "./question-bank/expansion": "./src/question-bank/packs/expansion/index.ts",
     "./account-security": "./src/account-security/index.ts",
-    "./account-security/contract": "./src/account-security/contract.ts"
+    "./account-security/contract": "./src/account-security/contract.ts",
+    "./learning-workspaces": "./src/learning-workspaces/index.ts",
+    "./learning-workspaces/contract": "./src/learning-workspaces/contract.ts",
+    "./learning-workspaces/reports": "./src/learning-workspaces/reports.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -28,6 +32,10 @@
     "test": "vitest run",
     "seed:rbac": "tsx src/seeds/run-rbac.ts",
     "seed:questions": "tsx src/seeds/run-question-bank-rbac.ts",
+    "seed:workspaces": "tsx src/seeds/run-learning-workspaces.ts",
+    "test:workspaces:postgres": "tsx src/learning-workspaces/verify-workflow.ts",
+    "workspaces:cleanup": "tsx src/learning-workspaces/run-cleanup.ts",
+    "workspaces:doctor": "tsx src/learning-workspaces/run-doctor.ts",
     "test:questions:postgres": "tsx src/question-bank/verify-migration.ts",
     "test:questions:workflow": "tsx src/question-bank/verify-workflow.ts",
     "seed:grades": "tsx src/seeds/run-grade-calculators.ts",

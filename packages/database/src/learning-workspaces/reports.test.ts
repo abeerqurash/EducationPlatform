@@ -1,0 +1,5 @@
+import { it,expect } from 'vitest';
+import { classroomGradebook,workspaceCsvCell } from './reports';
+it.each(['=SUM(A1:A2)','+1','-1','@name','  =HYPERLINK("x")','\tformula','\rformula'])('neutralizes spreadsheet formula %j',value=>expect(workspaceCsvCell(value)).toMatch(/^"'/));
+it('escapes quotation marks and preserves ordinary text',()=>{expect(workspaceCsvCell('Ada, "Student"')).toBe('"Ada, ""Student"""');expect(workspaceCsvCell(null)).toBe('""');});
+it('exports only assigned work with clear status',()=>{const date=new Date('2026-10-10T00:00:00Z');const csv=classroomGradebook({room:{title:'Math'},assignments:[{id:'a',title:'Algebra',exam:'SAT',dueAt:date}],roster:[{id:'u1',name:'Ada',email:'ada@example.test'},{id:'u2',name:'Ben',email:'ben@example.test'}],work:[{assignmentId:'a',userId:'u1',submittedAt:date,percentage:75},{assignmentId:'elsewhere',userId:'u2',submittedAt:date,percentage:100}]});expect(csv).toContain('"submitted","75"');expect(csv).toContain('"not started",""');expect(csv).not.toContain('"100"');expect(csv.split('\r\n')).toHaveLength(4);});

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { createQuestionDraft, importQuestionDrafts, transitionQuestionRevision } from "@education/database/question-bank";
 import { isQuestionId, QuestionBankError } from "@education/database/question-bank/contract";
 import { PRACTICE_QUESTIONS } from "@/app/dashboard/test-prep/practice/question-bank";
+import { EXPANSION_DRAFTS } from '@education/database/question-bank/expansion';
 
 async function actorId() {
   const session = await auth();
@@ -11,6 +12,7 @@ async function actorId() {
   if (!isQuestionId(id)) throw new QuestionBankError("Authentication required.");
   return id;
 }
+export async function importExpansionQuestionsAction(){try{const result=await importQuestionDrafts(await actorId(),EXPANSION_DRAFTS);refresh();return {ok:true as const,...result};}catch(error){return {ok:false as const,error:error instanceof QuestionBankError?error.message:'Unable to import expansion drafts.'};}}
 function refresh() { revalidatePath("/admin/question-bank", "layout"); revalidatePath("/dashboard/test-prep/practice/library"); }
 export async function createQuestionDraftAction(input: { slug?: string; entryId?: string; content: unknown }) {
   try { const revision = await createQuestionDraft(await actorId(), input); refresh(); return { ok: true as const, id: revision.id }; }

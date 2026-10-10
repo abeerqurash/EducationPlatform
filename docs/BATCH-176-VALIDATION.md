@@ -1,0 +1,12 @@
+# Executed validation
+
+- Final cumulative database suite: 210 test files / 1153 tests passed, including workspace boundaries, all 66 content drafts, independently enumerated numeric keys, consent expiry/defaults, and CSV formula escaping.
+- Calculator regression: 12 files / 99 tests passed.
+- Web/root TypeScript, ESLint, and production build passed. The build generated 90 static pages, including new private handlers; dynamic workspace data stays authenticated.
+- Fresh disposable PostgreSQL: all migrations applied, then 52 executed checks passed for permission seeds without grants, revoked sessions, cross-tenant denial, verified email-bound invitations, token hashing/replay/revocation, pinned-question grading, draft resumption, idempotent concurrent submissions, parent projections/revocation, support scoping/replies/status, explicit session restart, assignment close, roster removal, archive, and inactive staff denial, complete reporting beyond 2,000 work rows, and redacted transactional audit records.
+- Authenticated Chromium production journey: 22 checks passed for classroom creation/invitations, learner acceptance, reviewed assignment creation, explicit start, draft/reload, trusted grading, educator gradebook, denied owner export, parent sharing/revocation, support replies/private downloads, consent persistence, and forged staff/educator access.
+- Four streamed workspace pages were separately captured after the dashboard and content finished rendering, plus privacy preferences. Mobile width 375 × 812: no horizontal overflow. Screenshots were visually inspected. No full assistive-technology or cross-browser audit is claimed.
+- Standalone strict database typecheck remains at the baseline 258 diagnostics in existing code. No diagnostics occur in the new workspace, content-pack, report, or consent modules. Root/web checks passing does not mean the independent database strict debt is fixed.
+- Tests used a separate loopback PostgreSQL database and disposable verified/password fixtures. No application database, `.env.local`, user grant, real email, payment provider, deployment, or GitHub write was changed by this batch.
+
+Temporary test servers and the isolated PostgreSQL cluster are stopped before delivery. ZIPs exclude dependencies, builds, uploads, secrets, and test fixtures. CRC and every archive entry's SHA-256 are compared to the source used for validation; exact counts/hashes are in the bundle manifest and verification JSON.

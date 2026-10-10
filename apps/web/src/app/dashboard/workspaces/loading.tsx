@@ -1,0 +1,1 @@
+export default function Loading(){return <div role="status" className="mx-auto max-w-4xl p-8"><p className="text-sm font-semibold text-slate-500">Loading your private workspace…</p><div className="mt-4 h-40 animate-pulse rounded-2xl bg-slate-100"/></div>;}

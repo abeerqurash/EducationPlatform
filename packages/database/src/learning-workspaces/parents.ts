@@ -1,0 +1,11 @@
+import { workspaceAudit } from './audit';
+import { and,eq,or,sql } from 'drizzle-orm';
+import { db } from '../client';
+import { parentLinks } from '../schema/learning-workspaces';
+import { users } from '../schema/users';
+import { practiceAttempts } from '../schema/practice-attempts';
+import { studyActivities } from '../schema/student-intelligence';
+import { workspaceAccount,type WorkspaceActor } from './access';
+import { workspaceId,WorkspaceError } from './contract';
+export async function parentSharing(actor:WorkspaceActor){return db.transaction(async tx=>{await workspaceAccount(tx,actor);const outgoing=await tx.select({id:parentLinks.id,name:users.name,email:users.email}).from(parentLinks).innerJoin(users,eq(users.id,parentLinks.parentId)).where(eq(parentLinks.studentId,actor.id));const incoming=await tx.select({id:parentLinks.id,studentId:parentLinks.studentId,name:users.name}).from(parentLinks).innerJoin(users,eq(users.id,parentLinks.studentId)).where(and(eq(parentLinks.parentId,actor.id),eq(users.isActive,true))).limit(100).for('share',{of:parentLinks});const summaries=[];for(const link of incoming){const [practice]=await tx.select({attempts:sql<number>`count(*)::int`,average:sql<number>`coalesce(round(avg(${practiceAttempts.percentage})),0)::int`}).from(practiceAttempts).where(and(eq(practiceAttempts.userId,link.studentId),sql`${practiceAttempts.createdAt}>now()-interval '30 days'`));const [study]=await tx.select({minutes:sql<number>`coalesce(sum(${studyActivities.durationMinutes}),0)::int`}).from(studyActivities).where(and(eq(studyActivities.userId,link.studentId),sql`${studyActivities.createdAt}>now()-interval '30 days'`));summaries.push({id:link.id,name:link.name,attempts:practice?.attempts??0,average:practice?.average??0,minutes:study?.minutes??0});}return {outgoing,summaries};});}
+export async function removeParentLink(actor:WorkspaceActor,id:unknown){return db.transaction(async tx=>{await workspaceAccount(tx,actor);const [link]=await tx.delete(parentLinks).where(and(eq(parentLinks.id,workspaceId(id)),or(eq(parentLinks.studentId,actor.id),eq(parentLinks.parentId,actor.id)))).returning({id:parentLinks.id});if(!link)throw new WorkspaceError('Sharing connection unavailable.');await workspaceAudit(tx,actor,'parent-link',link.id,'disconnect');return {success:true};});}

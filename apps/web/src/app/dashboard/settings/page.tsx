@@ -30,6 +30,7 @@ export default async function SettingsPage() {
 
         <Panel title="Study preferences" description="These settings are server-owned and account scoped.">
           <p className="mb-5"><Link href="/dashboard/settings/security" className="text-sm font-bold underline">Manage account security and password</Link></p>
+          <p className="mb-5"><Link href="/dashboard/workspaces/parents" className="text-sm font-bold underline">Manage parent sharing</Link> · <Link href="/privacy/preferences" className="text-sm font-bold underline">Browser privacy preferences</Link></p>
           <form action={saveStudentProfileAction} className="max-w-2xl space-y-5">
             <label className="block text-xs font-bold text-slate-700">
               Timezone

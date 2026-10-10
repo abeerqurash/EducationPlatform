@@ -1,0 +1,391 @@
+{
+  "batch": 176,
+  "baseline_commit": "8e4d4b92a6a37bafd92d2f21b561280eb1a86988",
+  "source_files": [
+    "apps/web/src/app/actions/question-bank.ts",
+    "apps/web/src/app/admin/question-bank/page.tsx",
+    "apps/web/src/app/admin/support/page.tsx",
+    "apps/web/src/app/api/workspaces/route.ts",
+    "apps/web/src/app/dashboard/settings/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/assignments/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/classrooms/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/educator/[id]/export-csv/route.ts",
+    "apps/web/src/app/dashboard/workspaces/educator/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/error.tsx",
+    "apps/web/src/app/dashboard/workspaces/invitations/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/layout.tsx",
+    "apps/web/src/app/dashboard/workspaces/loading.tsx",
+    "apps/web/src/app/dashboard/workspaces/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/parents/export-json/route.ts",
+    "apps/web/src/app/dashboard/workspaces/parents/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/staff-support/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/staff-support/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/support/[id]/export-json/route.ts",
+    "apps/web/src/app/dashboard/workspaces/support/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/support/page.tsx",
+    "apps/web/src/app/privacy/preferences/page.tsx",
+    "apps/web/src/components/admin/expansion-question-import.tsx",
+    "apps/web/src/components/app-shell/dashboard-shell.tsx",
+    "apps/web/src/components/layout/footer.tsx",
+    "apps/web/src/components/layout/site-chrome.tsx",
+    "apps/web/src/components/privacy/consent-controls.tsx",
+    "apps/web/src/components/workspaces/assignment-builder.tsx",
+    "apps/web/src/components/workspaces/assignment-runner.tsx",
+    "apps/web/src/components/workspaces/support-conversation.tsx",
+    "apps/web/src/components/workspaces/support-list.tsx",
+    "apps/web/src/components/workspaces/workspace-form.tsx",
+    "apps/web/src/components/workspaces/workspace-layout.tsx",
+    "apps/web/src/lib/privacy/consent.ts",
+    "apps/web/src/lib/workspace-download.ts",
+    "apps/web/src/lib/workspaces.ts",
+    "packages/database/drizzle/0008_learning_workspaces.sql",
+    "packages/database/drizzle/meta/_journal.json",
+    "packages/database/package.json",
+    "packages/database/src/learning-workspaces/access.ts",
+    "packages/database/src/learning-workspaces/assignments.ts",
+    "packages/database/src/learning-workspaces/audit.ts",
+    "packages/database/src/learning-workspaces/classrooms.ts",
+    "packages/database/src/learning-workspaces/contract.test.ts",
+    "packages/database/src/learning-workspaces/contract.ts",
+    "packages/database/src/learning-workspaces/index.ts",
+    "packages/database/src/learning-workspaces/invitations.ts",
+    "packages/database/src/learning-workspaces/parents.ts",
+    "packages/database/src/learning-workspaces/reports.test.ts",
+    "packages/database/src/learning-workspaces/reports.ts",
+    "packages/database/src/learning-workspaces/run-cleanup.ts",
+    "packages/database/src/learning-workspaces/run-doctor.ts",
+    "packages/database/src/learning-workspaces/support.ts",
+    "packages/database/src/learning-workspaces/verify-workflow.ts",
+    "packages/database/src/publication/consent.test.ts",
+    "packages/database/src/question-bank/packs/expansion/arithmetic-mean.ts",
+    "packages/database/src/question-bank/packs/expansion/english-editing.ts",
+    "packages/database/src/question-bank/packs/expansion/index.ts",
+    "packages/database/src/question-bank/packs/expansion/integer-probability.ts",
+    "packages/database/src/question-bank/packs/expansion/linear-equations.ts",
+    "packages/database/src/question-bank/packs/expansion/pack.test.ts",
+    "packages/database/src/question-bank/packs/expansion/percent-discounts.ts",
+    "packages/database/src/question-bank/packs/expansion/reading-evidence.ts",
+    "packages/database/src/question-bank/packs/expansion/rectangle-area.ts",
+    "packages/database/src/question-bank/packs/expansion/science-data.ts",
+    "packages/database/src/question-bank/packs/expansion/types.ts",
+    "packages/database/src/question-bank/packs/expansion/unit-rates.ts",
+    "packages/database/src/schema/index.ts",
+    "packages/database/src/schema/learning-workspaces.ts",
+    "packages/database/src/seeds/learning-workspaces-rbac.ts",
+    "packages/database/src/seeds/run-learning-workspaces.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/app/actions/question-bank.ts",
+      "sha256": "fa6e9ecb0b459b10d42786e030883d8b78b9abad340d5aaf5922510f85cab44b"
+    },
+    {
+      "path": "apps/web/src/app/admin/question-bank/page.tsx",
+      "sha256": "c55087e89ee47d008d9ffe0a47ca77c426531a5838e057318883304b971a48be"
+    },
+    {
+      "path": "apps/web/src/app/admin/support/page.tsx",
+      "sha256": "962c76c9873e450675e731d1d7f58db0b348b17ba77ef417d165c4682a2343e2"
+    },
+    {
+      "path": "apps/web/src/app/api/workspaces/route.ts",
+      "sha256": "4293460c63406fbb6877320d0c2c78a7891288c1b959ede187e26bdc25343584"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/settings/page.tsx",
+      "sha256": "d6b997cfa411b99afca43cfd7c349a83880acb13a133e6f8531aef97f5208e33"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/assignments/[id]/page.tsx",
+      "sha256": "182deb370615d8daa290d5b869e88f2201af0327664bd36a8e002368d3ea2546"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/classrooms/[id]/page.tsx",
+      "sha256": "61f70ee234d2f4ecf99d43fa8be82acd4619b2810133c4d922557279c209fc75"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/educator/[id]/export-csv/route.ts",
+      "sha256": "e620d4df87437e5b452fc345d6728b1e0de672ff35cce4f13d2c09c2af30f00e"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/educator/[id]/page.tsx",
+      "sha256": "c42bd1388f879caa8b70d6c8275e8101da1a93d8cca7b9766781cf66872d9b4c"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/error.tsx",
+      "sha256": "16819feb6ccf50e22518422fe186f892599917e6ac379f3c3c7387ffd787a9e6"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/invitations/page.tsx",
+      "sha256": "391fa94a65a817f9bdc990f79fb5410bec786dbf4fe540d7703eada9c90b14f3"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/layout.tsx",
+      "sha256": "a854d03481ba607b9c1edd9b99d0b2c6c89645968e4144c5cd587037e06d0db2"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/loading.tsx",
+      "sha256": "a8e467ad6aa3b9f0abbd3928ea411034069e46e608344591e67cb0a5a64ff4d4"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/page.tsx",
+      "sha256": "95ee010a0ffacfa302b9e5a32039ef7b43d8d08c9b6863bcc1b859cef6d07624"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/parents/export-json/route.ts",
+      "sha256": "d9ce8e8d9ca79ae6ebf28767ac22924ced68d3b1d4ff0c33b1636e35e2d149d5"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/parents/page.tsx",
+      "sha256": "b28b64bd6ba23be02274327dfb96f4ea238477866bf5bd079b5a612a821b7442"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/staff-support/[id]/page.tsx",
+      "sha256": "7d729cb70751c8b2189ee0e0b7b06f0cc84e856374f12a02eef38f81641edbed"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/staff-support/page.tsx",
+      "sha256": "feefb4d562f04b3590afeb3cf8dd3518372162bf5141a4405a27dd61d92ecc28"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/support/[id]/export-json/route.ts",
+      "sha256": "65624a9c9cb00fe3dcbbe8a9f6e061869261aea6ae2f9b1228d0e486f282e293"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/support/[id]/page.tsx",
+      "sha256": "8d91fb38f89526c0aa21f1185d2134130f59dcd4a78cca076d3f7dd9722b3f00"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/support/page.tsx",
+      "sha256": "1c54b5717431425487fe4df02a9fe9afca44231e7fbb5f376d20ccb5dcb7d02a"
+    },
+    {
+      "path": "apps/web/src/app/privacy/preferences/page.tsx",
+      "sha256": "8f9a602c45a8d081fadeb09ae4fac95ea896d7e99b2d77db40bb98cf9b7e9938"
+    },
+    {
+      "path": "apps/web/src/components/admin/expansion-question-import.tsx",
+      "sha256": "419171592f5468a5aa41f377979b3153c368d8c2b9f52637a72ca24d30cc08c9"
+    },
+    {
+      "path": "apps/web/src/components/app-shell/dashboard-shell.tsx",
+      "sha256": "5eae993b18ddd5c075804207d487eff9b7088de842c030f7e29a836dd0686bac"
+    },
+    {
+      "path": "apps/web/src/components/layout/footer.tsx",
+      "sha256": "4786528758a9e8f7bb4fc35f45e1ffd0ec2f620e0b076a48395f3b6cf49d8095"
+    },
+    {
+      "path": "apps/web/src/components/layout/site-chrome.tsx",
+      "sha256": "719d0355136394272736547a108e23f1da2228e79c2a8005bccf39bb77ee6ec2"
+    },
+    {
+      "path": "apps/web/src/components/privacy/consent-controls.tsx",
+      "sha256": "52b08b99e78f489afbe85e59df54fbae67d990bfad9068c2b833e97acf87bff7"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/assignment-builder.tsx",
+      "sha256": "18d40ca8b1395f4b19840b91cb5f687f3734b718ceb0c7f4da18ff21d1a886a3"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/assignment-runner.tsx",
+      "sha256": "72a2f6dcd760a00e364f0de409de42fc4bb1e39af163afd7f02ccafba1cab232"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-conversation.tsx",
+      "sha256": "1400d4b158e1814b30b3e64e59b9b5d8a0fe8fa6e2db848677455c3755d804a3"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-list.tsx",
+      "sha256": "bb6e994146f7646745e74bcbb8311d48eee269e102c9d441ded8c5db46ed0def"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/workspace-form.tsx",
+      "sha256": "e9463c5e780625765d6ce525ec430cac608a5a1486f945e6fb65db0cff402dd6"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/workspace-layout.tsx",
+      "sha256": "7de8514e6c84e8c6836823ce3b14294f597b3c72395f6b9e5fb2b8cc5527a3b8"
+    },
+    {
+      "path": "apps/web/src/lib/privacy/consent.ts",
+      "sha256": "f0b87b67c3b4d7872aa0e45eb3117ae2891095c410bad21a2051ce9fc8c74210"
+    },
+    {
+      "path": "apps/web/src/lib/workspace-download.ts",
+      "sha256": "a3dde0c21e3879f96e45d5870906f9cef8bc74e0f9903fd0ca344b05f0a0fb22"
+    },
+    {
+      "path": "apps/web/src/lib/workspaces.ts",
+      "sha256": "7c43b263eb25cfe06b1c12fb63f3e7cafa21478f31d2b6c46fa0a501e22e3306"
+    },
+    {
+      "path": "docs/BATCH-176-ACCESS-MODEL.md",
+      "sha256": "d5e0bfa820d80ff4503b66fc83ab5ce5ee54a66f3ce93d82b0fafd4fa6f66e42"
+    },
+    {
+      "path": "docs/BATCH-176-COMPLETION-ROADMAP.md",
+      "sha256": "30ee5a69b4b9fc29cd6bab062490df1667882bffd01c5bac059897e2fbc33eb5"
+    },
+    {
+      "path": "docs/BATCH-176-CONTENT-PACK.md",
+      "sha256": "19a58a10ac74de31fbc164b02a53f76c5935412ff78798d9c19e515160b33e94"
+    },
+    {
+      "path": "docs/BATCH-176-RELEASE.md",
+      "sha256": "b91bc7e184571f9e7886380a71979047412021348d1b2aff213b2c0caa0e6d5b"
+    },
+    {
+      "path": "docs/BATCH-176-VALIDATION.md",
+      "sha256": "8852c439840634a83b3b0fb137b62665919acb01575d3695f6ab57aae7472bf1"
+    },
+    {
+      "path": "packages/database/drizzle/0008_learning_workspaces.sql",
+      "sha256": "a551f5b95040257ecd9565ce331ecfb079089282ef075b33d8c2640a811cef4f"
+    },
+    {
+      "path": "packages/database/drizzle/meta/_journal.json",
+      "sha256": "67f6be0ee865383ea85a4ed343b9fac14c734e1cc3a518e6b35aa02a205fe7b0"
+    },
+    {
+      "path": "packages/database/package.json",
+      "sha256": "572e074180711eaae0d49334cc77ca63c3bd96e20a6682d199d709f0b5b76fbc"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/access.ts",
+      "sha256": "1f28c51a39e420fdc4a6b2e987918329680919bee5fbbdf12d792d5a2dda2401"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/assignments.ts",
+      "sha256": "45c5aeff44d9c76bfad9846d7d0f89f0a5a1599744283aa42520b7a5882376a5"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/audit.ts",
+      "sha256": "3471239251dbb4706544114b304fadd6c5d9d9ec250999b6c449ee4562aaf640"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/classrooms.ts",
+      "sha256": "b7066949d39517a7d43d0b8a94d9529957fb499005882d29975b09cdc231408b"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/contract.test.ts",
+      "sha256": "07a878491329feefdbf9a4c07bc95c6b0415bc5d588236a86fdd81d11ec65375"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/contract.ts",
+      "sha256": "017851d663b2f8b11257f6ff67d5c1b2156475bad57b4d2e60c4a95ed102f3ef"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/index.ts",
+      "sha256": "dbbdb1cd79498db372f9dbb9e2984d6dadf04dc21e69916a5d15cbc60b50c034"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/invitations.ts",
+      "sha256": "caf3a74783041bf734a74c7741d4bde606a92659caae991e9685fe592c752a87"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/parents.ts",
+      "sha256": "25a267f145b6e937f9eebb2b53da0097a486f047dc612dbc2e99220b4ad84b3a"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/reports.test.ts",
+      "sha256": "232885e43a72370f4f6bd6307de663e48206130ed37a6ff172663a844daa677d"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/reports.ts",
+      "sha256": "0b11392b4891bc2d450d8c6984ccc0e7042bceb9ecc344394ecbdadc904c5854"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/run-cleanup.ts",
+      "sha256": "6ea3b75e6c825b0cdc2207ffb73b9b269a19a585f439074415d2804ba4771c54"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/run-doctor.ts",
+      "sha256": "217753880e54b91eee630d5577de70aefe49b92a99854013d9921165ef4d361d"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/support.ts",
+      "sha256": "c63b71272c99d63f5995b9515f466bb129a7db78f048bc5449ef9421a1c2fa13"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/verify-workflow.ts",
+      "sha256": "21d44c0016b96ebaa4c019ef1b0d99b43c4a73124221931a1acce2fef0a09f6f"
+    },
+    {
+      "path": "packages/database/src/publication/consent.test.ts",
+      "sha256": "b3784ceabc7e67494bc5791342fbe3fa007314843612a912b2d559b9712a2867"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/arithmetic-mean.ts",
+      "sha256": "b245957f9a756e12fe021a68a20ff28fff26b915a834c1360c90946c49156074"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/english-editing.ts",
+      "sha256": "d803ff476cc8db4140d38efff13e7c67452a46903cff31c9a08223fcff9124a8"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/index.ts",
+      "sha256": "82f07424c28ced91a5ed8e56baf19680a118c67af1bcc9dd44405b0b0c1417fa"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/integer-probability.ts",
+      "sha256": "208d34d953e708f6759e4bbaf3ba5297605b3d15ba00377e24bca229f649925e"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/linear-equations.ts",
+      "sha256": "022180a9f4fa96d01dedc9b9a2a0970cf05ce96f6d42fb594d9ae0f547fb7e15"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/pack.test.ts",
+      "sha256": "e4ab214e4ed0d368c8410a14b06c17f617e7f018623d379b7d44fc66aeb0aa8e"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/percent-discounts.ts",
+      "sha256": "e40d8f03b0377906e476a51084f7006b98396cea4f1fe6a5a2b8a247deddf207"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/reading-evidence.ts",
+      "sha256": "a6ade466acacb9c793435ba7a9a27ad26ca405fdf6c0894a0a192c79d65b33ff"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/rectangle-area.ts",
+      "sha256": "0ff76164fa8bfafa6ec468e8c8263226122dd91da457840f9c5810de7f11ae1a"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/science-data.ts",
+      "sha256": "021eeef670c070b0bf52389b59392e2af4b31fb3d7aca90dc3dff7f1ae73711e"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/types.ts",
+      "sha256": "89ca2cc17c0f8ba8e2f4564f69d4a6d14f5fc7409a11ffcbeacbac0eec866661"
+    },
+    {
+      "path": "packages/database/src/question-bank/packs/expansion/unit-rates.ts",
+      "sha256": "eece79f5d704c1d8c9f91e3ccef53eac3bd62821e19d74a31a67fe6277ea56c2"
+    },
+    {
+      "path": "packages/database/src/schema/index.ts",
+      "sha256": "43de30f5ba81a564798ffc7c06b96d58dd24a1260119c641dcfc9f1455829e85"
+    },
+    {
+      "path": "packages/database/src/schema/learning-workspaces.ts",
+      "sha256": "482d19e7e62ae3d6f156d1962681f7ef5a8964429f97393af618bf39b150e9c1"
+    },
+    {
+      "path": "packages/database/src/seeds/learning-workspaces-rbac.ts",
+      "sha256": "83f3de7bafd88a3d3e7d8126aee027d0d91212ac9761a0299842a3fa9716ad8d"
+    },
+    {
+      "path": "packages/database/src/seeds/run-learning-workspaces.ts",
+      "sha256": "e96ef182b0ccb4153bea28d2a76f9c134f2282a0980696345dda223b51e634a5"
+    },
+    {
+      "path": "scripts/verify-batch-176.ps1",
+      "sha256": "faffc376bbed488086f6678948267c9f7cd71e91e401dd02449fbad354d40751"
+    }
+  ],
+  "migration_required": "0008_learning_workspaces",
+  "dependencies_added": false,
+  "application_database_changed": false,
+  "github_changed": false
+}

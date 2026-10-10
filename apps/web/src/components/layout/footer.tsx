@@ -39,6 +39,7 @@ const footerGroups = [
       ["Privacy", "/privacy"],
       ["Terms", "/terms"],
       ["Cookies", "/cookies"],
+      ["Privacy preferences", "/privacy/preferences"],
       ["Accessibility", "/accessibility"],
     ],
   },

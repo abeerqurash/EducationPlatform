@@ -14,6 +14,7 @@ const nav: NavItem[] = [
   { label: "Study plan", href: "/dashboard/study-plan", icon: "book" },
   { label: "Progress", href: "/dashboard/progress", icon: "chart" },
   { label: "Saved results", href: "/dashboard/saved", icon: "bookmark" },
+  { label: "Workspaces", href: "/dashboard/workspaces", icon: "book" },
 ];
 
 export function DashboardShell({ children, userName, userEmail, active = "Overview" }: DashboardShellProps) {
