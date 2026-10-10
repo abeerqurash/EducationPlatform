@@ -1,51 +1,62 @@
 import Link from "next/link";
-import {redirect} from "next/navigation";
-import {auth} from "@/auth";
-import {DashboardShell} from "@/components/app-shell/dashboard-shell";
-import {listPracticeAttempts} from "@education/database";
-import {totalQuestions, totalCorrect, totalAnswered, totalMissed, totalUnanswered, weightedAccuracy, completionPercentage, sessionCount, satSessionCount, actSessionCount, totalSeconds, totalMinutes, averageQuestions, averageSeconds, bestAccuracy, worstAccuracy, latestAccuracy, firstAccuracy, accuracyImprovement, perfectSessionCount, zeroScoreCount, activeDays, averageAccuracy, correctPerMinute, unansweredPerSession, incorrectAnswered, fullyAnsweredSessions, satAccuracy, actAccuracy, sessionSpanDays} from "@education/database/practice-readiness";
-export const metadata={title:"Practice readiness | Student dashboard"};
-export const dynamic="force-dynamic";
-const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-export default async function PracticeReadinessPage(){
- const session=await auth();const id=session?.user?.id?.trim();
- if(!id||!uuid.test(id))redirect("/login?callbackUrl=%2Fdashboard%2Ftest-prep%2Fpractice%2Freadiness");
- const rows=await listPracticeAttempts(id,{limit:100});
- const metrics=[{label:"Total Questions",value:totalQuestions(rows)},
-{label:"Total Correct",value:totalCorrect(rows)},
-{label:"Total Answered",value:totalAnswered(rows)},
-{label:"Total Missed",value:totalMissed(rows)},
-{label:"Total Unanswered",value:totalUnanswered(rows)},
-{label:"Weighted Accuracy",value:weightedAccuracy(rows)},
-{label:"Completion Percentage",value:completionPercentage(rows)},
-{label:"Session Count",value:sessionCount(rows)},
-{label:"Sat Session Count",value:satSessionCount(rows)},
-{label:"Act Session Count",value:actSessionCount(rows)},
-{label:"Total Seconds",value:totalSeconds(rows)},
-{label:"Total Minutes",value:totalMinutes(rows)},
-{label:"Average Questions",value:averageQuestions(rows)},
-{label:"Average Seconds",value:averageSeconds(rows)},
-{label:"Best Accuracy",value:bestAccuracy(rows)},
-{label:"Worst Accuracy",value:worstAccuracy(rows)},
-{label:"Latest Accuracy",value:latestAccuracy(rows)},
-{label:"First Accuracy",value:firstAccuracy(rows)},
-{label:"Accuracy Improvement",value:accuracyImprovement(rows)},
-{label:"Perfect Session Count",value:perfectSessionCount(rows)},
-{label:"Zero Score Count",value:zeroScoreCount(rows)},
-{label:"Active Days",value:activeDays(rows)},
-{label:"Average Accuracy",value:averageAccuracy(rows)},
-{label:"Correct Per Minute",value:correctPerMinute(rows)},
-{label:"Unanswered Per Session",value:unansweredPerSession(rows)},
-{label:"Incorrect Answered",value:incorrectAnswered(rows)},
-{label:"Fully Answered Sessions",value:fullyAnsweredSessions(rows)},
-{label:"Sat Accuracy",value:satAccuracy(rows)},
-{label:"Act Accuracy",value:actAccuracy(rows)},
-{label:"Session Span Days",value:sessionSpanDays(rows)},];
- return <DashboardShell userName={session?.user?.name} userEmail={session?.user?.email} active="Test prep">
- <main className="mx-auto max-w-6xl space-y-6">
- <nav className="flex flex-wrap gap-2"><Link href="/dashboard/test-prep/practice" className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-5 text-xs font-bold">← Practice</Link><Link href="/dashboard/test-prep/practice/lab" className="inline-flex min-h-11 items-center rounded-full border border-violet-200 bg-violet-50 px-5 text-xs font-bold text-violet-900">Practice lab</Link></nav>
- <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h1 className="text-2xl font-extrabold text-slate-950">Practice readiness</h1><p className="mt-2 text-sm text-slate-600">Detailed descriptive metrics from up to 100 saved SAT/ACT practice sessions. Not a prediction of an official exam score.</p></header>
- <section aria-label="Practice readiness metrics" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{metrics.map(item=><article key={item.label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 className="text-xs font-semibold text-slate-600">{item.label}</h2><p className="mt-2 text-2xl font-extrabold text-slate-950">{item.value}</p></article>)}</section>
- {!rows.length?<p className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">Save a practice session to populate these metrics.</p>:null}
- </main></DashboardShell>;
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { DashboardShell } from "@/components/app-shell/dashboard-shell";
+import { ThemedFilterPill } from "@/components/shared/themed-filter-pill";
+import { dashboardAction } from "@/components/shared/dashboard-action-styles";
+import { PracticeReadinessDownloads } from "@/components/dashboard/practice-readiness-downloads";
+import { listPracticeAttempts } from "@education/database";
+import { buildReadinessReport, readinessExam } from "@education/database/practice-readiness/report";
+
+export const metadata = { title: "Practice readiness | Student dashboard", robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const path = "/dashboard/test-prep/practice/readiness";
+
+export default async function PracticeReadinessPage({ searchParams }: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const session = await auth();
+  const id = session?.user?.id?.trim();
+  if (!id || !uuid.test(id)) redirect(`/login?callbackUrl=${encodeURIComponent(path)}`);
+  const exam = readinessExam((await searchParams).exam);
+  // Keep one across-exam history window when switching filters.
+  const rows = await listPracticeAttempts(id, { limit: 100 });
+  const report = buildReadinessReport(rows, exam);
+  return <DashboardShell userName={session?.user?.name} userEmail={session?.user?.email} active="Test prep">
+    <main className="mx-auto max-w-6xl space-y-6">
+      <nav aria-label="Practice navigation" className="flex flex-wrap gap-2">
+        <Link href="/dashboard/test-prep/practice" className={dashboardAction}>Back to practice</Link>
+        <Link href="/dashboard/test-prep/practice/lab" className={dashboardAction}>Practice lab</Link>
+        <Link href="/dashboard/test-prep/practice/history" className={dashboardAction}>Session history</Link>
+      </nav>
+      <header className="rounded-[28px] border border-[#dfe0d5] bg-white p-6 shadow-sm">
+        <h1 className="text-2xl font-extrabold text-[#171912]">Practice readiness</h1>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{report.disclaimer}</p>
+        <p className="mt-2 text-xs leading-5 text-slate-600">{report.scope} Loaded {report.loadedSessions}; matching {report.matchingSessions}.</p>
+        {report.excludedSessions > 0 && <p role="status" className="mt-2 text-sm text-amber-800">Excluded {report.excludedSessions} invalid records from calculations.</p>}
+        <nav aria-label="Filter report by exam" className="mt-5 flex flex-wrap gap-2">
+          {(["All", "SAT", "ACT"] as const).map(value => <ThemedFilterPill key={value} href={value === "All" ? path : `${path}?exam=${value}`} active={exam === value}>{value === "All" ? "All exams" : value}</ThemedFilterPill>)}
+        </nav>
+        <div className="mt-5"><PracticeReadinessDownloads report={report} /></div>
+      </header>
+      <section aria-labelledby="readiness-next-steps" className="rounded-[28px] border border-[#dfe0d5] bg-[#f7f8f2] p-6">
+        <h2 id="readiness-next-steps" className="text-lg font-extrabold text-[#171912]">Your next steps</h2>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">{report.recommendations.map(item => <li key={item}>{item}</li>)}</ul>
+        {!report.matchingSessions && <Link href="/dashboard/test-prep/practice/lab" className={`${dashboardAction} mt-4`}>Start a practice lab session</Link>}
+      </section>
+      <section aria-label="Practice readiness metrics" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {report.metrics.map(item => <article key={item.label} className="rounded-2xl border border-[#dfe0d5] bg-white p-5 shadow-sm">
+          <h2 className="text-xs font-semibold text-slate-600">{item.label}</h2>
+          <p className="mt-2 text-2xl font-extrabold tabular-nums text-[#171912]">{item.value === null ? "No data" : item.value}{item.value !== null && <span className="ml-2 text-xs font-semibold text-slate-600">{item.unit}</span>}</p>
+          <p className="mt-3 text-xs leading-5 text-slate-600">{item.description}</p>
+        </article>)}
+      </section>
+      <section aria-labelledby="readiness-methodology" className="rounded-2xl border border-[#dfe0d5] bg-white p-6 text-sm leading-6 text-slate-600">
+        <h2 id="readiness-methodology" className="font-extrabold text-[#171912]">How to read this report</h2>
+        <p className="mt-2">Question-weighted score counts every question. Answered-question accuracy excludes skipped questions. Session-average score gives each session equal weight. A perfect score on a small familiar set is evidence about that set only.</p>
+        <p className="mt-2">Dates use UTC. First-to-latest changes compare different sessions and are descriptive, not a validated improvement estimate. Durations include pauses and review; they are not official exam pacing benchmarks.</p>
+      </section>
+    </main>
+  </DashboardShell>;
 }

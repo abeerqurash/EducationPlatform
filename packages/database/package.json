@@ -11,7 +11,8 @@
     "./practice-insights": "./src/publication/practice-insights/index.ts",
     "./practice-coach": "./src/publication/practice-coach/index.ts",
     "./question-quality": "./src/publication/question-quality/index.ts",
-    "./practice-readiness": "./src/publication/practice-readiness/index.ts"
+    "./practice-readiness": "./src/publication/practice-readiness/index.ts",
+    "./practice-readiness/report": "./src/publication/practice-readiness/report.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",

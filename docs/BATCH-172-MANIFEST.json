@@ -1,0 +1,67 @@
+{
+  "batch": 172,
+  "baseline_commit": "816e2252ed74bd76509ebec29029c3daef9a4990",
+  "source_files": [
+    "apps/web/src/app/dashboard/test-prep/practice/page.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/readiness/error.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/readiness/loading.tsx",
+    "apps/web/src/app/dashboard/test-prep/practice/readiness/page.tsx",
+    "apps/web/src/components/dashboard/practice-readiness-downloads.tsx",
+    "packages/database/package.json",
+    "packages/database/src/publication/practice-readiness/report.test.ts",
+    "packages/database/src/publication/practice-readiness/report.ts"
+  ],
+  "changes": [
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/page.tsx",
+      "sha256": "5b5c6aacb21bc3ec93d3604993270767da1e57d20f09a5114dcedf64df4f4109"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/readiness/error.tsx",
+      "sha256": "840f0a54f1821a4b16ce5afc88a01437a8c556264476b037785eeab4b9ad80d2"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/readiness/loading.tsx",
+      "sha256": "cee42a9bffc709c7e6bf784ff319ee85302a9e18e81eadfbec428a002aee85a2"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/test-prep/practice/readiness/page.tsx",
+      "sha256": "d5191cc99ab2a7363adfb6ee97e08496500f5cd4164808802d0dad8ad2609244"
+    },
+    {
+      "path": "apps/web/src/components/dashboard/practice-readiness-downloads.tsx",
+      "sha256": "8c0bded712eb4141eb01a8bf811c416e51b6518748b248b3a267d808fbb481f8"
+    },
+    {
+      "path": "docs/BATCH-172-RELEASE.md",
+      "sha256": "9fb0125f61903ca945f98cfedb5db17fd4fbac0bceaeaeb3d36b49cdad832d54"
+    },
+    {
+      "path": "docs/BATCH-172-VALIDATION.md",
+      "sha256": "9c81c6beae4c8618e4b24050198e4668d27dc3b7d6a8c6e64f493be0fc83d253"
+    },
+    {
+      "path": "docs/PROJECT-AUDIT-BATCH-172.md",
+      "sha256": "ca5dcb7a3fb606d544381b073faf0f4e3baecb0d0c3a3b8c8f036c61672ae838"
+    },
+    {
+      "path": "packages/database/package.json",
+      "sha256": "381360158c7615a2c4df3b72b84c47c642b92067db6835a6e2d3ba69037ff3e9"
+    },
+    {
+      "path": "packages/database/src/publication/practice-readiness/report.test.ts",
+      "sha256": "c63ec55214d8d678a790d6930c0e38b65c59f9079ca595d6fa66d53a2e6c3a07"
+    },
+    {
+      "path": "packages/database/src/publication/practice-readiness/report.ts",
+      "sha256": "05b359f301e633fd6f65529a3f45c6fc3b7d55b404e09f36e3db9b633a35b0ff"
+    },
+    {
+      "path": "scripts/verify-batch-172.ps1",
+      "sha256": "65d1f6edb971b20322491e8d0386a3fbacef8071c72b7f977c4f9e54f950039e"
+    }
+  ],
+  "dependencies_added": false,
+  "migrations_added": false,
+  "remote_modified": false
+}
