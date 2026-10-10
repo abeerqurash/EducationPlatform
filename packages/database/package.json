@@ -9,7 +9,8 @@
     "./practice-contract": "./src/publication/practice-attempt-contract.ts",
     "./practice-progress": "./src/publication/practice-progress.ts",
     "./practice-insights": "./src/publication/practice-insights/index.ts",
-    "./practice-coach": "./src/publication/practice-coach/index.ts"
+    "./practice-coach": "./src/publication/practice-coach/index.ts",
+    "./question-quality": "./src/publication/question-quality/index.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
