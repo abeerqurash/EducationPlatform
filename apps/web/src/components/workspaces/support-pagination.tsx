@@ -1,0 +1,4 @@
+import { dashboardAction } from '@/components/shared/dashboard-action-styles';
+import Link from 'next/link';
+import { supportPageHref,type SupportQuery } from '@education/database/learning-workspaces/support-query';
+export function SupportPagination({query,total,pages,page,staff=false}:{query:SupportQuery;total:number;pages:number;page:number;staff?:boolean}){return <div className="mt-5 space-y-3"><p role="status" className="text-sm text-[#6c7162]">{total} matching tickets · Page {page} of {pages}</p><nav aria-label="Ticket pages" className="flex gap-4 text-sm font-bold">{page>1?<Link className={dashboardAction} href={supportPageHref(staff,query,page-1)}>Previous page</Link>:null}{page<pages?<Link className={dashboardAction} href={supportPageHref(staff,query,page+1)}>Next page</Link>:null}</nav></div>;}

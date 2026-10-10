@@ -1,0 +1,16 @@
+import { it,expect } from 'vitest';
+import { normalizeSupportQuery,supportSearchPattern,supportPriority,supportPageHref } from './support-query';
+it('defaults to an unfiltered first page',()=>expect(normalizeSupportQuery()).toEqual({q:'',status:'all',category:'all',priority:'all',assignment:'all',sort:'newest',page:1}));
+it.each([null,{},[],true,'-1','1.5','1e2','NaN','Infinity'])('rejects invalid page %j',page=>expect(normalizeSupportQuery({page}).page).toBe(1));
+it.each([[0,1],[-5,1],[2,2],['3',3],[20000,10000]])('bounds page %j',(page,expected)=>expect(normalizeSupportQuery({page}).page).toBe(expected));
+it('bounds and trims subject search',()=>expect(normalizeSupportQuery({q:'  '+ 'x'.repeat(150)+'  '}).q).toHaveLength(100));
+it('ignores array search inputs',()=>expect(normalizeSupportQuery({q:['secret','other']}).q).toBe(''));
+it.each(['open','replied','closed'])('supports status %s',status=>expect(normalizeSupportQuery({status}).status).toBe(status));
+it.each(['technical','account','content','accessibility'])('supports category %s',category=>expect(normalizeSupportQuery({category}).category).toBe(category));
+it.each(['low','normal','high'])('supports priority %s',priority=>expect(supportPriority(priority)).toBe(priority));
+it.each([null,'urgent',{},true])('rejects invalid priority %j',priority=>expect(()=>supportPriority(priority)).toThrow());
+it('ignores forged customer assignment filters',()=>expect(normalizeSupportQuery({assignment:'mine'},false).assignment).toBe('all'));
+it('allows scoped staff assignment filters',()=>expect(normalizeSupportQuery({assignment:'mine'},true).assignment).toBe('mine'));
+it('resets unknown filter enums',()=>expect(normalizeSupportQuery({status:'deleted',category:'private',sort:'sql',priority:'critical',assignment:'other'},true)).toMatchObject({status:'all',category:'all',sort:'newest',priority:'all',assignment:'all'}));
+it('treats wildcards and backslashes as literal search characters',()=>expect(supportSearchPattern('50%_\\')).toBe('%50\\%\\_\\\\%'));
+it('encodes search and preserves filters in pagination links',()=>{const href=supportPageHref(true,normalizeSupportQuery({q:'a & b',status:'open',assignment:'mine'},true),2);const url=new URL(href,'http://localhost');expect(url.pathname).toBe('/dashboard/workspaces/staff-support');expect(url.searchParams.get('q')).toBe('a & b');expect(url.searchParams.get('assignment')).toBe('mine');expect(url.searchParams.get('page')).toBe('2');});

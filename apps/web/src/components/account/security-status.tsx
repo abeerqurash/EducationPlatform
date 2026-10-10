@@ -1,2 +1,3 @@
 import Link from 'next/link';
+import { dashboardAction } from '@/components/shared/dashboard-action-styles';
 export function SecurityStatus({verifiedAt,passwordChangedAt,lastLoginAt}:{verifiedAt:string|null;passwordChangedAt:string|null;lastLoginAt:string|null}){return <div className="security-status"><p><strong>Email:</strong> {verifiedAt?'Verified':'Not verified'} {!verifiedAt&&<Link href="/verify-email">Request verification</Link>}</p><p><strong>Password last changed:</strong> {passwordChangedAt?passwordChangedAt.slice(0,10):'No change recorded'}</p><p><strong>Last successful sign-in:</strong> {lastLoginAt?lastLoginAt.replace('T',' ').slice(0,19)+' UTC':'No sign-in recorded'}</p></div>;}

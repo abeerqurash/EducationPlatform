@@ -20,7 +20,8 @@
     "./account-security/contract": "./src/account-security/contract.ts",
     "./learning-workspaces": "./src/learning-workspaces/index.ts",
     "./learning-workspaces/contract": "./src/learning-workspaces/contract.ts",
-    "./learning-workspaces/reports": "./src/learning-workspaces/reports.ts"
+    "./learning-workspaces/reports": "./src/learning-workspaces/reports.ts",
+    "./learning-workspaces/support-query": "./src/learning-workspaces/support-query.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -45,7 +46,8 @@
     "email:work": "tsx src/account-security/run-worker.ts",
     "security:cleanup": "tsx src/account-security/run-cleanup.ts",
     "test:accounts:postgres": "tsx src/account-security/verify-workflow.ts",
-    "security:doctor": "tsx src/account-security/run-doctor.ts"
+    "security:doctor": "tsx src/account-security/run-doctor.ts",
+    "test:support:postgres": "tsx src/learning-workspaces/verify-support.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.3",

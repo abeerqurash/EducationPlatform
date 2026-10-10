@@ -1,0 +1,124 @@
+{
+  "batch": 177,
+  "baseline_commit": "9fb7419eca8ad021336d412de55d214b57058d79",
+  "source_files": [
+    "apps/web/src/app/api/workspaces/route.ts",
+    "apps/web/src/app/dashboard/workspaces/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/staff-support/[id]/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/staff-support/page.tsx",
+    "apps/web/src/app/dashboard/workspaces/support/page.tsx",
+    "apps/web/src/components/workspaces/support-filters.tsx",
+    "apps/web/src/components/workspaces/support-list.tsx",
+    "apps/web/src/components/workspaces/support-pagination.tsx",
+    "apps/web/src/components/workspaces/support-triage.tsx",
+    "packages/database/drizzle/0009_support_triage.sql",
+    "packages/database/drizzle/meta/_journal.json",
+    "packages/database/package.json",
+    "packages/database/src/learning-workspaces/access.ts",
+    "packages/database/src/learning-workspaces/classrooms.ts",
+    "packages/database/src/learning-workspaces/run-doctor.ts",
+    "packages/database/src/learning-workspaces/support-query.test.ts",
+    "packages/database/src/learning-workspaces/support-query.ts",
+    "packages/database/src/learning-workspaces/support.ts",
+    "packages/database/src/learning-workspaces/verify-support.ts",
+    "packages/database/src/schema/learning-workspaces.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/app/api/workspaces/route.ts",
+      "sha256": "b5c5a107b35da48a00622eeb4d63dd010961c3ad13ccfc8fb67fe334d596962b"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/page.tsx",
+      "sha256": "9726a4d98da59eb5332e8323d07d84ce2d8cde3f2ac7f4f32a446f866678f594"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/staff-support/[id]/page.tsx",
+      "sha256": "102e1856e84fe84cb486688b51882153f06748b1f1a2833db34cbc4dcbaecbba"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/staff-support/page.tsx",
+      "sha256": "96794c37d699d21405661e282de30926c3d6e8c394edaeba56be026a94148187"
+    },
+    {
+      "path": "apps/web/src/app/dashboard/workspaces/support/page.tsx",
+      "sha256": "36fa3a9f4a958d6d02c9b658dbaf488387627e00aa54dc90103597589b47e5e2"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-filters.tsx",
+      "sha256": "a8cbb46bb73f09c8222acfb30a0b7f9b8fc3af2cd747919b7c69a230d868bdbd"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-list.tsx",
+      "sha256": "1b43130557a7c1018b35d86a170473f029a321af8b4ed0f48522eeae8c41b0d3"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-pagination.tsx",
+      "sha256": "af574e77fc599c70f86a7cece73ae8197773fd4f2dc30e93272794ef79896d20"
+    },
+    {
+      "path": "apps/web/src/components/workspaces/support-triage.tsx",
+      "sha256": "a719edded60fff9925c57804ef01ceb9a226a44ad29ade9d22a6418f767c654b"
+    },
+    {
+      "path": "docs/BATCH-177-RELEASE.md",
+      "sha256": "12d0de96309d7154b8bec5b7b1e47700168c91faca3376a11459d1e6c7c61dd4"
+    },
+    {
+      "path": "docs/BATCH-177-VALIDATION.md",
+      "sha256": "8ccecc9ee11f435a78c55940bc3180dd1e3d7643d6bf4f8abfb65bb89c469429"
+    },
+    {
+      "path": "packages/database/drizzle/0009_support_triage.sql",
+      "sha256": "c5c772a61ca490d2847cc30a49b18e0ab818e21dd7a2e68a880af88a888dc75b"
+    },
+    {
+      "path": "packages/database/drizzle/meta/_journal.json",
+      "sha256": "69503f5bb44df79af2f4d4b93b84c83efd296ae5b5fdae52668cf782f3a4a597"
+    },
+    {
+      "path": "packages/database/package.json",
+      "sha256": "c78a302528a6f3c0a7c811f57087262ba3320d2000237ffbabe4671ccc4e09fb"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/access.ts",
+      "sha256": "e2d4b20018f59fc5f14741d8442a96e73f34702da04478bee9007940176e97cf"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/classrooms.ts",
+      "sha256": "fa676a1852a400eed20d84649e0a1493d6b8225775f976e73aa3350e79568e27"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/run-doctor.ts",
+      "sha256": "71afbdc5d14c6dd5016e0b70bf465f5d0b5dc25d70fdd4fdda28f8040e19e5a8"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/support-query.test.ts",
+      "sha256": "c40e9dfbf864283b78577757845f99eb8c05947c60a44db71a796b9aa16b416e"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/support-query.ts",
+      "sha256": "b9b9743916b6c4618e4643868a4efc40dde27e23e3ab11f9fcae2d9cdaddfa1d"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/support.ts",
+      "sha256": "573c85e9a6f314e898be575efcac1bc4e88389ce204d98c9b010eaf811a45262"
+    },
+    {
+      "path": "packages/database/src/learning-workspaces/verify-support.ts",
+      "sha256": "9757e2dac2dca6dcb50317529082a88b37e254714f97553557261f6d4c19f43a"
+    },
+    {
+      "path": "packages/database/src/schema/learning-workspaces.ts",
+      "sha256": "785076d66feee58aab5a8c722ad4b8027887c0eada7561b085cac89f7dadadb9"
+    },
+    {
+      "path": "scripts/verify-batch-177.ps1",
+      "sha256": "5d4583232e827c9d4398994a2aa9f41e8e0882a56b78acff2d6359aa3ecdfe7b"
+    }
+  ],
+  "migration_required": "0009_support_triage",
+  "dependencies_added": false,
+  "application_database_changed": false,
+  "github_changed": false
+}

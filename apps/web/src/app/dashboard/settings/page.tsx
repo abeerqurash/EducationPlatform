@@ -1,3 +1,4 @@
+import { dashboardAction } from '@/components/shared/dashboard-action-styles';
 import { getStudentWorkspace } from "@education/database";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
@@ -29,8 +30,8 @@ export default async function SettingsPage() {
         </div>
 
         <Panel title="Study preferences" description="These settings are server-owned and account scoped.">
-          <p className="mb-5"><Link href="/dashboard/settings/security" className="text-sm font-bold underline">Manage account security and password</Link></p>
-          <p className="mb-5"><Link href="/dashboard/workspaces/parents" className="text-sm font-bold underline">Manage parent sharing</Link> · <Link href="/privacy/preferences" className="text-sm font-bold underline">Browser privacy preferences</Link></p>
+          <div className="mb-5 flex flex-wrap gap-2"><Link href="/dashboard/settings/security" className={dashboardAction}>Manage account security and password</Link>
+          <Link href="/dashboard/workspaces/parents" className={dashboardAction}>Manage parent sharing</Link><Link href="/privacy/preferences" className={dashboardAction}>Browser privacy preferences</Link></div>
           <form action={saveStudentProfileAction} className="max-w-2xl space-y-5">
             <label className="block text-xs font-bold text-slate-700">
               Timezone

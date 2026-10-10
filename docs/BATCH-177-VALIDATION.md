@@ -1,0 +1,9 @@
+# Batch 177 validation
+
+- Cumulative database suite: 211 files / 1189 tests. Calculator regression: 12 files / 99 tests. Root/web TypeScript, lint, and production build passed.
+- Query boundary suite: 36 tests for defaults, malformed/bounded page values, enum filtering, owner scope, literal wildcard escaping, priority validation, and filter-preserving URLs.
+- Fresh disposable PostgreSQL: every migration applied, then 39 checks passed for private counts/search, all pages under tied timestamps, status/category filters, literal wildcard search, forged staff denial, concurrent claims, own-assignment release, inactive/revoked assignee reclamation, priority constraint/sorting, classroom archive/restore, cross-tenant denial, inactive organization denial, still-revoked invitation codes, and redacted audit metadata.
+- Authenticated Chromium production acceptance: 12 checks passed for owner pagination, private search, literal wildcard search, staff triage/release, queue filtering, customer triage denial, classroom restoration, and learner restoration denial. A fully rendered 375 × 812 mobile screenshot was inspected; no horizontal overflow or browser runtime errors occurred. Test accounts and database are isolated from application records.
+- Schema doctor passed on the disposable database, including the new columns. Standalone strict database typecheck remains at 258 existing diagnostics; none occur in the changed support, query, acceptance, or doctor modules. Root/web checks do not claim to fix package-wide debt.
+
+No application migration, production account grant, environment change, real notification delivery, payment action, deployment, or GitHub write was performed. Temporary test services are stopped before delivery. ZIPs exclude secrets, dependencies, builds, uploads, and disposable fixtures; CRC and entry SHA-256 are verified against source.
